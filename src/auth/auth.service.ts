@@ -1,46 +1,74 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { RegisterDto } from './dto/register.dto';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { User, UserDocument } from './schemas/user.schema';
+import { UsersService } from 'src/users/users.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly jwtSvc: JwtService,
+    private readonly usersSvc: UsersService,
   ) {}
 
-  async login(username: string, password: string) {
-    const user = await this.userModel.findOne({ username });
-    if (user === null) {
-      throw new UnauthorizedException();
-    }
+  async login(user: any) {
+    const payload = {
+      sub: user.id,
+      name: user.name,
+      username: user.username,
+    };
 
-    const { salt } = user;
-    const hash = bcrypt.hashSync(password, salt);
-
-    if (hash !== user.hash) {
-      throw new UnauthorizedException();
-    }
-
-    return { success: true };
+    return {
+      access_token: this.jwtSvc.sign(payload),
+    };
   }
 
-  async register(dto: RegisterDto) {
-    const { username, name, password } = dto;
+  // async login(username: string, password: string) {
+  //   const user = await this.userModel.findOne({ username });
+  //   if (user === null) {
+  //     throw new UnauthorizedException();
+  //   }
 
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(password, salt);
+  //   const { salt } = user;
+  //   const hash = bcrypt.hashSync(password, salt);
 
-    const user = new this.userModel({
-      username,
-      name,
-      salt,
-      hash,
-    });
+  //   if (hash !== user.hash) {
+  //     throw new UnauthorizedException();
+  //   }
 
-    const result = await user.save();
-    return result._id;
+  //   return { success: true };
+  // }
+
+  // async register(dto: RegisterDto) {
+  //   const { username, name, password } = dto;
+
+  //   const salt = bcrypt.genSaltSync(10);
+  //   const hash = bcrypt.hashSync(password, salt);
+
+  //   const user = new this.userModel({
+  //     username,
+  //     name,
+  //     salt,
+  //     hash,
+  //   });
+
+  //   const result = await user.save();
+  //   return result._id;
+  // }
+
+  async validateUser(username: string, password: string): Promise<any> {
+    const user = await this.usersSvc.findOne(username);
+
+    if (user === null) {
+      return null;
+    }
+
+    const pwdHash = bcrypt.hashSync(password, user.salt);
+
+    if (user.hash !== pwdHash) {
+      return null;
+    }
+
+    const { _id, name, username: usr } = user;
+    return { id: _id, name, username: usr };
   }
 }

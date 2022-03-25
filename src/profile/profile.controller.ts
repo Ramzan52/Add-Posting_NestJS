@@ -1,17 +1,29 @@
-import { Body, Controller, Get, Put } from '@nestjs/common';
-import { Profile } from './profile.modal';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/auth-guards/jwt-auth.guard';
+import { SaveProfileDto } from './dto/save-profile.dto';
 import { ProfileService } from './profile.service';
-import { EditProfileDto } from './dto/edit-profile.dto';
+import { Profile } from './schemas/profile.schema';
 
+@UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
-  constructor(private profileService: ProfileService) {}
-  @Get('myProfile')
-  getProfile(): Profile {
-    return this.profileService.getProfile();
+  constructor(private profileSvc: ProfileService) {}
+
+  @Get()
+  getProfile(@Request() req): Promise<Profile> {
+    console.log('getProfile', req.user);
+    return this.profileSvc.findOne(req.user.username);
   }
-  @Put('editProfile')
-  editProfile(@Body() editprofileDto: EditProfileDto) {
-    return this.profileService.editprofile(editprofileDto);
+
+  @Post()
+  saveProfile(@Request() req, @Body() body: SaveProfileDto) {
+    return this.profileSvc.editProfile(req.user.username, body);
   }
 }
