@@ -1,7 +1,7 @@
+import { BaseModel } from 'src/models/base-document.model';
 import { PostLocationDto } from '../dto/post-location.dto';
 
-export interface PostModel {
-  id: string;
+export interface PostModel extends BaseModel {
   categoryId: string;
   category: string;
   location: PostLocationDto;
@@ -9,7 +9,6 @@ export interface PostModel {
   condition: number;
   title: string;
   description: string;
-  isDeleted: boolean;
   isActive: boolean;
   isVend: boolean;
 }
