@@ -9,9 +9,12 @@ import {
 } from 'class-validator';
 import { PostLocationDto } from './post-location.dto';
 
-export class CreatePostDto {
+export class UpdatePostDto {
   @IsString()
   categoryId: string;
+
+  @IsString()
+  id: string;
 
   @IsString()
   title: string;
