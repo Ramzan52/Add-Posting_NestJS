@@ -1,20 +1,37 @@
-import * as passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { config } from 'dotenv';
+import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 
-const GOOGLE_CLIENT_ID = '105041112417-ot3fki9ph490erku4s54sn0obscgi0m4.apps.googleusercontent.com';
-const GOOGLE_CLIENT_SECRET = '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';
+config();
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: GOOGLE_CLIENT_ID,
-      clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: 'http://localhost:3000/auth/google/callback',
-    },
-    function (accessToken, refreshToken, profile, cb) {
-      // User.findOrCreate({ googleId: profile.id }, function (err, user) {
-      //   return cb(err, user);
-      // });
-    },
-  ),
-);
+@Injectable()
+export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
+  constructor() {
+    super({
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: 'http://localhost:3000/auth/google/redirect',
+      scope: ['email', 'profile'],
+    });
+  }
+
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback,
+  ): Promise<any> {
+    const { name, emails, photos } = profile;
+
+    const user = {
+      email: emails[0].value,
+      firstName: name.givenName,
+      lastName: name.familyName,
+      picture: photos[0].value,
+      accessToken,
+    };
+    
+    done(null, user);
+  }
+}

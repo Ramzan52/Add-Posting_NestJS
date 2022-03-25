@@ -22,38 +22,9 @@ export class AuthService {
     };
   }
 
-  // async login(username: string, password: string) {
-  //   const user = await this.userModel.findOne({ username });
-  //   if (user === null) {
-  //     throw new UnauthorizedException();
-  //   }
-
-  //   const { salt } = user;
-  //   const hash = bcrypt.hashSync(password, salt);
-
-  //   if (hash !== user.hash) {
-  //     throw new UnauthorizedException();
-  //   }
-
-  //   return { success: true };
-  // }
-
-  // async register(dto: RegisterDto) {
-  //   const { username, name, password } = dto;
-
-  //   const salt = bcrypt.genSaltSync(10);
-  //   const hash = bcrypt.hashSync(password, salt);
-
-  //   const user = new this.userModel({
-  //     username,
-  //     name,
-  //     salt,
-  //     hash,
-  //   });
-
-  //   const result = await user.save();
-  //   return result._id;
-  // }
+  async loginWithGoogle(payload: any) {
+    console.log('loginWithGoogle', payload);
+  }
 
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersSvc.findOne(username);
