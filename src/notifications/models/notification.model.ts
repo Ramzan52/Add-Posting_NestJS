@@ -1,4 +1,4 @@
-export interface NotificationModal {
+export interface NotificationModel {
   notificationId: string;
   content: string;
   picture: string;

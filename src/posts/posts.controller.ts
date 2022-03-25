@@ -1,47 +1,44 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { CreatePostDto } from './dto/create-post.dto';
+import { PostModel } from './models/posts.model';
 import { PostsService } from './posts.service';
-import { PostModal } from './posts.modal';
-import { CreatePostsDto } from './dto/create-posts.dto';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private postsService: PostsService) {}
-  @Get('getAll')
-  getPost(): PostModal[] {
-    return this.postsService.getPosts();
+  constructor(private readonly postsSvc: PostsService) {}
+
+  @Get()
+  getPosts(): PostModel[] {
+    return this.postsSvc.getPosts();
   }
-  @Get('recentPost/:locationTitle')
-  getRecentPost(@Param('locationTitle') locationTitle: string) {
-    return this.postsService.getPostByLocation(locationTitle);
+
+  @Get('recentPosts/:location')
+  getRecentPost(@Param('location') location: string) {
+    return this.postsSvc.getPostByLocation(location);
   }
-  @Post('/create')
-  @UsePipes(ValidationPipe)
-  createPost(@Body() createPostDto: CreatePostsDto) {
-    return this.postsService.createPost(createPostDto);
+
+  @Post()
+  createPost(@Body() body: CreatePostDto) {
+    return this.postsSvc.createPost(body);
   }
+
   @Get('/:id')
-  getPostById(@Param('id') id: string): PostModal {
-    return this.postsService.getPostById(id);
+  getPostById(@Param('id') id: string): PostModel {
+    return this.postsSvc.getPostById(id);
   }
-  @Get('/markActive/:id')
-  markPostActive(@Param('id') id: string): PostModal {
-    return this.postsService.markPostActive(id);
+
+  @Get('/mark-active/:id')
+  markPostActive(@Param('id') id: string): PostModel {
+    return this.postsSvc.markPostActive(id);
   }
-  @Get('/markVend/:id')
-  markPostVend(@Param('id') id: string): PostModal {
-    return this.postsService.markPostVend(id);
+
+  @Get('/mark-vend/:id')
+  markPostVend(@Param('id') id: string): PostModel {
+    return this.postsSvc.markPostVend(id);
   }
-  @Get('/markDelete/:id')
-  markPostDeleted(@Param('id') id: string): PostModal {
-    return this.postsService.markPostDeleted(id);
+
+  @Delete(':id')
+  markPostDeleted(@Param('id') id: string) {
+    this.postsSvc.markPostDeleted(id);
   }
 }

@@ -1,80 +1,71 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { PostModal } from './posts.modal';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { v1 as uuid } from 'uuid';
-import { CreatePostsDto } from './dto/create-posts.dto';
+import { CreatePostDto } from './dto/create-post.dto';
+import { PostModel } from './models/posts.model';
 
 @Injectable()
 export class PostsService {
-  private Posts: PostModal[] = [];
+  private posts: PostModel[] = [];
 
-  getPosts(): PostModal[] {
-    return this.Posts;
+  getPosts(): PostModel[] {
+    return this.posts;
   }
-  createPost(createPostDto: CreatePostsDto) {
-    const { title, description, condition, attachmentUrls, location } =
-      createPostDto;
-    if (condition < 0 || condition > 100) {
-      throw new BadRequestException('Condition must be in 0-100');
-    }
 
-    const post: PostModal = {
-      categoryId: uuid(),
+  createPost(dto: CreatePostDto) {
+    const {
+      categoryId,
+      title,
+      description,
+      condition,
+      attachmentUrls,
+      location,
+    } = dto;
+
+    const post: PostModel = {
+      id: uuid(),
+      categoryId,
+      category: '',
       title,
       description,
       condition,
       location,
       attachmentUrls,
       isActive: false,
-      isDelete: false,
+      isDeleted: false,
       isVend: false,
     };
-    this.Posts.push(post);
-  }
-  getPostById(id: string): PostModal {
-    const found = this.Posts.find((val) => val.categoryId === id);
-    if (!found) {
-      throw new NotFoundException(`Post with id ${id} Not Found`);
-    }
-    return found;
-  }
-  markPostActive(id: string): PostModal {
-    const found = this.Posts.find((val) => val.categoryId === id);
 
-    if (!found) {
-      throw new NotFoundException(`Post with id ${id} Not Found`);
-    }
-    found.isActive = true;
-    return found;
+    this.posts.push(post);
   }
-  markPostVend(id: string): PostModal {
-    const found = this.Posts.find((val) => val.categoryId === id);
 
-    if (!found) {
+  getPostById(id: string): PostModel {
+    const post = this.posts.find((val) => val.categoryId === id);
+    if (!post) {
       throw new NotFoundException(`Post with id ${id} Not Found`);
     }
-    found.isVend = true;
-    return found;
-  }
-  markPostDeleted(id: string): PostModal {
-    const found = this.Posts.find((val) => val.categoryId === id);
 
-    if (!found) {
-      throw new NotFoundException(`Post with id ${id} Not Found`);
-    }
-    found.isDelete = true;
-    return found;
+    return post;
   }
-  getPostByLocation(locationTitle: string): PostModal[] {
-    let posts = this.getPosts();
-    if (locationTitle) {
-      posts = posts.filter((post) =>
-        post.location.title.includes(locationTitle),
-      );
-    }
-    return posts;
+
+  markPostActive(id: string): PostModel {
+    const post = this.getPostById(id);
+    post.isActive = true;
+    return post;
+  }
+
+  markPostVend(id: string): PostModel {
+    const post = this.getPostById(id);
+    post.isVend = true;
+    return post;
+  }
+
+  markPostDeleted(id: string): PostModel {
+    const post = this.getPostById(id);
+    post.isDeleted = true;
+    return post;
+  }
+
+  getPostByLocation(location: string): PostModel[] {
+    return this.posts.filter((post) => post.location.title.includes(location));
   }
 }

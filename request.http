@@ -1,0 +1,21 @@
+### get all notifications
+GET http://localhost:3000/notifications
+
+### POSTS
+
+### get all posts
+GET http://localhost:3000/posts
+
+### create post
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+  "title": "My post",
+  "condition": 100,
+  "attachmentUrls": [],
+  "description": "worth it",
+  "location": {
+    "title": ""
+  }
+}

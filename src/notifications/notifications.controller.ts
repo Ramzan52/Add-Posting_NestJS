@@ -1,12 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import { NotificationModal } from './notification.modal';
+import { NotificationModel } from './models/notification.model';
 
 @Controller('notifications')
 export class NotificationsController {
-  constructor(private notificationsService: NotificationsService) {}
-  @Get('getAll')
-  getNotifications(): NotificationModal[] {
+  constructor(private readonly notificationsService: NotificationsService) {}
+
+  @Get()
+  getNotifications(): NotificationModel[] {
     return this.notificationsService.getNotifications();
   }
 }
