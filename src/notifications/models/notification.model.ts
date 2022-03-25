@@ -1,5 +1,5 @@
 export interface NotificationModel {
-  notificationId: string;
+  id: string;
   content: string;
   picture: string;
   time: Date;
