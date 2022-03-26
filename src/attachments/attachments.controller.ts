@@ -6,7 +6,7 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtAuthGuard } from 'src/auth/auth-guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { AttachmentsService } from './attachments.service';
 
 @UseGuards(JwtAuthGuard)

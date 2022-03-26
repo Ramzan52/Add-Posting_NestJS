@@ -8,10 +8,10 @@ export class Profile {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop()
   profilePic: string;
 
-  @Prop({ required: true })
+  @Prop()
   phoneNumber: string;
 
   @Prop({ required: true })

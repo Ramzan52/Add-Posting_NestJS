@@ -7,13 +7,13 @@ import {
   Post,
   Put,
   Request,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import { PostModel } from './models/post.model';
 import { PostsService } from './posts.service';
-import { UpdatePostDto } from './dto/update-post.dto';
-import { JwtAuthGuard } from 'src/auth/auth-guards/jwt-auth.guard';
 
 @Controller('posts')
 export class PostsController {

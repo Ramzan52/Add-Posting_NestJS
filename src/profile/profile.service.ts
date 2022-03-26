@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { RegisterDto } from 'src/auth/dto/register.dto';
 import { SaveProfileDto } from './dto/save-profile.dto';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
 
@@ -10,6 +11,15 @@ export class ProfileService {
     @InjectModel(Profile.name)
     private readonly profileModel: Model<ProfileDocument>,
   ) {}
+
+  async create(dto: RegisterDto) {
+    const profile = await this.profileModel.create({
+      email: dto.username,
+      name: dto.name,
+    });
+
+    return profile;
+  }
 
   async findOne(username: string): Promise<ProfileDocument> {
     return await this.profileModel.findOne({ email: username });

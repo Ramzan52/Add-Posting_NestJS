@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { hashSync } from 'bcrypt';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +33,7 @@ export class AuthService {
       return null;
     }
 
-    const pwdHash = bcrypt.hashSync(password, user.salt);
+    const pwdHash = hashSync(password, user.salt);
 
     if (user.hash !== pwdHash) {
       return null;
