@@ -1,15 +1,15 @@
 ### register
-POST http://localhost:3000/auth/register
+POST http://localhost:5100/auth/register
 Content-Type: application/json
 
 {
-  "username": "adeel",
+  "username": "adeelnayyer@aquila360.com",
   "name": "Adeel Nayyer",
   "password": "123456"
 }
 
 ### login
-POST http://localhost:3000/auth/login
+POST http://localhost:5100/auth/login
 Content-Type: application/json
 
 {

@@ -6,6 +6,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
+    app.enableCors({
+      origin: 'http://localhost:5100',
+    });
+
     app.useGlobalPipes(new ValidationPipe());
     const config = app.get(ConfigReader);
     const port = config.getIntOrThrow('PORT');

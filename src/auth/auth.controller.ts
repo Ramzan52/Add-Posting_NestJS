@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   Post,
   Req,
   Request,
@@ -9,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ProfileService } from 'src/profile/profile.service';
 import { UsersService } from 'src/users/users.service';
-import { GoogleAuthGuard, JwtAuthGuard, LocalAuthGuard } from './auth-guards';
+import { JwtAuthGuard, LocalAuthGuard } from './auth-guards';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -32,15 +31,15 @@ export class AuthController {
     );
   }
 
-  @Get('google')
-  @UseGuards(GoogleAuthGuard)
-  async googleAuth(@Request() req) {}
+  // @Get('google')
+  // @UseGuards(GoogleAuthGuard)
+  // async googleAuth(@Request() req) {}
 
-  @Get('google/redirect')
-  @UseGuards(GoogleAuthGuard)
-  googleAuthRedirect(@Request() req) {
-    return this.authSvc.loginWithGoogle(req.user);
-  }
+  // @Get('google/redirect')
+  // @UseGuards(GoogleAuthGuard)
+  // googleAuthRedirect(@Request() req) {
+  //   return this.authSvc.loginWithGoogle(req.user);
+  // }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
