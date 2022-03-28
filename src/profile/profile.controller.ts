@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { SaveProfileDto } from './dto/save-profile.dto';
 import { ProfileService } from './profile.service';
 import { Profile } from './schemas/profile.schema';
 
+@ApiTags('profile')
+@UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(private profileSvc: ProfileService) {}
