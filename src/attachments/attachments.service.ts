@@ -18,13 +18,14 @@ export class AttachmentsService {
     const blobClient = containerClient.getBlockBlobClient(imageName);
     return blobClient;
   }
-  async upload(file: Express.Multer.File) {
+  async upload(file: Express.Multer.File): Promise<string> {
     console.log('file', file.mimetype);
     if (!file.mimetype.includes('image/')) {
       console.log('not Image');
       throw new BadRequestException('Not a valid image');
     }
     const blobClient = this.getBlobClient(file.originalname);
-    await blobClient.uploadData(file.buffer);
+    const upload = await blobClient.uploadData(file.buffer);
+    return upload._response.request.url;
   }
 }

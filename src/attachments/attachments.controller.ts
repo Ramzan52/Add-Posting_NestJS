@@ -3,7 +3,7 @@ import {
   Post,
   UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
@@ -16,7 +16,7 @@ export class AttachmentsController {
 
   @Post()
   @UseInterceptors(FileInterceptor('image'))
-  async upload(@UploadedFile() file: Express.Multer.File) {
-    await this.attachmentSvc.upload(file);
+  async upload(@UploadedFile() file: Express.Multer.File): Promise<string> {
+    return await this.attachmentSvc.upload(file);
   }
 }
