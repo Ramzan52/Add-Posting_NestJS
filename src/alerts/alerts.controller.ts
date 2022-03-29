@@ -9,7 +9,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 @ApiTags('Alert')
 @UseGuards(JwtAuthGuard)
 @Controller('alerts')
@@ -19,7 +19,8 @@ export class AlertsController {
   saveAlerts(@Body() body: CreateAlertDto) {
     return this.alertSvc.saveAlerts(body);
   }
-  @Delete()
+
+  @Delete('/id')
   deleteAlert(@Param() id: string) {
     return this.alertSvc.deleteAlert(id);
   }
