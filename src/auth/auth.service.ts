@@ -2,9 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { hashSync } from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
+import { Strategy, ExtractJwt } from 'passport-firebase-jwt';
+import { auth } from 'firebase-admin';
 
 @Injectable()
 export class AuthService {
+  getAuth = auth;
   constructor(
     private readonly jwtSvc: JwtService,
     private readonly usersSvc: UsersService,

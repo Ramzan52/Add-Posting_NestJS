@@ -9,6 +9,7 @@ import { jwtConstants } from './constants';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { FireBaseLoginService } from './firebase-login.service';
 
 @Module({
   imports: [
@@ -20,7 +21,13 @@ import { LocalStrategy } from './strategies/local.strategy';
       signOptions: { expiresIn: '1h' },
     }),
   ],
-  providers: [AuthService, GoogleStrategy, JwtStrategy, LocalStrategy],
+  providers: [
+    AuthService,
+    GoogleStrategy,
+    JwtStrategy,
+    LocalStrategy,
+    FireBaseLoginService,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

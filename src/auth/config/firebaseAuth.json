@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "105041112417",
+    "project_id": "scrap-ready-app",
+    "storage_bucket": "scrap-ready-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105041112417:android:91391f9e5e95c3f5ee6920",
+        "android_client_info": {
+          "package_name": "com.scrapready.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "105041112417-mocq3a0pu8bh3ro0vnbjek31vlehfq6h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.scrapready.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "105041112417-ot3fki9ph490erku4s54sn0obscgi0m4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVlTDaSoa7WBF0-cL7wo4hY7s0QpxHhN0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "105041112417-ot3fki9ph490erku4s54sn0obscgi0m4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "105041112417-2bj0j0j2dd50ihvf1lempfblfcuae3k9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.scrapready.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
