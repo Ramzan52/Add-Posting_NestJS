@@ -46,7 +46,7 @@ export class AuthController {
     return this.authSvc.login(req.user);
   }
   @Post('/fb-login/:token')
-  async fbLogin(@Param() token: string) {
+  async fbLogin(@Param('id') token: string) {
     return this.fireBaseSvc.fbLogin(token);
   }
 

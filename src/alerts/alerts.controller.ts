@@ -21,7 +21,7 @@ export class AlertsController {
   }
 
   @Delete('/id')
-  deleteAlert(@Param() id: string) {
+  deleteAlert(@Param('id') id: string) {
     return this.alertSvc.deleteAlert(id);
   }
 }
