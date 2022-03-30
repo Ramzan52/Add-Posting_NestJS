@@ -1,5 +1,9 @@
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Multer } from 'multer';
 // import { Express } from 'express';
 @Injectable()
@@ -24,8 +28,16 @@ export class AttachmentsService {
       console.log('not Image');
       throw new BadRequestException('Not a valid image');
     }
-    const blobClient = this.getBlobClient(file.originalname);
-    const upload = await blobClient.uploadData(file.buffer);
-    return upload._response.request.url;
+
+    // let blobClient;
+
+    try {
+      const blobClient = this.getBlobClient(file.originalname);
+      const upload = await blobClient.uploadData(file.buffer);
+      return upload._response.request.url;
+    } catch (e) {
+      console.log(e);
+      throw InternalServerErrorException;
+    }
   }
 }

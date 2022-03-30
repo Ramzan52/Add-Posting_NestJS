@@ -71,7 +71,7 @@ export class PostsService {
     } = dto;
     const post = await this.getPostById(id);
 
-    // post.categoryId = categoryId;
+    post.categoryId = categoryId;
     post.condition = condition;
     post.attachmentUrls = attachmentUrls;
     post.title = title;
