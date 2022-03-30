@@ -11,6 +11,7 @@ import { PostsModule } from './posts/posts.module';
 import { ProfileModule } from './profile/profile.module';
 import { UsersModule } from './users/users.module';
 import { TestModule } from './test/test.module';
+import { AlertsModule } from './alerts/alerts.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { TestModule } from './test/test.module';
     NeconfigModule.register({
       readers: [{ name: 'env', file: path.resolve(process.cwd(), '.env') }],
     }),
+    AlertsModule,
   ],
 })
 export class AppModule {}

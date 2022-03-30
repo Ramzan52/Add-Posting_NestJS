@@ -6,7 +6,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { SaveProfileDto } from './dto/save-profile.dto';
 import { ProfileService } from './profile.service';
@@ -19,6 +19,7 @@ export class ProfileController {
   constructor(private profileSvc: ProfileService) {}
 
   @Get()
+  @ApiOkResponse({ status: 200, type: Profile })
   getProfile(@Request() req): Promise<Profile> {
     console.log('getProfile', req.user);
     return this.profileSvc.findOne(req.user.username);

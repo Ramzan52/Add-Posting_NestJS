@@ -1,27 +1,34 @@
+import { FireBaseLoginService } from './firebase-login.service';
 import {
   Body,
   Controller,
+  Param,
   Post,
   Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from 'src/profile/profile.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtAuthGuard, LocalAuthGuard } from './auth-guards';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RegisterDto } from './dto/register.dto';
-
+import admin from 'firebase-admin';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+  db: any;
   constructor(
     private readonly authSvc: AuthService,
     private readonly profileSvc: ProfileService,
     private readonly userSvc: UsersService,
-  ) {}
+    private readonly fireBaseSvc: FireBaseLoginService,
+  ) {
+    admin.initializeApp();
+    this.db = admin.firestore();
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
@@ -33,20 +40,14 @@ export class AuthController {
     );
   }
 
-  // @Get('google')
-  // @UseGuards(GoogleAuthGuard)
-  // async googleAuth(@Request() req) {}
-
-  // @Get('google/redirect')
-  // @UseGuards(GoogleAuthGuard)
-  // googleAuthRedirect(@Request() req) {
-  //   return this.authSvc.loginWithGoogle(req.user);
-  // }
-
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
     return this.authSvc.login(req.user);
+  }
+  @Post('/fb-login/:token')
+  async fbLogin(@Param('id') token: string) {
+    return this.fireBaseSvc.fbLogin(token);
   }
 
   @Post('register')
