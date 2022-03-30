@@ -6,7 +6,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { AttachmentsService } from './attachments.service';
 
@@ -24,7 +24,7 @@ export class AttachmentsController {
   }
 
   @Post('/single')
-  @UseInterceptors(FilesInterceptor('image'))
+  @UseInterceptors(FileInterceptor('image'))
   async uploadSingle(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<string> {
