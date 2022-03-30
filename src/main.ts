@@ -3,10 +3,15 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigReader } from 'neconfig';
 import { AppModule } from './app.module';
-
+import { ConfigService } from '@nestjs/config';
+import * as admin from 'firebase-admin';
+const service = require('./auth/config/firebaseAuth.json');
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
+;    admin.initializeApp({
+      credential: admin.credential.cert(service),
+    });
     app.enableCors({
       origin: 'http://localhost:5100',
     });

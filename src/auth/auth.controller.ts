@@ -25,10 +25,7 @@ export class AuthController {
     private readonly profileSvc: ProfileService,
     private readonly userSvc: UsersService,
     private readonly fireBaseSvc: FireBaseLoginService,
-  ) {
-    admin.initializeApp();
-    this.db = admin.firestore();
-  }
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
@@ -46,7 +43,7 @@ export class AuthController {
     return this.authSvc.login(req.user);
   }
   @Post('/fb-login/:token')
-  async fbLogin(@Param('id') token: string) {
+  async fbLogin(@Param('token') token: string) {
     return this.fireBaseSvc.fbLogin(token);
   }
 
