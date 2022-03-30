@@ -36,7 +36,6 @@ export class AttachmentsService {
       const upload = await blobClient.uploadData(file.buffer);
       return upload._response.request.url;
     } catch (e) {
-      console.log(e);
       throw InternalServerErrorException;
     }
   }

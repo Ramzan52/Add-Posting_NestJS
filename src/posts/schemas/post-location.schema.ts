@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
+@Schema()
 export class PostLocationSchema {
   @Prop({ required: true })
   title: string;

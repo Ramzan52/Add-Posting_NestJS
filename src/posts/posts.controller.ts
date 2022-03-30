@@ -13,59 +13,62 @@ import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
+import { PostDocument } from './schemas/post.schema';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsSvc: PostsService) {}
 
   @Get()
-  getPosts() {
-    return this.postsSvc.getPosts();
+  async getPosts(): Promise<Array<PostDocument>> {
+    return await this.postsSvc.getPosts();
   }
 
   @Get('recentPosts/:location')
-  getRecentPost(@Param('location') location: string) {
-    return this.postsSvc.getPostByLocation(location);
+  async getRecentPost(
+    @Param('location') location: string,
+  ): Promise<Array<PostDocument>> {
+    return await this.postsSvc.getPostByLocation(location);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  createPost(@Body() body: CreatePostDto) {
-    return this.postsSvc.createPost(body);
+  async createPost(@Body() body: CreatePostDto): Promise<PostDocument> {
+    return await this.postsSvc.createPost(body);
   }
 
   @Get('/:id')
-  getPostById(@Param('id') id: string) {
-    return this.postsSvc.getPostById(id);
+  async getPostById(@Param('id') id: string): Promise<PostDocument> {
+    return await this.postsSvc.getPostById(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/deactivate/:id')
-  deactivatePost(@Param('id') id: string) {
-    return this.postsSvc.deactivatePost(id);
+  async deactivatePost(@Param('id') id: string): Promise<PostDocument> {
+    return await this.postsSvc.deactivatePost(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/mark-vend/:id')
-  markPostVend(@Param('id') id: string) {
-    return this.postsSvc.markPostVend(id);
+  async markPostVend(@Param('id') id: string): Promise<PostDocument> {
+    return await this.postsSvc.markPostVend(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/my')
-  myPosts(@Request() req: any) {
-    return this.postsSvc.myPost(req.user.username);
+  async myPosts(@Request() req: any): Promise<Array<PostDocument>> {
+    return await this.postsSvc.myPost(req.user.username);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  markPostDeleted(@Param('id') id: string) {
-    this.postsSvc.markPostDeleted(id);
+  async markPostDeleted(@Param('id') id: string): Promise<PostDocument> {
+    return await this.postsSvc.markPostDeleted(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put()
-  editPost(@Body() body: UpdatePostDto) {
-    return this.postsSvc.editPost(body);
+  async editPost(@Body() body: UpdatePostDto): Promise<PostDocument> {
+    return await this.postsSvc.editPost(body);
   }
 }
