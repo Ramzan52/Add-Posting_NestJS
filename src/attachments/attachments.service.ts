@@ -1,5 +1,9 @@
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Multer } from 'multer';
 // import { Express } from 'express';
 @Injectable()
@@ -18,14 +22,30 @@ export class AttachmentsService {
     const blobClient = containerClient.getBlockBlobClient(imageName);
     return blobClient;
   }
-  async upload(file: Express.Multer.File): Promise<string> {
-    console.log('file', file.mimetype);
+
+  async uploadMultiple(files: Array<Express.Multer.File>) {
+    const promises: Promise<any>[] = [];
+    const urls: string[] = [];
+
+    files.forEach(async (file) => {
+      promises.push(this.uploadSingle(file).then((url) => urls.push(url)));
+    });
+
+    await Promise.all(promises);
+    return urls;
+  }
+
+  async uploadSingle(file: Express.Multer.File) {
     if (!file.mimetype.includes('image/')) {
       console.log('not Image');
       throw new BadRequestException('Not a valid image');
     }
-    const blobClient = this.getBlobClient(file.originalname);
-    const upload = await blobClient.uploadData(file.buffer);
-    return upload._response.request.url;
+    try {
+      const blobClient = this.getBlobClient(file.originalname);
+      const upload = await blobClient.uploadData(file.buffer);
+      return upload._response.request.url;
+    } catch (e) {
+      throw InternalServerErrorException;
+    }
   }
 }

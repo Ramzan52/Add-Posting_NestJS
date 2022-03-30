@@ -9,7 +9,7 @@ export class CategoriesController {
   constructor(private readonly categoriesSvc: CategoriesService) {}
 
   @Get()
-  getCategories(): CategoryModel[] {
+  getCategories() {
     return this.categoriesSvc.getCategories();
   }
 }

@@ -1,3 +1,4 @@
+import { Category } from './../../categories/schemas/category.schema';
 import {
   IsArray,
   IsNotEmptyObject,
@@ -11,7 +12,7 @@ import { PostLocationDto } from './post-location.dto';
 
 export class CreatePostDto {
   @IsString()
-  categoryId: string;
+  categoryId: Category;
 
   @IsString()
   title: string;

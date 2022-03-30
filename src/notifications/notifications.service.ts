@@ -1,12 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationModel } from './models/notification.model';
-import { notifications } from './notifications';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+
+import {
+  Notification,
+  NotificationDocument,
+} from './schemas/notification.schema';
+// import { notifications } from './notifications';
 
 @Injectable()
 export class NotificationsService {
-  private notifications = notifications;
+  // private notifications = notifications;
+  constructor(
+    @InjectModel(Notification.name)
+    private readonly notificationModel: Model<NotificationDocument>,
+  ) {}
 
-  getNotifications(): NotificationModel[] {
-    return this.notifications;
+  async getNotifications(): Promise<Array<NotificationDocument>> {
+    return await this.notificationModel.find().exec();
   }
 }

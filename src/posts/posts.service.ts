@@ -1,18 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { v1 as uuid } from 'uuid';
+import { Post } from './schemas/post.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostModel } from './models/post.model';
+import { PostDocument } from './schemas/post.schema';
 
 @Injectable()
 export class PostsService {
-  private posts: PostModel[] = [];
+  constructor(
+    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
+  ) {}
 
-  getPosts(): PostModel[] {
-    return this.posts;
+  async getPosts() {
+    return await this.postModel.find().exec();
   }
 
-  createPost(dto: CreatePostDto) {
+  async createPost(dto: CreatePostDto) {
     const {
       categoryId,
       title,
@@ -22,58 +26,56 @@ export class PostsService {
       location,
     } = dto;
 
-    const post: PostModel = {
-      id: uuid(),
-      createdBy: '',
-      createdByUsername: '',
-      createdOn: new Date(new Date().toUTCString()),
-      modifiedBy: '',
-      modifiedByUsername: '',
-      modifiedOn: new Date(new Date().toUTCString()),
+    const post = await this.postModel.create({
       categoryId,
-      category: '',
       title,
       description,
       condition,
-      location,
       attachmentUrls,
+      location,
       isActive: true,
       isDeleted: false,
       isVend: false,
-    };
-
-    this.posts.push(post);
-
+      createdByUsername: '',
+      createdBy: '',
+      createdOn: new Date(new Date().toUTCString()),
+      modifiedByUsername: '',
+      modifiedBy: '',
+      modifiedOn: new Date(new Date().toUTCString()),
+    });
     return post;
   }
 
-  getPostById(id: string): PostModel {
-    const post = this.posts.find((val) => val.categoryId === id);
+  async getPostById(id: string): Promise<PostDocument> {
+    const post = await this.postModel.findById(id).exec();
     if (!post) {
       throw new NotFoundException(`Post with id ${id} Not Found`);
     }
-
     return post;
   }
 
-  deactivatePost(id: string): PostModel {
-    const post = this.getPostById(id);
+  async deactivatePost(id: string): Promise<PostDocument> {
+    const post = await this.getPostById(id);
     post.isActive = false;
+    await this.postModel.replaceOne({ _id: post._id }, post);
     return post;
   }
 
-  markPostVend(id: string): PostModel {
-    const post = this.getPostById(id);
+  async markPostVend(id: string): Promise<PostDocument> {
+    const post = await this.getPostById(id);
     post.isVend = true;
+    await this.postModel.replaceOne({ _id: post._id }, post);
     return post;
   }
 
-  markPostDeleted(id: string): PostModel {
-    const post = this.getPostById(id);
+  async markPostDeleted(id: string): Promise<PostDocument> {
+    const post = await this.getPostById(id);
     post.isDeleted = true;
+    await this.postModel.replaceOne({ _id: post._id }, post);
     return post;
   }
-  editPost(dto: UpdatePostDto): PostModel {
+
+  async editPost(dto: UpdatePostDto): Promise<PostDocument> {
     const {
       id,
       categoryId,
@@ -83,21 +85,29 @@ export class PostsService {
       description,
       location,
     } = dto;
-    const post = this.getPostById(id);
+    const post = await this.getPostById(id);
+
     post.categoryId = categoryId;
     post.condition = condition;
     post.attachmentUrls = attachmentUrls;
     post.title = title;
     post.description = description;
     post.location = location;
+    await this.postModel.replaceOne({ _id: post._id });
     return post;
   }
-  getPostByLocation(location: string): PostModel[] {
-    return this.posts.filter((post) => post.location.title.includes(location));
+
+  async getPostByLocation(location: string): Promise<Array<PostDocument>> {
+    // return this.posts.filter((post) => post.location.title.includes(location));
+    return await this.postModel.find({
+      'location.title': { $regex: '.*' + location + '.*' },
+    });
   }
-  myPost(username: string): PostModel[] {
-    return this.posts.filter((post) =>
-      post.createdByUsername.includes(username),
-    );
+
+  async myPost(username: string): Promise<Array<PostDocument>> {
+    const post = await this.postModel
+      .find({ createdByUsername: username })
+      .exec();
+    return post;
   }
 }
