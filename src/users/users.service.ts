@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { genSalt, hashSync } from 'bcrypt';
 import { Model } from 'mongoose';
@@ -30,6 +34,11 @@ export class UsersService {
   }
 
   async create(dto: RegisterDto) {
+    const exists = this.findOne(dto.username);
+    if (exists) {
+      throw new BadRequestException('Email is already registered');
+    }
+
     const salt = await genSalt(10);
     const hash = hashSync(dto.password, salt);
 
