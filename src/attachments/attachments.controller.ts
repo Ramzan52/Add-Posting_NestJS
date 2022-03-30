@@ -2,10 +2,11 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { AttachmentsService } from './attachments.service';
 
@@ -14,9 +15,19 @@ import { AttachmentsService } from './attachments.service';
 export class AttachmentsController {
   constructor(private readonly attachmentSvc: AttachmentsService) {}
 
-  @Post()
-  @UseInterceptors(FileInterceptor('image'))
-  async upload(@UploadedFile() file: Express.Multer.File): Promise<string> {
-    return await this.attachmentSvc.upload(file);
+  @Post('/multiple')
+  @UseInterceptors(FilesInterceptor('images'))
+  async uploadMultiple(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ): Promise<Array<string>> {
+    return await this.attachmentSvc.uploadMultiple(files);
+  }
+
+  @Post('/single')
+  @UseInterceptors(FilesInterceptor('image'))
+  async uploadSingle(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<string> {
+    return await this.attachmentSvc.uploadSingle(file);
   }
 }
