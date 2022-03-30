@@ -7,12 +7,11 @@ import {
   Post,
   Put,
   Request,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostModel } from './models/post.model';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -20,7 +19,7 @@ export class PostsController {
   constructor(private readonly postsSvc: PostsService) {}
 
   @Get()
-  getPosts(): PostModel[] {
+  getPosts() {
     return this.postsSvc.getPosts();
   }
 
@@ -31,24 +30,24 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  createPost(@Body() body: CreatePostDto): PostModel {
+  createPost(@Body() body: CreatePostDto) {
     return this.postsSvc.createPost(body);
   }
 
   @Get('/:id')
-  getPostById(@Param('id') id: string): PostModel {
+  getPostById(@Param('id') id: string) {
     return this.postsSvc.getPostById(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/deactivate/:id')
-  deactivatePost(@Param('id') id: string): PostModel {
+  deactivatePost(@Param('id') id: string) {
     return this.postsSvc.deactivatePost(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/mark-vend/:id')
-  markPostVend(@Param('id') id: string): PostModel {
+  markPostVend(@Param('id') id: string) {
     return this.postsSvc.markPostVend(id);
   }
 

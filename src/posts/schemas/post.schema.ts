@@ -1,9 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { BaseSchema } from 'src/models/base-document.schema';
+import { Category } from '../../categories/schemas/category.schema';
+import { PostLocationSchema } from './post-location.schema';
+
+export type PostDocument = Post & Document;
 @Schema()
-export class Post {
-  @Prop({ required: true })
-  categoryId: string;
+export class Post extends BaseSchema {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Category' })
+  categoryId: Category;
 
   @Prop({ required: true })
   title: string;
@@ -16,4 +21,14 @@ export class Post {
 
   @Prop({ required: true })
   description: string;
+
+  @Prop({ required: true })
+  isActive: boolean;
+
+  @Prop({ required: true })
+  isVend: boolean;
+
+  @Prop({ required: true })
+  location: PostLocationSchema;
 }
+export const PostSchema = SchemaFactory.createForClass(Post);
