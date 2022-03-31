@@ -16,29 +16,35 @@ export class FireBaseLoginService {
   ) {}
 
   async fbLogin(token: any) {
-    console.log(token);
-    await this.getAuth()
-      .verifyIdToken(token)
-      .then((decodedToken) => {
-        const user = JSON.parse(decodedToken.uid);
-        const existingUser = this.usersSvc.findOne(user.username);
-        if (existingUser) {
-          const payload = {
-            sub: user.id,
-            name: user.name,
-            username: user.username,
-          };
+    try {
+      const decodedToken = await this.getAuth().verifyIdToken(token);
 
-          return {
-            access_token: this.jwtSvc.sign(payload),
-          };
-        } else {
-          this.usersSvc.create(user);
-          this.profileSvc.create(user);
-        }
-      })
-      .catch((error) => {
-        throw new UnauthorizedException();
-      });
+      const user = decodedToken;
+      console.log(user);
+      const existingUser = await this.usersSvc.findOne(decodedToken.user_id);
+      if (existingUser) {
+        const payload = {
+          sub: user.user_id,
+          name: user.name,
+        };
+
+        return {
+          access_token: this.jwtSvc.sign(payload),
+        };
+      } else {
+        this.usersSvc.create({
+          username: user.name,
+          name: user.name,
+          password: '',
+        });
+        this.profileSvc.create({
+          username: user.name,
+          name: user.name,
+          password: '',
+        });
+      }
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 }

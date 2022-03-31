@@ -1,22 +1,21 @@
-import { PostLocationDto } from './../../posts/dto/post-location.dto';
+import { Category } from './../../categories/schemas/category.schema';
+import { BaseSchema } from 'src/models/base-document.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { PostLocationSchema } from 'src/posts/schemas/post-location.schema';
 
 export type AlertDocument = Alert & Document;
 
 @Schema()
-export class Alert {
+export class Alert extends BaseSchema {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Category' })
+  categoryId: Category;
+
   @Prop({ required: true })
-  location: PostLocationDto;
+  location: PostLocationSchema;
 
   @Prop({ required: true })
   radius: string;
-
-  @Prop({ required: true })
-  categoryID: string;
-
-  @Prop({ required: true })
-  isDeleted: boolean;
 }
 
 export const AlertSchema = SchemaFactory.createForClass(Alert);

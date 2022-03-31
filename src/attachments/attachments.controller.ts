@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Post,
@@ -9,7 +10,7 @@ import {
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { AttachmentsService } from './attachments.service';
-
+@ApiTags('Attachments')
 @UseGuards(JwtAuthGuard)
 @Controller('attachments')
 export class AttachmentsController {

@@ -25,6 +25,7 @@
     "@azure/storage-blob": "^12.9.0",
     "@nestjs/azure-storage": "^3.0.0",
     "@nestjs/common": "^8.0.0",
+    "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/jwt": "^8.0.0",
     "@nestjs/mongoose": "9.0.2",
