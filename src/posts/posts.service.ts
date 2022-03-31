@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Post } from './schemas/post.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, mongo } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostDocument } from './schemas/post.schema';
@@ -27,20 +27,20 @@ export class PostsService {
     } = dto;
 
     const post = await this.postModel.create({
-      categoryId,
-      title,
-      description,
-      condition,
-      attachmentUrls,
-      location,
+      categoryId: new mongo.ObjectId(categoryId),
+      title: title,
+      description: description,
+      condition: condition,
+      attachmentUrls: attachmentUrls,
+      location: location,
       isActive: true,
       isDeleted: false,
       isVend: false,
-      createdByUsername: '',
-      createdBy: '',
+      createdByUsername: 'a',
+      createdBy: 'a',
       createdOn: new Date(new Date().toUTCString()),
-      modifiedByUsername: '',
-      modifiedBy: '',
+      modifiedByUsername: 'a',
+      modifiedBy: 'a',
       modifiedOn: new Date(new Date().toUTCString()),
     });
     return post;
