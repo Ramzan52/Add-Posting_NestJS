@@ -9,7 +9,7 @@ const service = require('./auth/config/firebaseAuth.json');
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
-;    admin.initializeApp({
+    admin.initializeApp({
       credential: admin.credential.cert(service),
     });
     app.enableCors({
