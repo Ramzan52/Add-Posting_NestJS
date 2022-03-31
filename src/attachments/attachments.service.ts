@@ -4,13 +4,12 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Multer } from 'multer';
-// import { Express } from 'express';
+
 @Injectable()
 export class AttachmentsService {
   private azureConnection =
-    'DefaultEndpointsProtocol=https;AccountName=scrapreadydev;AccountKey=+kSAsUNhx1u07sZwzD7FIigcSc8RnEedh66cGe46Ex3Dccm+vt2/0WDHWD3Ih9B8UmjHf9pja/WMkPxj3o4q7w==;EndpointSuffix=core.windows.net';
-  private containerName = 'attachments';
+    'DefaultEndpointsProtocol=https;AccountName=a360scrapreadydev;AccountKey=AVLRr/lH1QZ9wB6C2ZHBhjb4hWusts3242knrTAs31FUBpGAJZC8Elq3Wo7SGOkVmvbgF2i879LQ+ASttmtupA==;EndpointSuffix=core.windows.net';
+  private containerName = 'secure-attachments';
 
   getBlobClient(imageName: string): BlockBlobClient {
     const blobClientService = BlobServiceClient.fromConnectionString(
@@ -45,7 +44,7 @@ export class AttachmentsService {
       const upload = await blobClient.uploadData(file.buffer);
       return upload._response.request.url;
     } catch (e) {
-      throw InternalServerErrorException;
+      throw new InternalServerErrorException();
     }
   }
 }

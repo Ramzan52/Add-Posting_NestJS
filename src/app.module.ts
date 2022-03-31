@@ -1,17 +1,19 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PassportModule } from '@nestjs/passport';
 import { NeconfigModule } from 'neconfig';
 import * as path from 'path';
+import { AlertsModule } from './alerts/alerts.module';
 import { AttachmentsModule } from './attachments/attachments.module';
 import { AuthModule } from './auth/auth.module';
+import { AzureSASServiceService } from './azure-sasservice/azure-sasservice.service';
 import { CategoriesModule } from './categories/categories.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PostsModule } from './posts/posts.module';
 import { ProfileModule } from './profile/profile.module';
-import { UsersModule } from './users/users.module';
 import { TestModule } from './test/test.module';
-import { AlertsModule } from './alerts/alerts.module';
+import { UsersModule } from './users/users.module';
+
+import { AzureSASServiceModule } from './azure-sasservice/azure-sasservice.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { AlertsModule } from './alerts/alerts.module';
       readers: [{ name: 'env', file: path.resolve(process.cwd(), '.env') }],
     }),
     AlertsModule,
+    AzureSASServiceModule,
   ],
+  // providers: [AzureSASServiceService],
 })
 export class AppModule {}
