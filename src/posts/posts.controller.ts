@@ -25,6 +25,17 @@ export class PostsController {
     private sasSvc: AzureSASServiceService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
+  @Get('/my')
+  async myPosts(@Request() req: any) {
+    console.log(req);
+    const posts = await this.postsSvc.myPost(req.user.username);
+    return {
+      posts,
+      sas: this.sasSvc.getNewSASKey(),
+    };
+  }
+
   @Get()
   async getPosts() {
     const posts = await this.postsSvc.getPosts();
@@ -45,8 +56,8 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createPost(@Body() body: CreatePostDto) {
-    const post = await this.postsSvc.createPost(body);
+  async createPost(@Request() req: any, @Body() body: CreatePostDto) {
+    const post = await this.postsSvc.createPost(body, req);
     return {
       post,
       sas: this.sasSvc.getNewSASKey(),
@@ -78,16 +89,6 @@ export class PostsController {
     const post = await this.postsSvc.markPostVend(id);
     return {
       post,
-      sas: this.sasSvc.getNewSASKey(),
-    };
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/my')
-  async myPosts(@Request() req: any) {
-    const posts = await this.postsSvc.myPost(req.user.username);
-    return {
-      posts,
       sas: this.sasSvc.getNewSASKey(),
     };
   }

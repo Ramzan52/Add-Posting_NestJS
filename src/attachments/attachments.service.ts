@@ -25,8 +25,7 @@ export class AttachmentsService {
   async uploadMultiple(files: Array<Express.Multer.File>) {
     const promises: Promise<any>[] = [];
     const urls: string[] = [];
-
-    files.forEach(async (file) => {
+    files.forEach((file) => {
       promises.push(this.uploadSingle(file).then((url) => urls.push(url)));
     });
 

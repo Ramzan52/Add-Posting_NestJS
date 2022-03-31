@@ -20,7 +20,7 @@ export class PostsService {
     return await this.postModel.find().exec();
   }
 
-  async createPost(dto: CreatePostDto) {
+  async createPost(dto: CreatePostDto, tokenData: any) {
     const {
       categoryId,
       title,
@@ -40,11 +40,11 @@ export class PostsService {
       isActive: true,
       isDeleted: false,
       isVend: false,
-      createdByUsername: 'a',
-      createdBy: 'a',
+      createdByUsername: tokenData.user.username,
+      createdBy: tokenData.user.name,
       createdOn: new Date(new Date().toUTCString()),
-      modifiedByUsername: 'a',
-      modifiedBy: 'a',
+      modifiedByUsername: tokenData.user.username,
+      modifiedBy: tokenData.user.name,
       modifiedOn: new Date(new Date().toUTCString()),
     });
     return post;
@@ -125,10 +125,11 @@ export class PostsService {
     });
   }
 
-  async myPost(username: string): Promise<Array<PostDocument>> {
+  async myPost(username: any): Promise<Array<PostDocument>> {
     const post = await this.postModel
       .find({ createdByUsername: username })
       .exec();
+    console.log(post);
     return post;
   }
 }
