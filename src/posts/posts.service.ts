@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Post } from './schemas/post.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
@@ -51,25 +55,42 @@ export class PostsService {
     if (!post) {
       throw new NotFoundException(`Post with id ${id} Not Found`);
     }
+
     return post;
   }
 
   async deactivatePost(id: string): Promise<PostDocument> {
     const post = await this.getPostById(id);
+    console.log(post);
+    if (!post) {
+      throw new NotFoundException();
+    }
     post.isActive = false;
-    await this.postModel.replaceOne({ _id: post._id }, post);
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
     return post;
   }
 
   async markPostVend(id: string): Promise<PostDocument> {
     const post = await this.getPostById(id);
+    if (!post) {
+      throw new NotFoundException();
+    }
     post.isVend = true;
-    await this.postModel.replaceOne({ _id: post._id }, post);
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
     return post;
   }
 
   async markPostDeleted(id: string): Promise<PostDocument> {
     const post = await this.getPostById(id);
+    if (!post) {
+      throw new NotFoundException();
+    }
     post.isDeleted = true;
     await this.postModel.replaceOne({ _id: post._id }, post);
     return post;

@@ -29,7 +29,10 @@ export class ProfileController {
     console.log('getProfile', req.user);
     const profile = await this.profileSvc.findOne(req.user.username);
     return {
-      ...profile,
+      name: profile.name,
+      phoneNumber: profile.phoneNumber,
+      email: profile.email,
+      profilePic: profile.profilePic,
       sas: this.sasSvc.getNewSASKey(),
     };
   }
