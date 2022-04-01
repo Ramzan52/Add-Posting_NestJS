@@ -1,12 +1,13 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema } from '@nestjs/mongoose';
+
 @Schema()
 export class PostLocationSchema {
-  @Prop({ required: true })
+  @Prop()
   title: string;
 
-  @Prop({ required: true })
+  @Prop()
   latitude: number;
 
-  @Prop({ required: true })
+  @Prop()
   longitude: number;
 }

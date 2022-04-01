@@ -1,10 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Post } from './schemas/post.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostDocument } from './schemas/post.schema';
+import { Post, PostDocument } from './schemas/post.schema';
 
 @Injectable()
 export class PostsService {
@@ -13,10 +12,10 @@ export class PostsService {
   ) {}
 
   async getPosts() {
-    return await this.postModel.find().exec();
+    return await this.postModel.find({ isDeleted: false }).exec();
   }
 
-  async createPost(dto: CreatePostDto) {
+  async createPost(dto: CreatePostDto, tokenData: any) {
     const {
       categoryId,
       title,
@@ -36,11 +35,11 @@ export class PostsService {
       isActive: true,
       isDeleted: false,
       isVend: false,
-      createdByUsername: 'a',
-      createdBy: 'a',
+      createdByUsername: tokenData.user.username,
+      createdBy: tokenData.user.name,
       createdOn: new Date(new Date().toUTCString()),
-      modifiedByUsername: 'a',
-      modifiedBy: 'a',
+      modifiedByUsername: tokenData.user.username,
+      modifiedBy: tokenData.user.name,
       modifiedOn: new Date(new Date().toUTCString()),
     });
     return post;
@@ -48,30 +47,57 @@ export class PostsService {
 
   async getPostById(id: string): Promise<PostDocument> {
     const post = await this.postModel.findById(id).exec();
-    if (!post) {
+    if (!post || post.isDeleted) {
       throw new NotFoundException(`Post with id ${id} Not Found`);
     }
+
     return post;
   }
 
-  async deactivatePost(id: string): Promise<PostDocument> {
+  async activatePost(id: string, isActive: boolean): Promise<PostDocument> {
     const post = await this.getPostById(id);
-    post.isActive = false;
-    await this.postModel.replaceOne({ _id: post._id }, post);
+
+    if (!post || post.isDeleted) {
+      throw new NotFoundException();
+    }
+
+    post.isActive = isActive;
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
     return post;
   }
 
-  async markPostVend(id: string): Promise<PostDocument> {
+  async markVend(id: string, isVend: boolean): Promise<PostDocument> {
     const post = await this.getPostById(id);
-    post.isVend = true;
-    await this.postModel.replaceOne({ _id: post._id }, post);
+
+    if (!post || post.isDeleted) {
+      throw new NotFoundException();
+    }
+
+    post.isVend = isVend;
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
     return post;
   }
 
-  async markPostDeleted(id: string): Promise<PostDocument> {
+  async delete(id: string): Promise<PostDocument> {
     const post = await this.getPostById(id);
+    if (!post || post.isDeleted) {
+      throw new NotFoundException();
+    }
+
     post.isDeleted = true;
-    await this.postModel.replaceOne({ _id: post._id }, post);
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
     return post;
   }
 
@@ -85,6 +111,7 @@ export class PostsService {
       description,
       location,
     } = dto;
+
     const post = await this.getPostById(id);
 
     post.categoryId = categoryId;
@@ -93,20 +120,25 @@ export class PostsService {
     post.title = title;
     post.description = description;
     post.location = location;
-    await this.postModel.replaceOne({ _id: post._id });
+
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
     return post;
   }
 
   async getPostByLocation(location: string): Promise<Array<PostDocument>> {
-    // return this.posts.filter((post) => post.location.title.includes(location));
     return await this.postModel.find({
       'location.title': { $regex: '.*' + location + '.*' },
+      isDeleted: false,
     });
   }
 
-  async myPost(username: string): Promise<Array<PostDocument>> {
+  async myPost(username: any): Promise<Array<PostDocument>> {
     const post = await this.postModel
-      .find({ createdByUsername: username })
+      .find({ createdByUsername: username, isDeleted: false })
       .exec();
     return post;
   }

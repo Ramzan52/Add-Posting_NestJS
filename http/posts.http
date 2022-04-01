@@ -6,16 +6,30 @@ GET http://localhost:5100/notifications
 ### get all posts
 GET http://localhost:5100/posts
 
+### get my posts
+GET http://localhost:5100/posts/my
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
+
 ### get post by id
 GET http://localhost:5100/posts/
 
+### activate post
+POST http://localhost:5100/posts/6246c1826e8b6eedf4116802/active/true
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
+
+### vend item
+POST http://localhost:5100/posts/6246c1826e8b6eedf4116802/vend/false
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
+
 ### create post
 POST http://localhost:5100/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
 Content-Type: application/json
 
 {
   "title": "My post",
-  "condition": 100,
+  "categoryId": "624540fd25ca2f00c35061d9",
+  "condition": 10,
   "attachmentUrls": [],
   "description": "worth it",
   "location": {
