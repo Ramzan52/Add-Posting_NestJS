@@ -21,7 +21,7 @@ export class AzureSASServiceService {
     //We should probably add a config object here
     let expiryTime = new Date();
     let startTime = new Date();
-    expiryTime.setMonth(new Date().getDate() + 1);
+    expiryTime.setMinutes(new Date().getMinutes() + 1);
 
     return (
       '?' +
