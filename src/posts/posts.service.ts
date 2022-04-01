@@ -1,14 +1,9 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
-import { Post } from './schemas/post.schema';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PostDocument } from './schemas/post.schema';
+import { Post, PostDocument } from './schemas/post.schema';
 
 @Injectable()
 export class PostsService {
@@ -59,40 +54,50 @@ export class PostsService {
     return post;
   }
 
-  async deactivatePost(id: string): Promise<PostDocument> {
+  async activatePost(id: string, isActive: boolean): Promise<PostDocument> {
     const post = await this.getPostById(id);
-    console.log(post);
+
     if (!post || post.isDeleted) {
       throw new NotFoundException();
     }
-    post.isActive = false;
+
+    post.isActive = isActive;
     await this.postModel.replaceOne(
       { _id: new mongo.ObjectId(post._id) },
       post,
     );
+
     return post;
   }
 
-  async markPostVend(id: string): Promise<PostDocument> {
+  async markVend(id: string, isVend: boolean): Promise<PostDocument> {
     const post = await this.getPostById(id);
+
     if (!post || post.isDeleted) {
       throw new NotFoundException();
     }
-    post.isVend = true;
+
+    post.isVend = isVend;
     await this.postModel.replaceOne(
       { _id: new mongo.ObjectId(post._id) },
       post,
     );
+
     return post;
   }
 
-  async markPostDeleted(id: string): Promise<PostDocument> {
+  async delete(id: string): Promise<PostDocument> {
     const post = await this.getPostById(id);
     if (!post || post.isDeleted) {
       throw new NotFoundException();
     }
+
     post.isDeleted = true;
-    await this.postModel.replaceOne({ _id: post._id }, post);
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
     return post;
   }
 
@@ -106,6 +111,7 @@ export class PostsService {
       description,
       location,
     } = dto;
+
     const post = await this.getPostById(id);
 
     post.categoryId = categoryId;
@@ -114,12 +120,16 @@ export class PostsService {
     post.title = title;
     post.description = description;
     post.location = location;
-    await this.postModel.replaceOne({ _id: post._id });
+
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
     return post;
   }
 
   async getPostByLocation(location: string): Promise<Array<PostDocument>> {
-    // return this.posts.filter((post) => post.location.title.includes(location));
     return await this.postModel.find({
       'location.title': { $regex: '.*' + location + '.*' },
       isDeleted: false,

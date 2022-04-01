@@ -9,13 +9,12 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
+import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
-import { PostDocument } from './schemas/post.schema';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
-import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 
 @ApiTags('Post')
 @Controller('posts')
@@ -74,9 +73,13 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/deactivate/:id')
-  async deactivatePost(@Param('id') id: string) {
-    const post = await this.postsSvc.deactivatePost(id);
+  @Post('/:id/active/:isActive')
+  async activatePost(
+    @Param('id') id: string,
+    @Param('isActive') isActive: boolean,
+  ) {
+    const post = await this.postsSvc.activatePost(id, isActive);
+
     return {
       post,
       sas: this.sasSvc.getNewSASKey(),
@@ -84,9 +87,12 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/mark-vend/:id')
-  async markPostVend(@Param('id') id: string) {
-    const post = await this.postsSvc.markPostVend(id);
+  @Post('/:id/vend/:isVend')
+  async markPostVend(
+    @Param('id') id: string,
+    @Param('isVend') isVend: boolean,
+  ) {
+    const post = await this.postsSvc.markVend(id, isVend);
     return {
       post,
       sas: this.sasSvc.getNewSASKey(),
@@ -96,7 +102,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async markPostDeleted(@Param('id') id: string) {
-    const post = await this.postsSvc.markPostDeleted(id);
+    const post = await this.postsSvc.delete(id);
     return {
       post,
       sas: this.sasSvc.getNewSASKey(),
