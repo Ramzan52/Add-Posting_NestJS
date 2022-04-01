@@ -33,6 +33,5 @@ import { AzureSASServiceModule } from './azure-sasservice/azure-sasservice.modul
     AlertsModule,
     AzureSASServiceModule,
   ],
-  // providers: [AzureSASServiceService],
 })
 export class AppModule {}
