@@ -17,7 +17,7 @@ export class PostsService {
   ) {}
 
   async getPosts() {
-    return await this.postModel.find().exec();
+    return await this.postModel.find({ isDeleted: false }).exec();
   }
 
   async createPost(dto: CreatePostDto, tokenData: any) {
@@ -52,7 +52,7 @@ export class PostsService {
 
   async getPostById(id: string): Promise<PostDocument> {
     const post = await this.postModel.findById(id).exec();
-    if (!post) {
+    if (!post || post.isDeleted) {
       throw new NotFoundException(`Post with id ${id} Not Found`);
     }
 
@@ -62,7 +62,7 @@ export class PostsService {
   async deactivatePost(id: string): Promise<PostDocument> {
     const post = await this.getPostById(id);
     console.log(post);
-    if (!post) {
+    if (!post || post.isDeleted) {
       throw new NotFoundException();
     }
     post.isActive = false;
@@ -75,7 +75,7 @@ export class PostsService {
 
   async markPostVend(id: string): Promise<PostDocument> {
     const post = await this.getPostById(id);
-    if (!post) {
+    if (!post || post.isDeleted) {
       throw new NotFoundException();
     }
     post.isVend = true;
@@ -88,7 +88,7 @@ export class PostsService {
 
   async markPostDeleted(id: string): Promise<PostDocument> {
     const post = await this.getPostById(id);
-    if (!post) {
+    if (!post || post.isDeleted) {
       throw new NotFoundException();
     }
     post.isDeleted = true;
@@ -122,14 +122,14 @@ export class PostsService {
     // return this.posts.filter((post) => post.location.title.includes(location));
     return await this.postModel.find({
       'location.title': { $regex: '.*' + location + '.*' },
+      isDeleted: false,
     });
   }
 
   async myPost(username: any): Promise<Array<PostDocument>> {
     const post = await this.postModel
-      .find({ createdByUsername: username })
+      .find({ createdByUsername: username, isDeleted: false })
       .exec();
-    console.log(post);
     return post;
   }
 }
