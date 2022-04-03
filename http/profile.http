@@ -1,0 +1,16 @@
+### get profile
+
+GET http://localhost:5100/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODI1MDM5OCwiZXhwIjoxNjQ4MjUzOTk4fQ.XIsDVRWA9Uza3bU-OyifbVb5XnwnpiZihhKHzxjCwuI
+
+### save profile
+
+POST http://localhost:5100/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODI1MDM5OCwiZXhwIjoxNjQ4MjUzOTk4fQ.XIsDVRWA9Uza3bU-OyifbVb5XnwnpiZihhKHzxjCwuI
+Content-Type: application/json
+
+{
+  "name": "Adeel Nayyer Sheikh",
+  "phoneNumber": "+92 321 7502323",
+  "profilePic": ""
+}

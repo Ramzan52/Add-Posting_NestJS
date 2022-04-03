@@ -1,27 +1,50 @@
-import { Injectable } from '@nestjs/common';
-// import { isUUID } from 'class-validator';
-import { Profile } from './profile.modal';
-import { v1 as uuid } from 'uuid';
-import { EditProfileDto } from './dto/edit-profile.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { RegisterDto } from 'src/auth/dto/register.dto';
+import { SaveProfileDto } from './dto/save-profile.dto';
+import { Profile, ProfileDocument } from './schemas/profile.schema';
+
 @Injectable()
 export class ProfileService {
-  private profile: Profile = {
-    email: 'abc@example.com',
-    name: 'Example',
-    phoneNo: '03331234567',
-    profileId: uuid(),
-    profilePic:
-      'https://unsplash.com/photos/z3htkdHUh5w?utm_source=unsplash&utm_medium=referral&utm_content=creditShareLink',
-  };
+  constructor(
+    @InjectModel(Profile.name)
+    private readonly profileModel: Model<ProfileDocument>,
+  ) {}
 
-  getProfile(): Profile {
-    return this.profile;
+  async create(dto: RegisterDto) {
+    const profile = await this.profileModel.create({
+      email: dto.username,
+      name: dto.name,
+    });
+
+    return profile;
   }
-  editprofile(editProfileDto: EditProfileDto) {
-    const { name, profilePic, phoneNo, email } = editProfileDto;
-    this.profile.name = name;
-    this.profile.email = email;
-    this.profile.phoneNo = phoneNo;
-    this.profile.profilePic = profilePic;
+
+  async findOne(username: string): Promise<ProfileDocument> {
+    return await this.profileModel.findOne({ email: username });
+  }
+
+  async editProfile(username: string, dto: SaveProfileDto) {
+    const { name, profilePic, phoneNumber } = dto;
+
+    let profile = await this.findOne(username);
+
+    if (!profile) {
+      profile = await this.profileModel.create({
+        name,
+        email: username,
+        phoneNumber,
+        profilePic,
+      });
+    } else {
+      profile.name = name;
+      profile.phoneNumber = phoneNumber;
+      profile.profilePic = profilePic;
+
+      await this.profileModel.replaceOne({ _id: profile._id }, profile);
+    }
+
+    return profile;
   }
 }

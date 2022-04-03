@@ -1,47 +1,121 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
-  Query,
-  UsePipes,
-  ValidationPipe,
+  Put,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/auth-guards';
+import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
+import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
-import { PostModal } from './posts.modal';
-import { CreatePostsDto } from './dto/create-posts.dto';
 
+@ApiTags('Post')
 @Controller('posts')
 export class PostsController {
-  constructor(private postsService: PostsService) {}
-  @Get('getAll')
-  getPost(): PostModal[] {
-    return this.postsService.getPosts();
+  constructor(
+    private readonly postsSvc: PostsService,
+    private sasSvc: AzureSASServiceService,
+  ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/my')
+  async myPosts(@Request() req: any) {
+    console.log(req);
+    const posts = await this.postsSvc.myPost(req.user.username);
+    return {
+      posts,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
-  @Get('recentPost/:locationTitle')
-  getRecentPost(@Param('locationTitle') locationTitle: string) {
-    return this.postsService.getPostByLocation(locationTitle);
+
+  @Get()
+  async getPosts() {
+    const posts = await this.postsSvc.getPosts();
+    return {
+      list: posts,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
-  @Post('/create')
-  @UsePipes(ValidationPipe)
-  createPost(@Body() createPostDto: CreatePostsDto) {
-    return this.postsService.createPost(createPostDto);
+
+  @Get('recentPosts/:location')
+  async getRecentPost(@Param('location') location: string) {
+    const posts = await this.postsSvc.getPostByLocation(location);
+    return {
+      list: posts,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async createPost(@Request() req: any, @Body() body: CreatePostDto) {
+    const post = await this.postsSvc.createPost(body, req);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
+  }
+
   @Get('/:id')
-  getPostById(@Param('id') id: string): PostModal {
-    return this.postsService.getPostById(id);
+  async getPostById(@Param('id') id: string) {
+    const post = await this.postsSvc.getPostById(id);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
-  @Get('/markActive/:id')
-  markPostActive(@Param('id') id: string): PostModal {
-    return this.postsService.markPostActive(id);
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/:id/active/:isActive')
+  async activatePost(
+    @Param('id') id: string,
+    @Param('isActive') isActive: boolean,
+  ) {
+    const post = await this.postsSvc.activatePost(id, isActive);
+
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
-  @Get('/markVend/:id')
-  markPostVend(@Param('id') id: string): PostModal {
-    return this.postsService.markPostVend(id);
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/:id/vend/:isVend')
+  async markPostVend(
+    @Param('id') id: string,
+    @Param('isVend') isVend: boolean,
+  ) {
+    const post = await this.postsSvc.markVend(id, isVend);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
-  @Get('/markDelete/:id')
-  markPostDeleted(@Param('id') id: string): PostModal {
-    return this.postsService.markPostDeleted(id);
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async markPostDeleted(@Param('id') id: string) {
+    const post = await this.postsSvc.delete(id);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put()
+  async editPost(@Body() body: UpdatePostDto) {
+    const post = await this.postsSvc.editPost(body);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 }

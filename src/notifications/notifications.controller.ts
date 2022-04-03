@@ -1,12 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import { NotificationModal } from './notification.modal';
+import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/auth-guards';
 
+@ApiTags('notifications')
+@UseGuards(JwtAuthGuard)
 @Controller('notifications')
 export class NotificationsController {
-  constructor(private notificationsService: NotificationsService) {}
-  @Get('getAll')
-  getNotifications(): NotificationModal[] {
-    return this.notificationsService.getNotifications();
+  constructor(private readonly notificationsService: NotificationsService) {}
+
+  @Get()
+  async getNotifications() {
+    return await this.notificationsService.getNotifications();
   }
 }

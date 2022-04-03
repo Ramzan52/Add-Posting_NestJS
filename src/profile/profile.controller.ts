@@ -1,17 +1,44 @@
-import { Body, Controller, Get, Put } from '@nestjs/common';
-import { Profile } from './profile.modal';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/auth-guards';
+import { SaveProfileDto } from './dto/save-profile.dto';
 import { ProfileService } from './profile.service';
-import { EditProfileDto } from './dto/edit-profile.dto';
+import { Profile } from './schemas/profile.schema';
+import { GetProfileDto } from './dto/get-profile.dto';
+import { AzureSASServiceService } from '../azure-sasservice/azure-sasservice.service';
 
+@ApiTags('profile')
+@UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
-  constructor(private profileService: ProfileService) {}
-  @Get('myProfile')
-  getProfile(): Profile {
-    return this.profileService.getProfile();
+  constructor(
+    private profileSvc: ProfileService,
+    private sasSvc: AzureSASServiceService,
+  ) {}
+
+  @Get()
+  @ApiOkResponse({ status: 200, type: GetProfileDto })
+  async getProfile(@Request() req): Promise<GetProfileDto> {
+    console.log('getProfile', req.user);
+    const profile = await this.profileSvc.findOne(req.user.username);
+    return {
+      name: profile.name,
+      phoneNumber: profile.phoneNumber,
+      email: profile.email,
+      profilePic: profile.profilePic,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
-  @Put('editProfile')
-  editProfile(@Body() editprofileDto: EditProfileDto) {
-    return this.profileService.editprofile(editprofileDto);
+
+  @Post()
+  saveProfile(@Request() req, @Body() body: SaveProfileDto) {
+    return this.profileSvc.editProfile(req.user.username, body);
   }
 }

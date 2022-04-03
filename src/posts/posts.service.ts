@@ -1,80 +1,145 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { PostModal } from './posts.modal';
-import { v1 as uuid } from 'uuid';
-import { CreatePostsDto } from './dto/create-posts.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, mongo } from 'mongoose';
+import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { Post, PostDocument } from './schemas/post.schema';
 
 @Injectable()
 export class PostsService {
-  private Posts: PostModal[] = [];
+  constructor(
+    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
+  ) {}
 
-  getPosts(): PostModal[] {
-    return this.Posts;
+  async getPosts() {
+    return await this.postModel.find({ isDeleted: false }).exec();
   }
-  createPost(createPostDto: CreatePostsDto) {
-    const { title, description, condition, attachmentUrls, location } =
-      createPostDto;
-    if (condition < 0 || condition > 100) {
-      throw new BadRequestException('Condition must be in 0-100');
-    }
 
-    const post: PostModal = {
-      categoryId: uuid(),
+  async createPost(dto: CreatePostDto, tokenData: any) {
+    const {
+      categoryId,
       title,
       description,
       condition,
-      location,
       attachmentUrls,
-      isActive: false,
-      isDelete: false,
+      location,
+    } = dto;
+
+    const post = await this.postModel.create({
+      categoryId: new mongo.ObjectId(categoryId),
+      title: title,
+      description: description,
+      condition: condition,
+      attachmentUrls: attachmentUrls,
+      location: location,
+      isActive: true,
+      isDeleted: false,
       isVend: false,
-    };
-    this.Posts.push(post);
+      createdByUsername: tokenData.user.username,
+      createdBy: tokenData.user.name,
+      createdOn: new Date(new Date().toUTCString()),
+      modifiedByUsername: tokenData.user.username,
+      modifiedBy: tokenData.user.name,
+      modifiedOn: new Date(new Date().toUTCString()),
+    });
+    return post;
   }
-  getPostById(id: string): PostModal {
-    const found = this.Posts.find((val) => val.categoryId === id);
-    if (!found) {
-      throw new NotFoundException(`Post with id ${id} Not Found`);
-    }
-    return found;
-  }
-  markPostActive(id: string): PostModal {
-    const found = this.Posts.find((val) => val.categoryId === id);
 
-    if (!found) {
+  async getPostById(id: string): Promise<PostDocument> {
+    const post = await this.postModel.findById(id).exec();
+    if (!post || post.isDeleted) {
       throw new NotFoundException(`Post with id ${id} Not Found`);
     }
-    found.isActive = true;
-    return found;
-  }
-  markPostVend(id: string): PostModal {
-    const found = this.Posts.find((val) => val.categoryId === id);
 
-    if (!found) {
-      throw new NotFoundException(`Post with id ${id} Not Found`);
-    }
-    found.isVend = true;
-    return found;
+    return post;
   }
-  markPostDeleted(id: string): PostModal {
-    const found = this.Posts.find((val) => val.categoryId === id);
 
-    if (!found) {
-      throw new NotFoundException(`Post with id ${id} Not Found`);
+  async activatePost(id: string, isActive: boolean): Promise<PostDocument> {
+    const post = await this.getPostById(id);
+
+    if (!post || post.isDeleted) {
+      throw new NotFoundException();
     }
-    found.isDelete = true;
-    return found;
+
+    post.isActive = isActive;
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
+    return post;
   }
-  getPostByLocation(locationTitle: string): PostModal[] {
-    let posts = this.getPosts();
-    if (locationTitle) {
-      posts = posts.filter((post) =>
-        post.location.title.includes(locationTitle),
-      );
+
+  async markVend(id: string, isVend: boolean): Promise<PostDocument> {
+    const post = await this.getPostById(id);
+
+    if (!post || post.isDeleted) {
+      throw new NotFoundException();
     }
-    return posts;
+
+    post.isVend = isVend;
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
+    return post;
+  }
+
+  async delete(id: string): Promise<PostDocument> {
+    const post = await this.getPostById(id);
+    if (!post || post.isDeleted) {
+      throw new NotFoundException();
+    }
+
+    post.isDeleted = true;
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
+    return post;
+  }
+
+  async editPost(dto: UpdatePostDto): Promise<PostDocument> {
+    const {
+      id,
+      categoryId,
+      title,
+      condition,
+      attachmentUrls,
+      description,
+      location,
+    } = dto;
+
+    const post = await this.getPostById(id);
+
+    post.categoryId = categoryId;
+    post.condition = condition;
+    post.attachmentUrls = attachmentUrls;
+    post.title = title;
+    post.description = description;
+    post.location = location;
+
+    await this.postModel.replaceOne(
+      { _id: new mongo.ObjectId(post._id) },
+      post,
+    );
+
+    return post;
+  }
+
+  async getPostByLocation(location: string): Promise<Array<PostDocument>> {
+    return await this.postModel.find({
+      'location.title': { $regex: '.*' + location + '.*' },
+      isDeleted: false,
+    });
+  }
+
+  async myPost(username: any): Promise<Array<PostDocument>> {
+    const post = await this.postModel
+      .find({ createdByUsername: username, isDeleted: false })
+      .exec();
+    return post;
   }
 }

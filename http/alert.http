@@ -1,0 +1,17 @@
+
+##create alert
+POST http://localhost:5100/alerts
+Content-Type: application/json
+{
+  "categoryID":"aa",
+  "radius":"aa",
+  "location":{
+      "title":"aaa",
+      "latitude":32.5,
+      "longitude":44.5
+      }
+}
+
+#delete alert
+
+DELETE http://localhost:5100/alerts/id
