@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: scrap-ready-api-dev-container
-          image: inserito.azurecr.io/scrap-ready-api:01
+          image: inserito.azurecr.io/scrap-ready-api:latest
           resources:
             limits:
               memory: '64Mi'
@@ -58,8 +58,7 @@ metadata:
 spec:
   tls:
     - hosts:
-        - scrap-ready-api-dev.aquila360.com
-
+      - scrap-ready-api-dev.aquila360.com
       secretName: aquila360-com-tls
   rules:
     - host: scrap-ready-api-dev.aquila360.com
