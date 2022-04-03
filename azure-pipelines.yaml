@@ -1,0 +1,154 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - dev
+
+resources:
+  - repo: self
+
+variables:
+  dockerfilePath: 'Dockerfile'
+  tag: '$(Build.BuildId)'
+  vmImageName: 'ubuntu-latest'
+
+stages:
+  - stage: buildAndPushDev
+    displayName: build and push to dev
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+    variables:
+      imageRepository: 'scrap-ready-api-dev'
+    jobs:
+      - job: build
+        displayName: build and push
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: Docker@2
+            displayName: build api image
+            inputs:
+              containerRegistry: 'container-registry-service-connection'
+              repository: '$(imageRepository)'
+              command: 'build'
+              Dockerfile: $(dockerfilePath)
+              tags: '$(tag)'
+              arguments: '--build-arg ASPNETCORE_ENVIRONMENT=Development'
+
+          - task: Docker@2
+            displayName: push api image to container registry
+            inputs:
+              containerRegistry: 'aquila360-container-registry-service-connection'
+              repository: '$(imageRepository)'
+              command: 'push'
+              tags: '$(tag)'
+
+          - upload: manifests
+            displayName: publish k8s manifests
+            artifact: manifests
+
+  - stage: deploy2dev
+    displayName: deploy to dev
+    dependsOn: buildAndPushDev
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    variables:
+      containerRegistry: 'aquila360.azurecr.io'
+      imagePullSecret: 'aquila360-security-management-api-server-dev'
+      imageRepository: 'security-management-api-server-dev'
+    jobs:
+      - deployment: deploy
+        pool:
+          vmImage: $(vmImageName)
+        environment: 'security-management-api.security-management'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: KubernetesManifest@0
+                  displayName: create imagePullSecret
+                  inputs:
+                    action: 'createSecret'
+                    kubernetesServiceConnection: 'aquila360-dev-security-management-service-connection'
+                    namespace: 'security-management'
+                    secretType: 'dockerRegistry'
+                    secretName: '$(imagePullSecret)'
+                    dockerRegistryEndpoint: 'aquila360-container-registry-service-connection'
+
+                - task: KubernetesManifest@0
+                  displayName: deploy api to k8s cluster
+                  inputs:
+                    action: 'deploy'
+                    kubernetesServiceConnection: 'aquila360-dev-security-management-service-connection'
+                    namespace: 'security-management'
+                    manifests: '$(Pipeline.Workspace)/manifests/dev.yaml'
+                    containers: '$(containerRegistry)/$(imageRepository):$(tag)'
+                    imagePullSecrets: '$(imagePullSecret)'
+
+  - stage: buildAndPushBeta
+    displayName: build and push to beta
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/beta')
+    variables:
+      imageRepository: security-management-api-server-beta
+    jobs:
+      - job: build
+        displayName: build and push
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: Docker@2
+            displayName: build api image
+            inputs:
+              containerRegistry: aquila360-security-management-container-registry-beta
+              repository: '$(imageRepository)'
+              command: 'build'
+              Dockerfile: $(dockerfilePath)
+              tags: '$(tag)'
+              arguments: '--build-arg ASPNETCORE_ENVIRONMENT=beta'
+
+          - task: Docker@2
+            displayName: push api image to container registry
+            inputs:
+              containerRegistry: aquila360-security-management-container-registry-beta
+              repository: '$(imageRepository)'
+              command: 'push'
+              tags: '$(tag)'
+
+          - upload: manifests
+            displayName: publish k8s manifests
+            artifact: manifests
+
+  - stage: deploy2beta
+    displayName: deploy to beta
+    dependsOn: buildAndPushBeta
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/beta')
+    variables:
+      containerRegistry: 'aquila360.azurecr.io'
+      imagePullSecret: aquila360-security-management-api-server-beta
+      imageRepository: security-management-api-server-beta
+    jobs:
+      - deployment: deploy
+        pool:
+          vmImage: $(vmImageName)
+        environment: security-management-api.security-management
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: KubernetesManifest@0
+                  displayName: create imagePullSecret
+                  inputs:
+                    action: 'createSecret'
+                    kubernetesServiceConnection: aquila360-security-management-aks-beta-service-connection
+                    namespace: 'security-management-beta'
+                    secretType: 'dockerRegistry'
+                    secretName: '$(imagePullSecret)'
+                    dockerRegistryEndpoint: 'aquila360-container-registry-service-connection'
+
+                - task: KubernetesManifest@0
+                  displayName: deploy api to k8s cluster
+                  inputs:
+                    action: 'deploy'
+                    kubernetesServiceConnection: aquila360-security-management-aks-beta-service-connection
+                    namespace: 'security-management-beta'
+                    manifests: '$(Pipeline.Workspace)/manifests/beta.yaml'
+                    containers: '$(containerRegistry)/$(imageRepository):$(tag)'
+                    imagePullSecrets: '$(imagePullSecret)'
