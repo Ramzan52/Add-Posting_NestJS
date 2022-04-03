@@ -25,7 +25,7 @@ spec:
           image: inserito.azurecr.io/scrap-ready-api:latest
           resources:
             limits:
-              memory: '64Mi'
+              memory: '256Mi'
               cpu: '64m'
           ports:
             - containerPort: 5100
@@ -36,7 +36,7 @@ metadata:
   name: scrap-ready-api-dev-svc
   namespace: scrap-ready-dev
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 80
       protocol: TCP
