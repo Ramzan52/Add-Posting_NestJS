@@ -10,7 +10,7 @@ export class AlertsService {
     @InjectModel(Alert.name) private readonly alertModel: Model<AlertDocument>,
   ) {}
   async saveAlerts(dto: CreateAlertDto) {
-    const alert = new this.alertModel(CreateAlertDto);
+    const alert = new this.alertModel(dto);
     return alert.save();
   }
   async deleteAlert(id: string) {
