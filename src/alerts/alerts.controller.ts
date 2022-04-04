@@ -1,3 +1,4 @@
+import { AlertDocument } from './schema/alert.schema';
 import { CreateAlertDto } from './dto/post-alert.dto';
 import { AlertsService } from './alerts.service';
 import { JwtAuthGuard } from './../auth/auth-guards/jwt-auth.guard';
@@ -5,8 +6,10 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
@@ -23,5 +26,10 @@ export class AlertsController {
   @Delete('/id')
   deleteAlert(@Param('id') id: string) {
     return this.alertSvc.deleteAlert(id);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('/my')
+  async myPosts(@Request() req: any): Promise<Array<AlertDocument>> {
+    return await this.alertSvc.myAlert(req.user.username);
   }
 }

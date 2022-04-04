@@ -29,4 +29,10 @@ export class AlertsService {
     }
     return alert;
   }
+  async myAlert(username: string): Promise<Array<AlertDocument>> {
+    const post = await this.alertModel
+      .find({ createdByUsername: username })
+      .exec();
+    return post;
+  }
 }
