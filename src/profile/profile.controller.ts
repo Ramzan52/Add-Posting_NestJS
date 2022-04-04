@@ -11,18 +11,30 @@ import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { SaveProfileDto } from './dto/save-profile.dto';
 import { ProfileService } from './profile.service';
 import { Profile } from './schemas/profile.schema';
+import { GetProfileDto } from './dto/get-profile.dto';
+import { AzureSASServiceService } from '../azure-sasservice/azure-sasservice.service';
 
 @ApiTags('profile')
 @UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
-  constructor(private profileSvc: ProfileService) {}
+  constructor(
+    private profileSvc: ProfileService,
+    private sasSvc: AzureSASServiceService,
+  ) {}
 
   @Get()
-  @ApiOkResponse({ status: 200, type: Profile })
-  getProfile(@Request() req): Promise<Profile> {
+  @ApiOkResponse({ status: 200, type: GetProfileDto })
+  async getProfile(@Request() req): Promise<GetProfileDto> {
     console.log('getProfile', req.user);
-    return this.profileSvc.findOne(req.user.username);
+    const profile = await this.profileSvc.findOne(req.user.username);
+    return {
+      name: profile.name,
+      phoneNumber: profile.phoneNumber,
+      email: profile.email,
+      profilePic: profile.profilePic,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 
   @Post()

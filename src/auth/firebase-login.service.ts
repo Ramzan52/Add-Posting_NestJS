@@ -1,10 +1,8 @@
-import { ProfileService } from 'src/profile/profile.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { hashSync } from 'bcrypt';
-import { UsersService } from 'src/users/users.service';
-import { Strategy, ExtractJwt } from 'passport-firebase-jwt';
 import { auth } from 'firebase-admin';
+import { ProfileService } from 'src/profile/profile.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class FireBaseLoginService {
@@ -18,32 +16,45 @@ export class FireBaseLoginService {
   async fbLogin(token: any) {
     try {
       const decodedToken = await this.getAuth().verifyIdToken(token);
-
       const user = decodedToken;
-      console.log(user);
-      const existingUser = await this.usersSvc.findOne(decodedToken.user_id);
+      const email = user.email;
+
+      const existingUser = await this.usersSvc.findOne(email);
       if (existingUser) {
         const payload = {
           sub: user.user_id,
           name: user.name,
+          username: user.email,
         };
 
         return {
           access_token: this.jwtSvc.sign(payload),
         };
       } else {
-        this.usersSvc.create({
-          username: user.name,
+        const payload = {
+          sub: user.user_id,
+          name: user.name,
+          username: user.email,
+        };
+
+        await this.usersSvc.create({
+          username: user.email,
           name: user.name,
           password: '',
         });
-        this.profileSvc.create({
-          username: user.name,
+
+        await this.profileSvc.create({
+          username: user.email,
           name: user.name,
           password: '',
         });
+
+        return {
+          access_token: this.jwtSvc.sign(payload),
+        };
       }
     } catch (error) {
+      console.error(error);
       throw new UnauthorizedException();
     }
   }

@@ -34,7 +34,7 @@ export class UsersService {
   }
 
   async create(dto: RegisterDto) {
-    const exists = this.findOne(dto.username);
+    const exists = await this.findOne(dto.username);
     if (exists) {
       throw new BadRequestException('Email is already registered');
     }

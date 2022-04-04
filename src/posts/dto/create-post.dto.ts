@@ -12,7 +12,7 @@ import { PostLocationDto } from './post-location.dto';
 
 export class CreatePostDto {
   @IsString()
-  categoryId: Category;
+  categoryId: string;
 
   @IsString()
   title: string;

@@ -1,0 +1,2 @@
+### get all categories
+GET http://localhost:5100/categories

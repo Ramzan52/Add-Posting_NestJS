@@ -9,68 +9,113 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
+import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
-import { PostDocument } from './schemas/post.schema';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Post')
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsSvc: PostsService) {}
+  constructor(
+    private readonly postsSvc: PostsService,
+    private sasSvc: AzureSASServiceService,
+  ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/my')
+  async myPosts(@Request() req: any) {
+    console.log(req);
+    const posts = await this.postsSvc.myPost(req.user.username);
+    return {
+      posts,
+      sas: this.sasSvc.getNewSASKey(),
+    };
+  }
 
   @Get()
-  async getPosts(): Promise<Array<PostDocument>> {
-    return await this.postsSvc.getPosts();
+  async getPosts() {
+    const posts = await this.postsSvc.getPosts();
+    return {
+      list: posts,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 
   @Get('recentPosts/:location')
-  async getRecentPost(
-    @Param('location') location: string,
-  ): Promise<Array<PostDocument>> {
-    return await this.postsSvc.getPostByLocation(location);
+  async getRecentPost(@Param('location') location: string) {
+    const posts = await this.postsSvc.getPostByLocation(location);
+    return {
+      list: posts,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createPost(@Body() body: CreatePostDto): Promise<PostDocument> {
-    return await this.postsSvc.createPost(body);
+  async createPost(@Request() req: any, @Body() body: CreatePostDto) {
+    const post = await this.postsSvc.createPost(body, req);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 
   @Get('/:id')
-  async getPostById(@Param('id') id: string): Promise<PostDocument> {
-    return await this.postsSvc.getPostById(id);
+  async getPostById(@Param('id') id: string) {
+    const post = await this.postsSvc.getPostById(id);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/deactivate/:id')
-  async deactivatePost(@Param('id') id: string): Promise<PostDocument> {
-    return await this.postsSvc.deactivatePost(id);
+  @Post('/:id/active/:isActive')
+  async activatePost(
+    @Param('id') id: string,
+    @Param('isActive') isActive: boolean,
+  ) {
+    const post = await this.postsSvc.activatePost(id, isActive);
+
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/mark-vend/:id')
-  async markPostVend(@Param('id') id: string): Promise<PostDocument> {
-    return await this.postsSvc.markPostVend(id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/my')
-  async myPosts(@Request() req: any): Promise<Array<PostDocument>> {
-    return await this.postsSvc.myPost(req.user.username);
+  @Post('/:id/vend/:isVend')
+  async markPostVend(
+    @Param('id') id: string,
+    @Param('isVend') isVend: boolean,
+  ) {
+    const post = await this.postsSvc.markVend(id, isVend);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async markPostDeleted(@Param('id') id: string): Promise<PostDocument> {
-    return await this.postsSvc.markPostDeleted(id);
+  async markPostDeleted(@Param('id') id: string) {
+    const post = await this.postsSvc.delete(id);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 
   @UseGuards(JwtAuthGuard)
   @Put()
-  async editPost(@Body() body: UpdatePostDto): Promise<PostDocument> {
-    return await this.postsSvc.editPost(body);
+  async editPost(@Body() body: UpdatePostDto) {
+    const post = await this.postsSvc.editPost(body);
+    return {
+      post,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 }
