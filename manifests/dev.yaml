@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scrap-ready-api-dev-deployment
+  name: scrap-ready-api-deployment
   namespace: scrap-ready-dev
 spec:
   progressDeadlineSeconds: 300
@@ -14,15 +14,15 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: scrap-ready-api-dev
+      app: scrap-ready-api
   template:
     metadata:
       labels:
-        app: scrap-ready-api-dev
+        app: scrap-ready-api
     spec:
       containers:
-        - name: scrap-ready-api-dev-container
-          image: inserito.azurecr.io/scrap-ready-api:latest
+        - name: scrap-ready-api-container
+          image: inserito.azurecr.io/scrap-ready-api-dev:latest
           resources:
             limits:
               memory: '256Mi'
@@ -33,7 +33,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: scrap-ready-api-dev-svc
+  name: scrap-ready-api-svc
   namespace: scrap-ready-dev
 spec:
   type: ClusterIP
@@ -42,12 +42,12 @@ spec:
       protocol: TCP
       targetPort: 5100
   selector:
-    app: scrap-ready-api-dev
+    app: scrap-ready-api
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: scrap-ready-api-dev-ingress
+  name: scrap-ready-api-ingress
   namespace: scrap-ready-dev
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -58,7 +58,7 @@ metadata:
 spec:
   tls:
     - hosts:
-      - scrap-ready-api-dev.aquila360.com
+        - scrap-ready-api-dev.aquila360.com
       secretName: aquila360-com-tls
   rules:
     - host: scrap-ready-api-dev.aquila360.com
@@ -68,6 +68,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: scrap-ready-api-dev-svc
+                name: scrap-ready-api-svc
                 port:
                   number: 80
