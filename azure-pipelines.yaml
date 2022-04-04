@@ -70,13 +70,13 @@ stages:
                     namespace: 'scrap-ready-dev'
                     secretType: 'dockerRegistry'
                     secretName: '$(imagePullSecret)'
-                    dockerRegistryEndpoint: 'conatiner-registry-service-connection'
+                    dockerRegistryEndpoint: 'container-registry-service-connection'
 
                 - task: KubernetesManifest@0
                   displayName: deploy api to k8s cluster
                   inputs:
                     action: 'deploy'
-                    kubernetesServiceConnection: 'container-registry-service-connection'
+                    kubernetesServiceConnection: 'k8s-scrap-ready-dev'
                     namespace: 'scrap-ready-dev'
                     manifests: '$(Pipeline.Workspace)/manifests/dev.yaml'
                     containers: '$(containerRegistry)/$(imageRepository):$(tag)'
