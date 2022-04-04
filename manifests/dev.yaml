@@ -58,7 +58,7 @@ metadata:
 spec:
   tls:
     - hosts:
-        - scrap-ready-api-dev.aquila360.com
+      - scrap-ready-api-dev.aquila360.com
       secretName: aquila360-com-tls
   rules:
     - host: scrap-ready-api-dev.aquila360.com
