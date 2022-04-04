@@ -1,3 +1,4 @@
+import { DeviceTokenModule } from './device_token/device_token.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NeconfigModule } from 'neconfig';
@@ -13,6 +14,7 @@ import { ProfileModule } from './profile/profile.module';
 import { TestModule } from './test/test.module';
 import { UsersModule } from './users/users.module';
 import { AzureSASServiceModule } from './azure-sasservice/azure-sasservice.module';
+import { FirebaseNotificationModule } from './firebase_notification/firebase_notification.module';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { AzureSASServiceModule } from './azure-sasservice/azure-sasservice.modul
     ProfileModule,
     TestModule,
     UsersModule,
+    DeviceTokenModule,
     MongooseModule.forRoot(
       'mongodb://aquila360:R28xtu462zVBaf02@east-us-01-shard-00-00.19lgk.mongodb.net:27017,east-us-01-shard-00-01.19lgk.mongodb.net:27017,east-us-01-shard-00-02.19lgk.mongodb.net:27017/scrap-ready-dev?replicaSet=atlas-r03cto-shard-0&ssl=true&authSource=admin',
     ),
@@ -32,6 +35,7 @@ import { AzureSASServiceModule } from './azure-sasservice/azure-sasservice.modul
     }),
     AlertsModule,
     AzureSASServiceModule,
+    FirebaseNotificationModule,
   ],
 })
 export class AppModule {}
