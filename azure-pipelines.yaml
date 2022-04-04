@@ -36,7 +36,7 @@ stages:
           - task: Docker@2
             displayName: push api image to container registry
             inputs:
-              containerRegistry: 'registry-service-connection'
+              containerRegistry: 'container-registry-service-connection'
               repository: '$(imageRepository)'
               command: 'push'
               tags: '$(tag)'
