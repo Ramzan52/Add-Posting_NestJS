@@ -3,8 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as admin from 'firebase-admin';
 import { ConfigReader } from 'neconfig';
-import service from '../src/auth/config/firebase-auth';
 import { AppModule } from './app.module';
+import service from './auth/config/firebase-auth';
 
 async function bootstrap() {
   try {
