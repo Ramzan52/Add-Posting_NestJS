@@ -9,16 +9,16 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class PostNotification {
+export class PostMessage {
   @IsString()
-  userId: string;
+  sender: string;
 
   @IsString()
-  type: string;
+  reciever: string;
 
   @IsString()
-  payLoad: string;
+  text: string;
 
   @IsDate()
-  sentOn: Date;
+  timeStamp: string;
 }

@@ -6,15 +6,19 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
+import {
+  FirebaseNotificationDocument,
+  PostFirebaseNotification,
+} from './schema/post.notification.schema';
 
 @Injectable()
 export class Firebase_NotificationService {
   constructor(
-    @InjectModel(PostNotification.name)
-    private readonly notification: Model<NotificationDocument>,
+    @InjectModel(PostFirebaseNotification.name)
+    private readonly notificationModel: Model<FirebaseNotificationDocument>,
   ) {}
-  PostNotification(dto: PostNotification) {
-    const notification = new this.notification(dto);
+  async PostNotification(dto: PostNotification) {
+    const notification = await new this.notificationModel(dto);
     return notification.save();
   }
 }

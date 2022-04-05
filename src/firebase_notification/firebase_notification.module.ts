@@ -3,14 +3,17 @@ import { Module } from '@nestjs/common';
 import { FirebaseNotificationController } from './firebase_notification.controller';
 import { Firebase_NotificationService } from './firebase_notification.service';
 import {
-  NotificationSchema,
-  PostNotification,
+  NotificationFirebaseSchema,
+  PostFirebaseNotification,
 } from './schema/post.notification.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: PostNotification.name, schema: NotificationSchema },
+      {
+        name: PostFirebaseNotification.name,
+        schema: NotificationFirebaseSchema,
+      },
     ]),
   ],
   controllers: [FirebaseNotificationController],

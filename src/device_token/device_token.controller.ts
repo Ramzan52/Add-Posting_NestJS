@@ -9,20 +9,15 @@ import {
   UseGuards,
   Post,
   Request,
+  Req,
 } from '@nestjs/common';
-
+@UseGuards(JwtAuthGuard)
 @Controller('device-token')
 @ApiTags('device-token')
 export class DeviceTokenController {
   constructor(private deviceSvc: DeviceTokenService) {}
   @Post()
-  postDeviceToken(@Request() req: any, @Body() body: CreateDeviceTokenDto) {
-    this.deviceSvc.postDeviceToken(req.user.username, body);
-  }
-  @Get()
-  getToken() {
-    this.deviceSvc.sendNotification(
-      'fWn9AKhHQMe5y0unzams8K:APA91bFuWIb_ml53GQJA9mdPVP-MbyJwGNWf-NmV0FoAHcZYQneX4tmvH1j7nVwc384kIXAxe_EqRpxf5CwSYfMhUd0uta8RBPhGCiA1IVp5RPYQITPr_DIKJOg6oeQ0MYNN23dxA8bb',
-    );
+  postDeviceToken(@Req() req: any, @Body() body: CreateDeviceTokenDto) {
+    this.deviceSvc.postDeviceToken(req.user.id, body);
   }
 }

@@ -4,14 +4,21 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { PostLocationSchema } from 'src/posts/schemas/post-location.schema';
 
-export type DeviceTokenDocument = DeviceToken & Document;
+export type MessageDocument = Message & Document;
 
 @Schema()
-export class DeviceToken {
+export class Message {
   @Prop({ required: true })
-  token: string;
+  sender: string;
+
   @Prop({ required: true })
-  userId: string;
+  reciever: string;
+
+  @Prop({ required: true })
+  text: string;
+
+  @Prop({ required: true })
+  timeStamp: string;
 }
 
-export const DeviceTokenSchema = SchemaFactory.createForClass(DeviceToken);
+export const MessageSchema = SchemaFactory.createForClass(Message);

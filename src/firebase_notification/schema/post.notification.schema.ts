@@ -4,10 +4,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { PostLocationSchema } from 'src/posts/schemas/post-location.schema';
 
-export type NotificationDocument = PostNotification & Document;
+export type FirebaseNotificationDocument = PostFirebaseNotification & Document;
 
 @Schema()
-export class PostNotification extends BaseSchema {
+export class PostFirebaseNotification extends BaseSchema {
   @Prop({ required: true })
   type: string;
 
@@ -15,11 +15,12 @@ export class PostNotification extends BaseSchema {
   payLoad: string;
 
   @Prop({ required: true })
-  username: string;
+  userId: string;
 
   @Prop({ required: true })
   sentOn: Date;
 }
 
-export const NotificationSchema =
-  SchemaFactory.createForClass(PostNotification);
+export const NotificationFirebaseSchema = SchemaFactory.createForClass(
+  PostFirebaseNotification,
+);

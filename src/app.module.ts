@@ -15,6 +15,7 @@ import { TestModule } from './test/test.module';
 import { UsersModule } from './users/users.module';
 import { AzureSASServiceModule } from './azure-sasservice/azure-sasservice.module';
 import { FirebaseNotificationModule } from './firebase_notification/firebase_notification.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { FirebaseNotificationModule } from './firebase_notification/firebase_not
     AlertsModule,
     AzureSASServiceModule,
     FirebaseNotificationModule,
+    MessagesModule,
   ],
 })
 export class AppModule {}

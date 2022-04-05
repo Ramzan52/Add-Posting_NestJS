@@ -11,32 +11,13 @@ export class DeviceTokenService {
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
   ) {}
 
-  postDeviceToken(username: String, dto: CreateDeviceTokenDto) {
+  async postDeviceToken(username: String, dto: CreateDeviceTokenDto) {
     let data = {
-      username,
-      token: dto,
+      userId: username,
+      token: dto.token,
     };
-    const DeviceToken = new this.deviceTokenModal(data);
-    return DeviceToken.save();
-  }
-  sendNotification(token: string) {
-    var message = {
-      apns: {
-        headers: {
-          'apns-priority': '10',
-        },
-        payload: {
-          aps: {
-            alert: {
-              body: 'hii',
-              title: 'hello',
-            },
-            sound: 'dafault',
-          },
-        },
-      },
-      token: token,
-    };
-    admin.messaging().send(message);
+    const DeviceToken = await new this.deviceTokenModal(data);
+    DeviceToken.save();
+    return DeviceToken;
   }
 }

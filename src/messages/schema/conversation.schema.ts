@@ -3,15 +3,20 @@ import { BaseSchema } from 'src/models/base-document.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { PostLocationSchema } from 'src/posts/schemas/post-location.schema';
+import { Message } from './post.message.schema';
 
-export type DeviceTokenDocument = DeviceToken & Document;
+export type ConversationDocument = Conversation & Document;
 
 @Schema()
-export class DeviceToken {
+export class Conversation {
   @Prop({ required: true })
-  token: string;
+  sender: string;
+
   @Prop({ required: true })
-  userId: string;
+  reciever: string;
+
+  @Prop({ required: true })
+  message: Message;
 }
 
-export const DeviceTokenSchema = SchemaFactory.createForClass(DeviceToken);
+export const ConversationSchema = SchemaFactory.createForClass(Conversation);
