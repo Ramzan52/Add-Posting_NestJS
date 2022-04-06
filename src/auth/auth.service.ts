@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { hashSync } from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
@@ -22,7 +22,29 @@ export class AuthService {
 
     return {
       access_token: this.jwtSvc.sign(payload),
+      refresh_token: this.jwtSvc.sign(payload, { expiresIn: 86400}),
     };
+  }
+
+  async refreshToken(token: string) {
+    try {
+      var decodedToken = await this.jwtSvc.verifyAsync(token);
+      const user = await this.usersSvc.findOne(decodedToken.username);
+      if (user === null) {
+        return null;
+      }
+      const payload = {
+        sub: user.id,
+        name: user.name,
+        username: user.username,
+      };
+      return {
+        access_token: this.jwtSvc.sign(payload, { expiresIn: '30m'}),
+        refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h'}),
+      };
+    } catch (e) {
+      throw new BadRequestException("Invalid or expired refresh token");
+    }
   }
 
   async loginWithGoogle(payload: any) {

@@ -5,6 +5,7 @@ import * as admin from 'firebase-admin';
 import { ConfigReader } from 'neconfig';
 import { AppModule } from './app.module';
 import service from './auth/config/firebase-auth';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   try {
