@@ -20,7 +20,6 @@ export class FirebaseNotificationController {
   constructor(private readonly notificationSvc: Firebase_NotificationService) {}
   @Get()
   getNotifications(@Req() req: any) {
-    console.log(req.user.id);
     this.notificationSvc.getNotifications(req.user.id);
   }
 }

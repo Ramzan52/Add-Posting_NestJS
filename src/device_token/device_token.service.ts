@@ -16,8 +16,16 @@ export class DeviceTokenService {
       userId: username,
       token: dto.token,
     };
-    const DeviceToken = await new this.deviceTokenModal(data);
-    DeviceToken.save();
-    return DeviceToken;
+    const existingUser = await this.deviceTokenModal.findOneAndReplace(
+      { userId: username },
+      data,
+      { new: true },
+    );
+    if (!existingUser) {
+      const DeviceToken = await new this.deviceTokenModal(data);
+      DeviceToken.save();
+      return DeviceToken;
+    }
+    return existingUser;
   }
 }
