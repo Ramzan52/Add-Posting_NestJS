@@ -9,13 +9,22 @@ export type MessageDocument = Message & Document;
 @Schema()
 export class Message {
   @Prop({ required: true })
-  sender: string;
+  senderId: string;
 
   @Prop({ required: true })
-  reciever: string;
+  recieverId: string;
+
+  @Prop({ required: true })
+  recieverName: string;
+
+  @Prop({ required: true })
+  senderName: string;
 
   @Prop({ required: true })
   text: string;
+
+  @Prop({ required: true })
+  image: string;
 
   @Prop({ required: true })
   timeStamp: Date;

@@ -10,10 +10,16 @@ export type ConversationDocument = Conversation & Document;
 @Schema()
 export class Conversation {
   @Prop({ required: true })
-  sender: string;
+  senderId: string;
 
   @Prop({ required: true })
-  reciever: string;
+  recieverId: string;
+
+  @Prop({ required: true })
+  recieverName: string;
+
+  @Prop({ required: true })
+  senderName: string;
 
   @Prop({ required: true })
   message: Message;

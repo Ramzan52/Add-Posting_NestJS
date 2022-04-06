@@ -13,10 +13,16 @@ import { Message } from '../schema/post.message.schema';
 
 export class PostConversation {
   @IsString()
-  sender: string;
+  senderId: string;
 
   @IsString()
-  reciever: string;
+  recieverId: string;
+
+  @IsString()
+  senderName: string;
+
+  @IsString()
+  recieverName: string;
 
   @IsObject()
   message: Message;

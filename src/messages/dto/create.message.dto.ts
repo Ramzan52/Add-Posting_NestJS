@@ -11,13 +11,22 @@ import {
 
 export class PostMessage {
   @IsString()
-  sender: string;
+  senderId: string;
 
   @IsString()
-  reciever: string;
+  recieverId: string;
+
+  @IsString()
+  recieverName: string;
+
+  @IsString()
+  senderName: string;
 
   @IsString()
   text: string;
+
+  @IsString()
+  image: string;
 
   @IsDate()
   timeStamp: Date;

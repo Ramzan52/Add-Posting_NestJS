@@ -19,8 +19,10 @@ export class ConversationService {
   ) {}
   async postConversation(dto: PostConversation) {
     let data = {
-      reciever: dto.sender,
-      sender: dto.reciever,
+      recieverId: dto.senderId,
+      senderId: dto.recieverId,
+      senderName: dto.recieverName,
+      recieverName: dto.senderName,
       message: dto.message,
     };
 
@@ -32,8 +34,8 @@ export class ConversationService {
   @ApiOkResponse({ status: 200, type: PostConversation })
   getConversation(id: string, sender: string) {
     let conversationList = this.conversationModel.find({
-      sender: sender,
-      reciever: id,
+      senderId: sender,
+      recieverId: id,
     });
     return conversationList;
   }

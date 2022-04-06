@@ -19,45 +19,53 @@ export class MessagesService {
   ) {}
   async postMessage(dto: PostMessage) {
     let data = {
-      reciever: dto.sender,
-      sender: dto.reciever,
+      recieverId: dto.senderId,
+      recieverName: dto.senderName,
+      senderId: dto.recieverId,
+      senderName: dto.recieverName,
       timeStamp: dto.timeStamp,
       text: dto.text,
+      image: dto.image,
     };
     let conversation = {
-      reciever: dto.sender,
-      sender: dto.reciever,
+      senderId: dto.senderId,
+      senderName: dto.senderName,
+      recieverId: dto.recieverId,
+      recieverName: dto.recieverName,
       message: {
-        reciever: dto.sender,
-        sender: dto.reciever,
+        senderId: dto.senderId,
+        senderName: dto.senderName,
+        recieverId: dto.recieverId,
+        recieverName: dto.recieverName,
         timeStamp: dto.timeStamp,
         text: dto.text,
+        image: dto.image,
       },
     };
     this.ConversationSvc.postConversation(conversation);
     const existingMessage = await this.messageModel.findOneAndReplace(
-      { sender: dto.sender, reciever: dto.reciever },
+      { senderId: dto.senderId, recieverId: dto.recieverId },
       dto,
       { new: true },
     );
     if (existingMessage) {
       const existingMessageFlip = await this.messageModel.findOneAndReplace(
-        { reciever: dto.sender, sender: dto.reciever },
+        { recieverId: dto.senderId, senderId: dto.recieverId },
         data,
         { new: true },
       );
-      this.fcmSvc.findDeviceToken(dto.reciever, dto);
+      this.fcmSvc.findDeviceToken(dto.recieverId, dto);
       return existingMessage;
     } else {
       const message = await new this.messageModel(dto);
       const messageFlip = await new this.messageModel(data);
       messageFlip.save();
-      this.fcmSvc.findDeviceToken(dto.reciever, dto);
+      this.fcmSvc.findDeviceToken(dto.recieverId, dto);
       return message.save();
     }
   }
   async getMessage(id: String) {
-    let message = this.messageModel.find({ sender: id });
+    let message = this.messageModel.find({ senderId: id });
     if (!message) {
       throw new NotFoundException('no message found');
     }
