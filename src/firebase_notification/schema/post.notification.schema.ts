@@ -7,7 +7,7 @@ import { PostLocationSchema } from 'src/posts/schemas/post-location.schema';
 export type FirebaseNotificationDocument = PostFirebaseNotification & Document;
 
 @Schema()
-export class PostFirebaseNotification extends BaseSchema {
+export class PostFirebaseNotification {
   @Prop({ required: true })
   type: string;
 
