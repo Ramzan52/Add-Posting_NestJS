@@ -8,13 +8,51 @@ import { Post, PostDocument } from './schemas/post.schema';
 
 @Injectable()
 export class FavoritePostsService {
-    constructor(
-        @InjectModel(FavoritePosts.name) private readonly favoritePostModel: Model<FavoritePosts>,
-    ) {}
+  constructor(
+    @InjectModel(FavoritePosts.name)
+    private readonly favoritePostModel: Model<FavoritePosts>,
+    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
+  ) {}
 
-    async likePost(id: string, like: boolean) {
-    
-        
+  async likePost(postId: string, like: boolean, userId: string) {
+    const post = await this.postModel.findById(postId).exec();
+    if (!post) {
+      throw new NotFoundException(`Post with id ${postId} Not Found`);
     }
+    if (like) {
+      let dto = {
+        userId,
+        postId,
+      };
+      const favoritePosts = await new this.favoritePostModel(dto);
+      return favoritePosts.save();
+    } else {
+      await this.favoritePostModel.deleteOne({
+        userId: userId,
+        postId: postId,
+      });
+    }
+  }
+  async myFavPost(userId: string) {
+    const favPost = await this.favoritePostModel
+      .find({ userId: userId })
+      .exec();
+    if (!favPost) {
+      throw new NotFoundException(`No Favourite Post Found`);
+    }
+    const post = await this.postModel.find().exec();
 
+    return this.postModel
+      .aggregate([
+        {
+          $lookup: {
+            from: 'favoritePostModel',
+            localField: 'postId',
+            foreignField: '_id',
+            as: 'orderdetails',
+          },
+        },
+      ])
+      .exec();
+  }
 }

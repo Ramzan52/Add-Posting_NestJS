@@ -1,3 +1,4 @@
+import { FavoritePostsService } from './favorite-posts.service';
 import {
   Body,
   Controller,
@@ -7,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -23,6 +25,7 @@ export class PostsController {
   constructor(
     private readonly postsSvc: PostsService,
     private sasSvc: AzureSASServiceService,
+    private favSvc: FavoritePostsService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -63,15 +66,24 @@ export class PostsController {
       sas: this.sasSvc.getNewSASKey(),
     };
   }
-
-  @Put('fav/:id/:like')
-  async likePost(@Param('id') id: string, @Param('like') like : boolean) {
-    const existingPost = await this.postsSvc.getPostById(id);
-    if (!existingPost || existingPost.isDeleted) {
-      throw new NotFoundException(`Post with id ${id} Not Found`);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Post('fav/:id/:like')
+  async likePost(
+    @Param('postId') postId: string,
+    @Param('like') like: boolean,
+    @Request() req: any,
+  ) {
+    let favPost = await this.favSvc.likePost(postId, like, req.user.id);
+    return favPost;
   }
+  @Get('my-favourite/post')
+  async mypost(@Req() req: any) {
+    console.log(req.user);
+    // let favPost = await this.favSvc.myFavPost(req.user.id);
+    let favPost = await this.favSvc.myFavPost('623dc7488751e150d021c303');
 
+    return favPost;
+  }
   @Get('/:id')
   async getPostById(@Param('id') id: string) {
     const post = await this.postsSvc.getPostById(id);
