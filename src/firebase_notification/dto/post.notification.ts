@@ -19,6 +19,6 @@ export class PostNotification {
   @IsString()
   payLoad: string;
 
-  @IsDate()
+  @IsString()
   sentOn: Date;
 }

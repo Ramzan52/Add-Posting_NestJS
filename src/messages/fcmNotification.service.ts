@@ -27,12 +27,11 @@ export class FcmTOkenService {
   async findDeviceToken(id: string, message: PostMessage) {
     let fcmToken = await this.deviceTokenModal.findOne({ userId: id });
     if (fcmToken.token !== null) {
-      let data = {
-        type: 'new-message',
-        payload: JSON.stringify(message),
+      let payload: admin.messaging.Message = {
+        data: { message: JSON.stringify(message), type: 'new-message' },
         token: fcmToken.token,
       };
-      admin.messaging().send(data);
+      admin.messaging().send(payload);
       this.firebaseSvc.PostNotification({
         type: 'new-message',
         payLoad: message.text,
