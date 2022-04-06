@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { exec } from 'child_process';
 import { Model, mongo } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -11,8 +12,17 @@ export class PostsService {
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
   ) {}
 
-  async getPosts() {
-    return await this.postModel.find({ isDeleted: false }).skip(1).limit(1);
+  async getPosts(search: string) {
+    if (search != null) {
+      const regex = new RegExp(this.escapeRegex(search), 'gi');
+      return await this.postModel.find({isDeleted: false, title: {$regex: regex}}).exec();
+    }
+    else 
+      return await this.postModel.find({isDeleted: false}).exec();
+  }
+
+  escapeRegex(text: string) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
   }
 
   async createPost(dto: CreatePostDto, tokenData: any) {

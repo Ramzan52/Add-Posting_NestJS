@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -37,8 +38,9 @@ export class PostsController {
   }
 
   @Get()
-  async getPosts() {
-    const posts = await this.postsSvc.getPosts();
+  async getPosts(@Query('search') search?: string) {
+    console.log("search", search);
+    const posts = await this.postsSvc.getPosts(search);
     return {
       list: posts,
       sas: this.sasSvc.getNewSASKey(),
