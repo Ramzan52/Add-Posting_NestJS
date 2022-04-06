@@ -20,5 +20,5 @@ export class PostMessage {
   text: string;
 
   @IsDate()
-  timeStamp: string;
+  timeStamp: Date;
 }

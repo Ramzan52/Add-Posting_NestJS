@@ -18,7 +18,7 @@ export class Message {
   text: string;
 
   @Prop({ required: true })
-  timeStamp: string;
+  timeStamp: Date;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);
