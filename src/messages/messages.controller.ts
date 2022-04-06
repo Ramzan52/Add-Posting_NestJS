@@ -22,16 +22,19 @@ export class MessagesController {
     private readonly conversationSvc: ConversationService,
   ) {}
   @Post()
-  postMessage(@Body() body: PostMessage) {
-    this.messageSvc.postMessage(body);
+  async postMessage(@Body() body: PostMessage) {
+    let message = await this.messageSvc.postMessage(body);
+    return message;
   }
   @Get()
   @ApiOkResponse({ status: 200, type: PostMessage })
-  getMessage(@Request() req: any) {
-    this.messageSvc.getMessage(req.user.id);
+  async getMessage(@Request() req: any) {
+    let messages = await this.messageSvc.getMessage(req.user.id);
+    return messages;
   }
   @Get('/conversation')
-  getConversation(@Param('recieverId') id: string, @Request() req: any) {
-    this.conversationSvc.getConversation(id, req.user.id);
+  async getConversation(@Param('recieverId') id: string, @Request() req: any) {
+    let conversation = this.conversationSvc.getConversation(id, req.user.id);
+    return conversation;
   }
 }
