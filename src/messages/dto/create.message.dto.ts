@@ -25,9 +25,6 @@ export class PostMessage {
   @IsString()
   text: string;
 
-  @IsString()
-  image: string;
-
   @IsDate()
   timeStamp: Date;
 }

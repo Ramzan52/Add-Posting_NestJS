@@ -24,9 +24,6 @@ export class Message {
   text: string;
 
   @Prop({ required: true })
-  image: string;
-
-  @Prop({ required: true })
   timeStamp: Date;
 }
 

@@ -25,13 +25,13 @@ export class MessagesService {
       senderName: dto.recieverName,
       timeStamp: dto.timeStamp,
       text: dto.text,
-      image: dto.image,
     };
     let conversation = {
       senderId: dto.senderId,
       senderName: dto.senderName,
       recieverId: dto.recieverId,
       recieverName: dto.recieverName,
+
       message: {
         senderId: dto.senderId,
         senderName: dto.senderName,
@@ -39,7 +39,6 @@ export class MessagesService {
         recieverName: dto.recieverName,
         timeStamp: dto.timeStamp,
         text: dto.text,
-        image: dto.image,
       },
     };
     this.ConversationSvc.postConversation(conversation);
