@@ -1,11 +1,14 @@
 import { FireBaseLoginService } from './firebase-login.service';
 import {
+  BadRequestException,
   Body,
   Controller,
+  HttpStatus,
   Param,
   Post,
   Req,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
@@ -16,6 +19,7 @@ import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RegisterDto } from './dto/register.dto';
 import admin from 'firebase-admin';
+import { LoginDto } from './dto/login.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -39,13 +43,20 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
-    return this.authSvc.login(req.user);
+  async login(@Request() req, @Body() body: LoginDto) {
+    return this.authSvc.login(body);
   }
 
   @Post('/fb-login/:token')
   async fbLogin(@Param('token') token: string) {
     return this.fireBaseSvc.fbLogin(token);
+  }
+
+  @Post('refresh-token/:refresh')
+  async refreshToken(@Param('refresh') refresh: string) {
+    var response = this.authSvc.refreshToken(refresh);
+    if (response != null) return response;
+    else throw new BadRequestException();
   }
 
   @Post('register')

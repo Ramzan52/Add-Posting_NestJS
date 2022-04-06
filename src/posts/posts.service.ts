@@ -12,7 +12,7 @@ export class PostsService {
   ) {}
 
   async getPosts() {
-    return await this.postModel.find({ isDeleted: false }).exec();
+    return await this.postModel.find({ isDeleted: false }).skip(1).limit(1);
   }
 
   async createPost(dto: CreatePostDto, tokenData: any) {

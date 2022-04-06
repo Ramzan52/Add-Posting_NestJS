@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -61,6 +62,14 @@ export class PostsController {
       post,
       sas: this.sasSvc.getNewSASKey(),
     };
+  }
+
+  @Put('fav/:id/:like')
+  async likePost(@Param('id') id: string, @Param('like') like : boolean) {
+    const existingPost = await this.postsSvc.getPostById(id);
+    if (!existingPost || existingPost.isDeleted) {
+      throw new NotFoundException(`Post with id ${id} Not Found`);
+    }
   }
 
   @Get('/:id')
