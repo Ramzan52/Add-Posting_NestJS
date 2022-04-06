@@ -3,14 +3,14 @@ import { NotificationsService } from './notifications.service';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
 
-@ApiTags('notifications')
+// @ApiTags('notifications')
 @UseGuards(JwtAuthGuard)
 @Controller('notifications')
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  @Get()
-  async getNotifications() {
-    return await this.notificationsService.getNotifications();
-  }
+  // @Get()
+  // async getNotifications() {
+  //   return await this.notificationsService.getNotifications();
+  // }
 }
