@@ -40,19 +40,18 @@ export class FavoritePostsService {
     if (!favPost) {
       throw new NotFoundException(`No Favourite Post Found`);
     }
-    const post = await this.postModel.find().exec();
 
-    return this.postModel
-      .aggregate([
-        {
-          $lookup: {
-            from: 'favoritePostModel',
-            localField: 'postId',
-            foreignField: '_id',
-            as: 'orderdetails',
-          },
-        },
-      ])
-      .exec();
+    const pipeline = [
+      {
+        $lookup: {
+          from: 'favoriteposts',
+          localField: '_id',
+          foreignField: 'postId',
+          as: 'details'
+        }
+      }
+    ];
+
+    return this.postModel.aggregate(pipeline);
   }
 }

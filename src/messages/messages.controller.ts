@@ -23,11 +23,13 @@ export class MessagesController {
     private readonly messageSvc: MessagesService,
     private readonly conversationSvc: ConversationService,
   ) {}
+
   @Post()
   async postMessage(@Body() body: PostMessage) {
     let message = await this.messageSvc.postMessage(body);
     return message;
   }
+
   @Get()
   @ApiOkResponse({ status: 200, type: PostMessage })
   async getMessage(
@@ -46,6 +48,7 @@ export class MessagesController {
       throw new InternalServerErrorException();
     }
   }
+  
   @Get('/conversation')
   async getConversation(@Param('recieverId') id: string, @Request() req: any) {
     let conversation = this.conversationSvc.getConversation(id, req.user.id);

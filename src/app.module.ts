@@ -29,7 +29,7 @@ import { MessagesModule } from './messages/messages.module';
     UsersModule,
     DeviceTokenModule,
     MongooseModule.forRoot(
-      'mongodb://aquila360:R28xtu462zVBaf02@east-us-01-shard-00-00.19lgk.mongodb.net:27017,east-us-01-shard-00-01.19lgk.mongodb.net:27017,east-us-01-shard-00-02.19lgk.mongodb.net:27017/scrap-ready-dev?replicaSet=atlas-r03cto-shard-0&ssl=true&authSource=admin',
+      'mongodb://appsadmin:5bz8F5p7WPupf0TP@australia-east-01-shard-00-00.skjwl.mongodb.net:27017,australia-east-01-shard-00-01.skjwl.mongodb.net:27017,australia-east-01-shard-00-02.skjwl.mongodb.net:27017/scrap-ready-dev?ssl=true&replicaSet=atlas-p7olib-shard-0&authSource=admin&retryWrites=true&w=majority',
     ),
     NeconfigModule.register({
       readers: [{ name: 'env', file: path.resolve(process.cwd(), '.env') }],
