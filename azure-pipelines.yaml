@@ -24,6 +24,13 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
+          - script: del /f $(System.DefaultWorkingDirectory)\.env
+            displayName: delete .env file
+
+          - script: ren $(System.DefaultWorkingDirectory)\.env.dev .env
+            displayName: copy dev environment
+            condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+
           - task: Docker@2
             displayName: build api image
             inputs:

@@ -2,10 +2,8 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as admin from 'firebase-admin';
-import { ConfigReader } from 'neconfig';
 import { AppModule } from './app.module';
 import service from './auth/config/firebase-auth';
-import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   try {
@@ -18,8 +16,7 @@ async function bootstrap() {
     });
 
     app.useGlobalPipes(new ValidationPipe());
-    const config = app.get(ConfigReader);
-    const port = config.getIntOrThrow('PORT');
+    const port = process.env.PORT;
 
     configureSwagger(app);
 
