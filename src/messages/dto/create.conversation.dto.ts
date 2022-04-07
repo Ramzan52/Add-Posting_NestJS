@@ -1,4 +1,3 @@
-import { PostChat } from './../schema/post.schema';
 import {
   IsArray,
   IsDate,
