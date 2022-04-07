@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { FcmTOkenService } from './fcmNotification.service';
+import { SendMessage } from './dto/sendMessage.dto';
 
 @Injectable()
 export class MessagesService {
@@ -31,6 +32,7 @@ export class MessagesService {
       senderName: dto.senderName,
       recieverId: dto.recieverId,
       recieverName: dto.recieverName,
+      post: dto.post,
 
       message: {
         senderId: dto.senderId,
@@ -39,6 +41,7 @@ export class MessagesService {
         recieverName: dto.recieverName,
         timeStamp: dto.timeStamp,
         text: dto.text,
+        post: dto.post,
       },
     };
     this.ConversationSvc.postConversation(conversation);
@@ -61,6 +64,18 @@ export class MessagesService {
       messageFlip.save();
       this.fcmSvc.findDeviceToken(dto.recieverId, dto);
       return message.save();
+    }
+  }
+  async sendMessage(dto: SendMessage) {
+    let data = {
+      dto,
+      timeStamp: new Date(),
+    };
+    try {
+      const message = new this.messageModel(data);
+      return message;
+    } catch {
+      throw new NotFoundException();
     }
   }
   async getMessage(id: String, pageSize: number, pageNumber: number) {

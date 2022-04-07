@@ -1,3 +1,4 @@
+import { PostChat, PostChatSchema } from './schema/post.schema';
 import { Firebase_NotificationService } from './../firebase_notification/firebase_notification.service';
 import {
   DeviceToken,
@@ -29,6 +30,12 @@ import {
       {
         name: PostFirebaseNotification.name,
         schema: NotificationFirebaseSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: PostChat.name,
+        schema: PostChatSchema,
       },
     ]),
   ],

@@ -10,10 +10,9 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { Message } from '../schema/post.message.schema';
 import { ChatPost } from './post.dto';
 
-export class PostConversation {
+export class SendMessage {
   @IsString()
   senderId: string;
 
@@ -21,14 +20,5 @@ export class PostConversation {
   recieverId: string;
 
   @IsString()
-  senderName: string;
-
-  @IsString()
-  recieverName: string;
-
-  @IsObject()
-  message: Message;
-
-  @IsObject()
-  post: ChatPost;
+  text: string;
 }

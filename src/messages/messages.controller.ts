@@ -1,3 +1,4 @@
+import { SendMessage } from './dto/sendMessage.dto';
 import { ConversationService } from './conversation.service';
 import { MessagesService } from './messages.service';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
@@ -23,10 +24,23 @@ export class MessagesController {
     private readonly messageSvc: MessagesService,
     private readonly conversationSvc: ConversationService,
   ) {}
-  @Post()
+  @Post('create-chat')
   async postMessage(@Body() body: PostMessage) {
     let message = await this.messageSvc.postMessage(body);
-    return message;
+    if (message) {
+      return message;
+    } else {
+      throw new InternalServerErrorException();
+    }
+  }
+  @Post('send-message')
+  async sendMessage(@Body() body: SendMessage) {
+    let message = await this.messageSvc.sendMessage(body);
+    if (message) {
+      return message;
+    } else {
+      throw new InternalServerErrorException();
+    }
   }
   @Get()
   @ApiOkResponse({ status: 200, type: PostMessage })

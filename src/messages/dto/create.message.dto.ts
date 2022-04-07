@@ -1,13 +1,16 @@
+import { PostChat } from './../schema/post.schema';
 import {
   IsArray,
   IsDate,
   IsNotEmptyObject,
   IsNumber,
+  IsObject,
   IsString,
   Max,
   Min,
   ValidateNested,
 } from 'class-validator';
+import { ChatPost } from './post.dto';
 
 export class PostMessage {
   @IsString()
@@ -27,4 +30,7 @@ export class PostMessage {
 
   @IsString()
   timeStamp: Date;
+
+  @IsObject()
+  post: ChatPost;
 }
