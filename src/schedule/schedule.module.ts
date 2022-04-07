@@ -4,6 +4,7 @@ import { ScheduleService } from './schedule.service';
 import { ScheduleController } from './schedule.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Post, PostSchema } from 'src/posts/schemas/post.schema';
+import { User, UserSchema } from 'src/users/schemas/user.schema';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { Post, PostSchema } from 'src/posts/schemas/post.schema';
       { name: Schedule.name, schema: ScheduleSchema },
     ]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
 
   providers: [ScheduleService],

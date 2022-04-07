@@ -1,3 +1,4 @@
+import { PostRating } from './dto/create.rating.dto';
 import { ScheduleService } from './schedule.service';
 import {
   Body,
@@ -31,6 +32,14 @@ export class ScheduleController {
     let schedule = await this.scheduleSvc.PostSchedule(req.user.id, body);
     if (schedule) {
       return schedule;
+    }
+    throw new InternalServerErrorException();
+  }
+  @Post('/rating')
+  async postScheduleRating(@Body() body: PostRating) {
+    let rating = await this.scheduleSvc.postScheduleRating(body);
+    if (rating) {
+      return rating;
     }
     throw new InternalServerErrorException();
   }

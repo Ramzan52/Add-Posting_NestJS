@@ -1,3 +1,4 @@
+import { Schedule } from './../../schedule/schema/post.schedule.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -16,6 +17,18 @@ export class User {
 
   @Prop({ required: true })
   hash: string;
+
+  @Prop()
+  ratings: [
+    {
+      postId: string;
+      scheduleId: string;
+      rating: number;
+    },
+  ];
+
+  @Prop()
+  avgRating: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
