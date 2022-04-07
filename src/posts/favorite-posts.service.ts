@@ -20,38 +20,27 @@ export class FavoritePostsService {
       throw new NotFoundException(`Post with id ${postId} Not Found`);
     }
     if (like) {
-      let dto = {
-        userId,
-        postId,
-      };
-      const favoritePosts = await new this.favoritePostModel(dto);
-      return favoritePosts.save();
+      const favoritePosts = await this.favoritePostModel.create({
+        userId: userId,
+        postId: new mongo.ObjectId(postId),
+      });
+      return favoritePosts;
     } else {
       await this.favoritePostModel.deleteOne({
         userId: userId,
-        postId: postId,
+        postId: new mongo.ObjectId(postId),
       });
     }
   }
   async myFavPost(userId: string) {
     const favPost = await this.favoritePostModel
       .find({ userId: userId })
+      .populate('postId')
       .exec();
     if (!favPost) {
       throw new NotFoundException(`No Favourite Post Found`);
     }
 
-    const pipeline = [
-      {
-        $lookup: {
-          from: 'favoriteposts',
-          localField: '_id',
-          foreignField: 'postId',
-          as: 'details'
-        }
-      }
-    ];
-
-    return this.postModel.aggregate(pipeline);
+    return favPost;
   }
 }
