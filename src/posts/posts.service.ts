@@ -12,10 +12,19 @@ export class PostsService {
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
   ) {}
 
-  async getPosts(search: string) {
+  async getPosts(search: string, pageSize: number, pageNumber: number) {
     if (search != null) {
       const regex = new RegExp(this.escapeRegex(search), 'gi');
-      return await this.postModel.find({isDeleted: false, title: {$regex: regex}}).exec();
+      var count = await this.postModel.find({isDeleted: false}).countDocuments();
+      console.log("count", count);
+      var query = this.postModel.find({isDeleted: false, title: {$regex: regex}});
+      var count = await query.countDocuments();
+      var response = await this.postModel.find({isDeleted: false, title: {$regex: regex}}).skip((pageNumber - 1) * pageSize)
+        .limit(pageSize);
+      return {
+        count : count,
+        result: response
+      }
     }
     else 
       return await this.postModel.find({isDeleted: false}).exec();

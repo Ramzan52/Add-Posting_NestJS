@@ -41,9 +41,9 @@ export class PostsController {
   }
 
   @Get()
-  async getPosts(@Query('search') search?: string) {
+  async getPosts(@Query("pageSize") pageSize: number, @Query("pageNumber") pageNumber: number, @Query('search') search?: string) {
     console.log("search", search);
-    const posts = await this.postsSvc.getPosts(search);
+    const posts = await this.postsSvc.getPosts(search, pageSize, pageNumber);
     return {
       list: posts,
       sas: this.sasSvc.getNewSASKey(),
@@ -78,7 +78,7 @@ export class PostsController {
     let favPost = await this.favSvc.likePost(postId, like, req.user.id);
     return favPost;
   }
-  
+
   @Get('my-favourite/post')
   async mypost(@Req() req: any) {
     console.log(req.user);
