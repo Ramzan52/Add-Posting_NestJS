@@ -22,13 +22,14 @@ export class FireBaseLoginService {
       const existingUser = await this.usersSvc.findOne(email);
       if (existingUser) {
         const payload = {
-          sub: user.user_id,
-          name: user.name,
-          username: user.email,
+          sub: existingUser._id,
+          name: existingUser.name,
+          username: existingUser.username,
         };
 
         return {
-          access_token: this.jwtSvc.sign(payload),
+          access_token: this.jwtSvc.sign(payload, {expiresIn: '30m'}),
+          refresh_token: this.jwtSvc.sign(payload, {expiresIn: '24h'}),
         };
       } else {
         const payload = {
@@ -50,7 +51,8 @@ export class FireBaseLoginService {
         });
 
         return {
-          access_token: this.jwtSvc.sign(payload),
+          access_token: this.jwtSvc.sign(payload, {expiresIn: '30m'}),
+          refresh_token: this.jwtSvc.sign(payload, {expiresIn: '24h'}),
         };
       }
     } catch (error) {

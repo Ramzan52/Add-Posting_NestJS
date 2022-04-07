@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { genSalt, hashSync } from 'bcrypt';
 import { Model } from 'mongoose';
+import { use } from 'passport';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { User, UserDocument } from './schemas/user.schema';
 

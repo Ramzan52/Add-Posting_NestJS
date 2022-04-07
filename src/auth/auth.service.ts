@@ -4,6 +4,7 @@ import { hashSync } from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 import { Strategy, ExtractJwt } from 'passport-firebase-jwt';
 import { auth } from 'firebase-admin';
+import { jwtConstants } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -14,16 +15,23 @@ export class AuthService {
   ) {}
 
   async login(user: any) {
-    const payload = {
-      sub: user.id,
-      name: user.name,
-      username: user.username,
-    };
+    const existingUser = await this.usersSvc.findOne(user.username);
+    if (existingUser) {
+      const payload = {
+        sub: existingUser.id,
+        name: existingUser.name,
+        username: existingUser.username,
+      };
 
-    return {
-      access_token: this.jwtSvc.sign(payload),
-      refresh_token: this.jwtSvc.sign(payload, { expiresIn: 86400}),
-    };
+      console.log("payload", payload);
+      
+      return {
+        access_token: this.jwtSvc.sign(payload, {expiresIn: '30m'}),
+        refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h'}),
+      };
+    } else {
+      return null;
+    }
   }
 
   async refreshToken(token: string) {
