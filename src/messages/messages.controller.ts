@@ -6,14 +6,16 @@ import {
   Body,
   Controller,
   Get,
+  InternalServerErrorException,
   Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { PostMessage } from './dto/create.message.dto';
 
-@ApiTags('message')
+@ApiTags('messages')
 @UseGuards(JwtAuthGuard)
 @Controller('messages')
 export class MessagesController {
@@ -28,9 +30,21 @@ export class MessagesController {
   }
   @Get()
   @ApiOkResponse({ status: 200, type: PostMessage })
-  async getMessage(@Request() req: any) {
-    let messages = await this.messageSvc.getMessage(req.user.id);
-    return messages;
+  async getMessage(
+    @Query('pageSize') pageSize: number,
+    @Query('pageNumber') pageNumber: number,
+    @Request() req: any,
+  ) {
+    let messages = await this.messageSvc.getMessage(
+      req.user.id,
+      pageSize,
+      pageNumber,
+    );
+    if (messages) {
+      return messages;
+    } else {
+      throw new InternalServerErrorException();
+    }
   }
   @Get('/conversation')
   async getConversation(@Param('recieverId') id: string, @Request() req: any) {

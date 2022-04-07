@@ -63,11 +63,20 @@ export class MessagesService {
       return message.save();
     }
   }
-  async getMessage(id: String) {
-    let message = this.messageModel.find({ senderId: id });
-    if (!message) {
+  async getMessage(id: String, pageSize: number, pageNumber: number) {
+    console.log(id);
+    var query = this.messageModel.find({ senderId: id });
+    var count = await query.countDocuments();
+    if (count === 0) {
       throw new NotFoundException('no message found');
     }
-    return message;
+    var response = await this.messageModel
+      .find({ senderId: id })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+    return {
+      count: count,
+      result: response,
+    };
   }
 }
