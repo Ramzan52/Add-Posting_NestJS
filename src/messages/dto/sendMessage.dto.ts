@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { ChatPost } from './post.dto';
 
-export class PostMessage {
+export class SendMessage {
   @IsString()
   senderId: string;
 
@@ -19,17 +19,5 @@ export class PostMessage {
   recieverId: string;
 
   @IsString()
-  recieverName: string;
-
-  @IsString()
-  senderName: string;
-
-  @IsString()
   text: string;
-
-  @IsString()
-  timeStamp: Date;
-
-  @IsObject()
-  post: ChatPost;
 }
