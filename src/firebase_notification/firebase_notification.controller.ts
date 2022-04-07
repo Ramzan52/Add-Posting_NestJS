@@ -8,6 +8,8 @@ import {
   Get,
   Param,
   Req,
+  NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
@@ -19,7 +21,19 @@ import { PostNotification } from './dto/post.notification';
 export class FirebaseNotificationController {
   constructor(private readonly notificationSvc: Firebase_NotificationService) {}
   @Get()
-  getNotifications(@Req() req: any) {
-    this.notificationSvc.getNotifications(req.user.id);
+  async getNotifications(
+    @Query('pageSize') pageSize: number,
+    @Query('pageNumber') pageNumber: number,
+    @Req() req: any,
+  ) {
+    let notification = await this.notificationSvc.getNotifications(
+      req.user.id,
+      pageSize,
+      pageNumber,
+    );
+    if (notification) {
+      return notification;
+    }
+    throw new NotFoundException('no notification found');
   }
 }

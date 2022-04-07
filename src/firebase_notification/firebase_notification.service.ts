@@ -21,13 +21,21 @@ export class Firebase_NotificationService {
     const notification = await new this.notificationModel(dto);
     return notification.save();
   }
-  async getNotifications(
-    userId: string,
-  ): Promise<Array<FirebaseNotificationDocument>> {
+  async getNotifications(userId: string, pageSize: number, pageNumber: number) {
     let notifications = await this.notificationModel.find({ userId }).exec();
     if (!notifications) {
       throw new NotFoundException('no notification found');
     }
-    return notifications;
+    var count = await this.notificationModel.find({ userId }).countDocuments();
+    var query = this.notificationModel.find({ userId });
+    var count = await query.countDocuments();
+    var response = await this.notificationModel
+      .find({ userId })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+    return {
+      count: count,
+      result: response,
+    };
   }
 }
