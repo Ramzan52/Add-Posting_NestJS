@@ -24,10 +24,10 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
-          - script: rm $(System.DefaultWorkingDirectory)\.env
+          - script: rm $(System.DefaultWorkingDirectory)/.env
             displayName: delete .env file
 
-          - script: mv $(System.DefaultWorkingDirectory)\.env.dev .env
+          - script: mv $(System.DefaultWorkingDirectory)/.env.dev .env
             displayName: copy dev environment
             condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
 
