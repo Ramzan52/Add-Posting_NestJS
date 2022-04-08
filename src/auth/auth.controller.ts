@@ -1,27 +1,24 @@
-import { FireBaseLoginService } from './firebase-login.service';
 import {
   BadRequestException,
   Body,
   Controller,
-  HttpStatus,
   Param,
   Post,
   Req,
   Request,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { ProfileService } from 'src/profile/profile.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtAuthGuard, LocalAuthGuard } from './auth-guards';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { RegisterDto } from './dto/register.dto';
-import admin from 'firebase-admin';
 import { LoginDto } from './dto/login.dto';
-import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
+import { RegisterDto } from './dto/register.dto';
 import { VerifyDto } from './dto/verfiy.dto';
+import { FireBaseLoginService } from './firebase-login.service';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -31,7 +28,7 @@ export class AuthController {
     private readonly profileSvc: ProfileService,
     private readonly userSvc: UsersService,
     private readonly fireBaseSvc: FireBaseLoginService,
-    private readonly busSvc: AzureServiceBusService
+    private readonly busSvc: AzureServiceBusService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -57,23 +54,25 @@ export class AuthController {
 
   @Post('refresh-token/:refresh')
   async refreshToken(@Param('refresh') refresh: string) {
-    var response = this.authSvc.refreshToken(refresh);
-    if (response != null) return response;
-    else throw new BadRequestException();
+    const response = this.authSvc.refreshToken(refresh);
+    if (response != null) {
+      return response;
+    }
+
+    throw new BadRequestException();
   }
 
   @Post('register')
   async register(@Body() body: RegisterDto) {
-
     const code = Math.floor(100000 + Math.random() * 900000);
     const emailBody = {
-      "recipient":[`${body.username}`],
-      "subject":"Verification Code for Scrap Ready Application",
-      "from":"scrapreadyapp@gmail.com",
-      "body":`Your code is ${code}`
-      };
+      recipient: [`${body.username}`],
+      subject: 'Verification Code for Scrap Ready Application',
+      from: 'scrapreadyapp@gmail.com',
+      body: `Your code is ${code}`,
+    };
 
-      console.log("email body", emailBody);
+    console.log('email body', emailBody);
 
     this.busSvc.sendEmail(emailBody);
     await this.userSvc.create(body, code);
@@ -81,7 +80,7 @@ export class AuthController {
   }
 
   @Post('verify-user')
-  async verfiyUser(@Body() body: VerifyDto) {
+  async verifyUser(@Body() body: VerifyDto) {
     const isVerify = await this.userSvc.verify(body);
     if (isVerify) {
       const user = await this.userSvc.findOne(body.username);
@@ -89,6 +88,11 @@ export class AuthController {
       regDto.name = user.name;
       regDto.username = user.username;
       return await this.profileSvc.create(regDto);
-    } 
+    }
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body('email') email: string) {
+    this.userSvc.resetPassword(email);
   }
 }

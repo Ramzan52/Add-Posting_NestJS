@@ -7,7 +7,10 @@ import service from './auth/config/firebase-auth';
 
 async function bootstrap() {
   try {
-    console.log(process.env);
+    console.log('NODE_ENV', process.env.NODE_ENV);
+    console.log('HOST', process.env.HOST);
+    console.log('PORT', process.env.PORT);
+    console.log('MONGO_CONNECTION_STRING', process.env.MONGO_CONNECTION_STRING);
 
     const app = await NestFactory.create(AppModule);
     admin.initializeApp({
