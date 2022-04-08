@@ -1,0 +1,1 @@
+git checkout dev && git pull && git checkout inserito-dev && git merge dev && git push inserito HEAD:dev && git checkout dev
