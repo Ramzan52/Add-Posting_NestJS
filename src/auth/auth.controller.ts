@@ -80,7 +80,7 @@ export class AuthController {
   }
 
   @Post('verify-user')
-  async verfiyUser(@Body() body: VerifyDto) {
+  async verifyUser(@Body() body: VerifyDto) {
     const isVerify = await this.userSvc.verify(body);
     if (isVerify) {
       const user = await this.userSvc.findOne(body.username);
