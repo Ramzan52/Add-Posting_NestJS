@@ -20,6 +20,8 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { RegisterDto } from './dto/register.dto';
 import admin from 'firebase-admin';
 import { LoginDto } from './dto/login.dto';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
+import { VerifyDto } from './dto/verfiy.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -29,6 +31,7 @@ export class AuthController {
     private readonly profileSvc: ProfileService,
     private readonly userSvc: UsersService,
     private readonly fireBaseSvc: FireBaseLoginService,
+    private readonly busSvc: AzureServiceBusService
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -61,7 +64,31 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body: RegisterDto) {
-    await this.userSvc.create(body);
-    return await this.profileSvc.create(body);
+
+    const code = Math.floor(100000 + Math.random() * 900000);
+    const emailBody = {
+      "recipient":[`${body.username}`],
+      "subject":"Verification Code for Scrap Ready Application",
+      "from":"scrapreadyapp@gmail.com",
+      "body":`Your code is ${code}`
+      };
+
+      console.log("email body", emailBody);
+
+    this.busSvc.sendEmail(emailBody);
+    await this.userSvc.create(body, code);
+    // return await this.profileSvc.create(body);
+  }
+
+  @Post('verify-user')
+  async verfiyUser(@Body() body: VerifyDto) {
+    const isVerify = await this.userSvc.verify(body);
+    if (isVerify) {
+      const user = await this.userSvc.findOne(body.username);
+      const regDto: RegisterDto = new RegisterDto();
+      regDto.name = user.name;
+      regDto.username = user.username;
+      return await this.profileSvc.create(regDto);
+    } 
   }
 }

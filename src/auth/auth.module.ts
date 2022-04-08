@@ -10,6 +10,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { FireBaseLoginService } from './firebase-login.service';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { FireBaseLoginService } from './firebase-login.service';
     JwtStrategy,
     LocalStrategy,
     FireBaseLoginService,
+    AzureServiceBusService
   ],
   controllers: [AuthController],
 })

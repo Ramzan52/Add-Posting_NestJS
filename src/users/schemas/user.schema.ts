@@ -29,6 +29,12 @@ export class User {
 
   @Prop()
   avgRating: number;
+
+  @Prop()
+  registerCode: number;
+
+  @Prop()
+  isUserVerified: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

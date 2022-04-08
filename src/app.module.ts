@@ -15,6 +15,8 @@ import { ProfileModule } from './profile/profile.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { TestModule } from './test/test.module';
 import { UsersModule } from './users/users.module';
+import { AzureServiceBusService } from './azure-servicebus/azure-servicebus.service';
+import { AzureServiceBusModule } from './azure-servicebus/azure-servicebus.module';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { UsersModule } from './users/users.module';
     AttachmentsModule,
     AuthModule,
     AzureSASServiceModule,
+    AzureServiceBusModule,
     CategoriesModule,
     ConfigModule.forRoot(),
     DeviceTokenModule,

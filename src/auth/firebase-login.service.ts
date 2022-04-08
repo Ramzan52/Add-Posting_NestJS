@@ -42,7 +42,7 @@ export class FireBaseLoginService {
           username: user.email,
           name: user.name,
           password: '',
-        });
+        }, 0);
 
         await this.profileSvc.create({
           username: user.email,
