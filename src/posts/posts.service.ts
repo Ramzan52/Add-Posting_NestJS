@@ -14,7 +14,6 @@ export class PostsService {
 
   async getPosts(search: string, pageSize: number, pageNumber: number) {
     if (search != null) {
-
       const regex = new RegExp(this.escapeRegex(search), 'gi');
 
       var count = await this.postModel
@@ -25,7 +24,7 @@ export class PostsService {
         .find({ isDeleted: false, title: { $regex: regex } })
         .skip((pageNumber - 1) * pageSize)
         .limit(pageSize);
-        
+
       return {
         count: count,
         result: response,
@@ -38,7 +37,9 @@ export class PostsService {
       var response = await this.postModel
         .find({ isDeleted: false })
         .skip((pageNumber - 1) * pageSize)
-        .limit(pageSize);
+        .limit(pageSize)
+        .sort([['createdOn', -1]])
+        .exec();
 
       return {
         count: count,

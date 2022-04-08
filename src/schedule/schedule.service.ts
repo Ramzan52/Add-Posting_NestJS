@@ -18,10 +18,13 @@ export class ScheduleService {
   ) {}
 
   async getSchedule(id: string): Promise<Array<PostSchedule>> {
-    let Schedule = await this.scheduleModel.find({
-      buyerId: id,
-      vendorId: id,
-    });
+    let Schedule = await this.scheduleModel
+      .find({
+        buyerId: id,
+        vendorId: id,
+      })
+      .sort([['date', -1]])
+      .exec();
     if (!Schedule) {
       throw new NotFoundException('No schendule found');
     }
