@@ -1,3 +1,4 @@
+import { VerifyResetPassword } from './../auth/dto/verify.resetPassword.dto';
 import {
   Injectable,
   UnauthorizedException,
@@ -11,11 +12,13 @@ import { RegisterDto } from 'src/auth/dto/register.dto';
 import { ResetPassword } from 'src/auth/dto/reset.password';
 import { VerifyDto } from 'src/auth/dto/verfiy.dto';
 import { User, UserDocument } from './schemas/user.schema';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly busSvc: AzureServiceBusService,
   ) {}
 
   async changePassword(
@@ -77,10 +80,35 @@ export class UsersService {
       return true;
     }
   }
-  async resetPassword(dto: ResetPassword) {
-    const user = await this.userModel.findOne({ username: dto.email });
+  async resetPassword(username: string) {
+    const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+    user.IsResetVerfied = false;
+    const code = Math.floor(100000 + Math.random() * 900000);
+    const emailBody = {
+      recipient: [`${username}`],
+      subject: 'Verification Code to reset password',
+      from: 'scrapreadyapp@gmail.com',
+      body: `Your code is ${code}`,
+    };
+
+    this.busSvc.sendEmail(emailBody);
+  }
+  async verifyResetPassword(dto: VerifyResetPassword) {
+    const user = await this.userModel.findOne({ username: dto.username });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.isUserVerified) {
+      throw new BadRequestException('User already verified');
+    }
+    if (user.registerCode == dto.code) {
+      const { salt, hash } = user;
+      user.hash = hashSync(dto.password, salt);
+      user.isUserVerified = true;
+      await this.userModel.replaceOne({ _id: user._id }, user);
     }
   }
 }

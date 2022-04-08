@@ -1,3 +1,4 @@
+import { VerifyResetPassword } from './dto/verify.resetPassword.dto';
 import { FireBaseLoginService } from './firebase-login.service';
 import {
   BadRequestException,
@@ -88,9 +89,14 @@ export class AuthController {
       return await this.profileSvc.create(regDto);
     }
   }
-
+  @UseGuards(JwtAuthGuard)
   @Post('reset-password')
-  async resetPassword(@Body() body: ResetPassword) {
-    const isVerify = await this.userSvc.resetPassword(body);
+  async resetPassword(@Req() req: any) {
+    return await this.userSvc.resetPassword(req.user.username);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post('verify/reset-password')
+  async VerifyResetPassword(@Body() body: VerifyResetPassword) {
+    return await this.userSvc.verifyResetPassword(body);
   }
 }

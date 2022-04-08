@@ -33,7 +33,9 @@ export class User {
   @Prop()
   resetPasswordCode: string;
 
-  IsResetVerfied: { type: boolean; default: 'false' };
+  @Prop()
+  IsResetVerfied: boolean = false;
+
   registerCode: number;
 
   @Prop()
