@@ -32,7 +32,7 @@ stages:
               command: 'build'
               Dockerfile: $(dockerfilePath)
               tags: '$(tag)'
-              arguments: '-e NODE_ENV=development'
+              arguments: '--env NODE_ENV=development'
 
           - task: Docker@2
             displayName: push api image to container registry
