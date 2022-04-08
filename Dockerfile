@@ -1,22 +1,21 @@
+# Stage 1 - Build
+FROM node:16-bullseye-slim as builder
+WORKDIR /usr/src/app
 
-FROM node:16.14.2-bullseye
+# Install all deps including devDependencies
+COPY . .
+RUN yarn install --frozen-lockfile && yarn build
 
-# Create app directory
-WORKDIR /var/www/backend
+# Stage 2 - Package
+FROM node:16-bullseye-slim as app
+WORKDIR /usr/src/app
 
-COPY package.json yarn.lock ./ 
-RUN yarn --pure-lockfile
+# Install deps for production only
+ENV NODE_ENV=production
+COPY package.json yarn.lock ./
+RUN yarn install --production
 
-RUN yarn install
-COPY .eslintrc.js nest-cli.json tsconfig.json tsconfig.build.json ./
+# Copy builded source from the upper builder stage
+COPY --from=builder /usr/src/app/dist .
 
-# Copy env
-COPY .env /var/www/backend/.env
-
-COPY . . 
-
-RUN yarn build
-
-EXPOSE 5100
-
-CMD [ "node", "dist/main"]
+CMD ["node", "dist/main.js"]
