@@ -32,7 +32,9 @@ export class Firebase_NotificationService {
     var response = await this.notificationModel
       .find({ userId })
       .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize);
+      .limit(pageSize)
+      .sort([['sentOn', -1]])
+      .exec();
     return {
       count: count,
       result: response,

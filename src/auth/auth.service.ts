@@ -1,10 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { hashSync } from 'bcrypt';
-import { UsersService } from 'src/users/users.service';
-import { Strategy, ExtractJwt } from 'passport-firebase-jwt';
+import { hashSync } from 'bcryptjs';
 import { auth } from 'firebase-admin';
-import { jwtConstants } from './constants';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -23,11 +21,11 @@ export class AuthService {
         username: existingUser.username,
       };
 
-      console.log("payload", payload);
-      
+      console.log('payload', payload);
+
       return {
-        access_token: this.jwtSvc.sign(payload, {expiresIn: '30m'}),
-        refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h'}),
+        access_token: this.jwtSvc.sign(payload, { expiresIn: '30m' }),
+        refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
       };
     } else {
       return null;
@@ -47,11 +45,11 @@ export class AuthService {
         username: user.username,
       };
       return {
-        access_token: this.jwtSvc.sign(payload, { expiresIn: '30m'}),
-        refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h'}),
+        access_token: this.jwtSvc.sign(payload, { expiresIn: '30m' }),
+        refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
       };
     } catch (e) {
-      throw new BadRequestException("Invalid or expired refresh token");
+      throw new BadRequestException('Invalid or expired refresh token');
     }
   }
 

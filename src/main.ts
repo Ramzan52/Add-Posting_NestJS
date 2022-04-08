@@ -7,12 +7,11 @@ import service from './auth/config/firebase-auth';
 
 async function bootstrap() {
   try {
+    console.log(process.env);
+
     const app = await NestFactory.create(AppModule);
     admin.initializeApp({
       credential: admin.credential.cert(service),
-    });
-    app.enableCors({
-      origin: 'http://localhost:5100',
     });
 
     app.useGlobalPipes(new ValidationPipe());
