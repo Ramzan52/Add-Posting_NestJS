@@ -41,8 +41,11 @@ export class PostsController {
   }
 
   @Get()
-  async getPosts(@Query("pageSize") pageSize: number, @Query("pageNumber") pageNumber: number, @Query('search') search?: string) {
+  async getPosts(@Query("pageSize") pageSize?: number, @Query("pageNumber") pageNumber?: number, @Query('search') search?: string) {
     console.log("search", search);
+    if (pageSize == null || pageSize < 1) pageSize = 10;
+    if (pageNumber == null || pageNumber < 1) pageNumber = 1;
+    
     const posts = await this.postsSvc.getPosts(search, pageSize, pageNumber);
     return {
       list: posts,

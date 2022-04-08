@@ -46,10 +46,13 @@ export class MessagesController {
   @Get()
   @ApiOkResponse({ status: 200, type: PostMessage })
   async getMessage(
-    @Query('pageSize') pageSize: number,
-    @Query('pageNumber') pageNumber: number,
     @Request() req: any,
+    @Query('pageSize') pageSize?: number,
+    @Query('pageNumber') pageNumber?: number,
   ) {
+    if (pageSize == null || pageSize < 1) pageSize = 10;
+    if (pageNumber == null || pageNumber < 1) pageNumber = 1;
+    
     let messages = await this.messageSvc.getMessage(
       req.user.id,
       pageSize,

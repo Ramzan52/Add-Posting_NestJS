@@ -88,7 +88,8 @@ export class MessagesService {
     var response = await this.messageModel
       .find({ senderId: id })
       .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize);
+      .limit(pageSize)
+      .sort([['timeStamp', -1]]).exec();
     return {
       count: count,
       result: response,
