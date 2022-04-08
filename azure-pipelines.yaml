@@ -48,10 +48,6 @@ stages:
               command: 'push'
               tags: '$(tag)'
 
-          - upload: $(Build.SourcesDirectory)/dist
-            displayName: publish dist
-            artifact: dist
-
           - upload: manifests
             displayName: publish k8s manifests
             artifact: manifests
