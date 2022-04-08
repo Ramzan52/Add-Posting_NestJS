@@ -1,24 +1,28 @@
+import { FireBaseLoginService } from './firebase-login.service';
 import {
   BadRequestException,
   Body,
   Controller,
+  HttpStatus,
   Param,
   Post,
   Req,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from 'src/profile/profile.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtAuthGuard, LocalAuthGuard } from './auth-guards';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import admin from 'firebase-admin';
+import { LoginDto } from './dto/login.dto';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { VerifyDto } from './dto/verfiy.dto';
-import { FireBaseLoginService } from './firebase-login.service';
+import { ResetPassword } from './dto/reset.password';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -54,12 +58,9 @@ export class AuthController {
 
   @Post('refresh-token/:refresh')
   async refreshToken(@Param('refresh') refresh: string) {
-    const response = this.authSvc.refreshToken(refresh);
-    if (response != null) {
-      return response;
-    }
-
-    throw new BadRequestException();
+    var response = this.authSvc.refreshToken(refresh);
+    if (response != null) return response;
+    else throw new BadRequestException();
   }
 
   @Post('register')
@@ -80,7 +81,7 @@ export class AuthController {
   }
 
   @Post('verify-user')
-  async verifyUser(@Body() body: VerifyDto) {
+  async verfiyUser(@Body() body: VerifyDto) {
     const isVerify = await this.userSvc.verify(body);
     if (isVerify) {
       const user = await this.userSvc.findOne(body.username);
@@ -92,7 +93,7 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  async resetPassword(@Body('email') email: string) {
-    this.userSvc.resetPassword(email);
+  async resetPassword(@Body() body: ResetPassword) {
+    const isVerify = await this.userSvc.resetPassword(body);
   }
 }

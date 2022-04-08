@@ -77,5 +77,10 @@ export class UsersService {
       return true;
     }
   }
-  async resetPassword(dto: ResetPassword) {}
+  async resetPassword(dto: ResetPassword) {
+    const user = await this.userModel.findOne({ username: dto.email });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  }
 }
