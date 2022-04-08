@@ -34,6 +34,10 @@ export class User {
   resetPasswordCode: string;
 
   IsResetVerfied: { type: boolean; default: 'false' };
+  registerCode: number;
+
+  @Prop()
+  isUserVerified: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
