@@ -64,4 +64,8 @@ export class AuthController {
     await this.userSvc.create(body);
     return await this.profileSvc.create(body);
   }
+  @Post('reset-password')
+  async resetPassword(@Body('email') email: string) {
+    this.userSvc.resetPassword(email);
+  }
 }

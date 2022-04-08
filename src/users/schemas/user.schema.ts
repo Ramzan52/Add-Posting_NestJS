@@ -29,6 +29,11 @@ export class User {
 
   @Prop()
   avgRating: number;
+
+  @Prop()
+  resetPasswordCode: string;
+
+  IsResetVerfied: { type: boolean; default: 'false' };
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
