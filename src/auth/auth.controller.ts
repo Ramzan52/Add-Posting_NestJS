@@ -72,11 +72,8 @@ export class AuthController {
       body: `Your code is ${code}`,
     };
 
-    console.log('email body', emailBody);
-
     this.busSvc.sendEmail(emailBody);
     await this.userSvc.create(body, code);
-    // return await this.profileSvc.create(body);
   }
 
   @Post('verify-user')
