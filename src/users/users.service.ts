@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { genSalt, hashSync } from 'bcryptjs';
 import { Model } from 'mongoose';
 import { RegisterDto } from 'src/auth/dto/register.dto';
+import { ResetPassword } from 'src/auth/dto/reset.password';
 import { VerifyDto } from 'src/auth/dto/verfiy.dto';
 import { User, UserDocument } from './schemas/user.schema';
 
@@ -50,7 +51,7 @@ export class UsersService {
       salt,
       hash,
       registerCode: code,
-      isUserVerified: false
+      isUserVerified: false,
     });
 
     return {
@@ -65,7 +66,7 @@ export class UsersService {
 
   async verify(dto: VerifyDto) {
     var username = dto.username;
-    const user = await this.userModel.findOne({username});
+    const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -76,4 +77,5 @@ export class UsersService {
       return true;
     }
   }
+  async resetPassword(dto: ResetPassword) {}
 }

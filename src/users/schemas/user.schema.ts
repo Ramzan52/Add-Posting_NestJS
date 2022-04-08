@@ -31,6 +31,9 @@ export class User {
   avgRating: number;
 
   @Prop()
+  resetPasswordCode: string;
+
+  IsResetVerfied: { type: boolean; default: 'false' };
   registerCode: number;
 
   @Prop()
