@@ -25,7 +25,7 @@ spec:
           image: inserito.azurecr.io/scrap-ready-api-dev:latest
           resources:
             limits:
-              memory: '256Mi'
+              memory: '128Mi'
               cpu: '64m'
           env:
             - name: NODE_ENV
