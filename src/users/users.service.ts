@@ -90,14 +90,14 @@ export class UsersService {
     const emailBody = {
       recipient: [`${username}`],
       subject: 'Verification Code to reset password',
-      from: 'scrapreadyapp@gmail.com',
+      from: 'scrap.ready@aquila360.com',
       body: `Your code is ${code}`,
     };
 
     this.busSvc.sendEmail(emailBody);
   }
-  async verifyResetPassword(dto: VerifyResetPassword) {
-    const user = await this.userModel.findOne({ username: dto.username });
+  async verifyResetPassword(dto: VerifyResetPassword, username: string) {
+    const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new NotFoundException('User not found');
     }

@@ -96,7 +96,10 @@ export class AuthController {
   }
   @UseGuards(JwtAuthGuard)
   @Post('verify/reset-password')
-  async VerifyResetPassword(@Body() body: VerifyResetPassword) {
-    return await this.userSvc.verifyResetPassword(body);
+  async VerifyResetPassword(
+    @Body() body: VerifyResetPassword,
+    @Req() req: any,
+  ) {
+    return await this.userSvc.verifyResetPassword(body, req.user.username);
   }
 }

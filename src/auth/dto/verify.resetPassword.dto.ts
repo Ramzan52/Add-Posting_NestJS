@@ -1,8 +1,8 @@
 import { IsNumber, IsString } from 'class-validator';
 
 export class VerifyResetPassword {
-  @IsString()
-  username: string;
+  // @IsString()
+  // username: string;
 
   @IsNumber()
   code: number;
