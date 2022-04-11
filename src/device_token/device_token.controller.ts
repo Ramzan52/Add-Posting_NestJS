@@ -18,6 +18,6 @@ export class DeviceTokenController {
   constructor(private deviceSvc: DeviceTokenService) {}
   @Post()
   postDeviceToken(@Req() req: any, @Body() body: CreateDeviceTokenDto) {
-    this.deviceSvc.postDeviceToken(req.user.id, body);
+    return this.deviceSvc.postDeviceToken(req.user.id, body);
   }
 }
