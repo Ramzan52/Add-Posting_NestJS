@@ -1,6 +1,10 @@
 import { CreateDeviceTokenDto } from './dto/post.device.token';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { DeviceToken, DeviceTokenDocument } from './schema/device_token.schema';
 import { Model } from 'mongoose';
 import admin from 'firebase-admin';
@@ -16,16 +20,24 @@ export class DeviceTokenService {
       userId: username,
       token: dto.token,
     };
-    const existingUser = await this.deviceTokenModal.findOneAndReplace(
-      { userId: username },
-      data,
-      { new: true },
-    );
-    if (!existingUser) {
-      const DeviceToken = await new this.deviceTokenModal(data);
-      DeviceToken.save();
-      return DeviceToken;
+    try {
+      const existingUser = await this.deviceTokenModal.findOneAndReplace(
+        { userId: username },
+        data,
+        { new: true },
+      );
+      if (!existingUser) {
+        try {
+          const DeviceToken = await new this.deviceTokenModal(data);
+          DeviceToken.save();
+          return DeviceToken;
+        } catch {
+          throw new BadRequestException();
+        }
+      }
+      return existingUser;
+    } catch {
+      throw new BadRequestException();
     }
-    return existingUser;
   }
 }
