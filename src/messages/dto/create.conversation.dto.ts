@@ -28,6 +28,6 @@ export class PostConversation {
   @IsObject()
   message: Message;
 
-  @IsObject()
-  post: ChatPost;
+  // @IsObject()
+  // post: ChatPost;
 }

@@ -13,11 +13,8 @@ import { ChatPost } from './post.dto';
 
 export class PostFirstMessage {
   @IsString()
-  senderId: string;
-
-  @IsString()
   recieverId: string;
 
-  @IsObject()
-  post: ChatPost;
+  @IsString()
+  postId: string;
 }
