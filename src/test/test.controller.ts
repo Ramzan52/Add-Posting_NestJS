@@ -1,10 +1,20 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/auth-guards';
+
 @ApiTags('test')
 @Controller('test')
 export class TestController {
   @Get()
-  get() {
+  test() {
+    return {
+      message: 'NestJS rocks!',
+    };
+  }
+
+  @Get('secure')
+  @UseGuards(JwtAuthGuard)
+  secureTest() {
     return {
       message: 'NestJS rocks!',
     };
