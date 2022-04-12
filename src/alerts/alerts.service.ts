@@ -9,8 +9,20 @@ export class AlertsService {
   constructor(
     @InjectModel(Alert.name) private readonly alertModel: Model<AlertDocument>,
   ) {}
-  async saveAlerts(dto: CreateAlertDto) {
-    const alert = new this.alertModel(dto);
+  async saveAlerts(dto: CreateAlertDto, tokenData: any) {
+    let data = {
+      location: dto.location,
+      categortId: dto.categoryID,
+      radius: dto.radius,
+      createdByUsername: tokenData.user.username,
+      createdBy: tokenData.user.name,
+      createdOn: new Date(new Date().toUTCString()),
+      modifiedByUsername: tokenData.user.username,
+      modifiedBy: tokenData.user.name,
+      modifiedOn: new Date(new Date().toUTCString()),
+    };
+    const alert = new this.alertModel(data);
+
     return alert.save();
   }
   async deleteAlert(id: string) {
