@@ -12,40 +12,37 @@ export class PostsService {
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
   ) {}
 
-  async getPosts(search: string, pageSize: number, pageNumber: number) {
-    if (search != null) {
-      const regex = new RegExp(this.escapeRegex(search), 'gi');
+  async getPosts(
+    search: string,
+    location: string,
+    pageSize: number,
+    pageNumber: number,
+  ) {
+    const filter: any = { isDeleted: false };
 
-      var count = await this.postModel
-        .find({ isDeleted: false })
-        .countDocuments();
+    if (search) {
+      filter.title = { $regex: new RegExp(this.escapeRegex(search), 'gi') };
+    }
 
-      var response = await this.postModel
-        .find({ isDeleted: false, title: { $regex: regex } })
-        .skip((pageNumber - 1) * pageSize)
-        .limit(pageSize);
-
-      return {
-        count: count,
-        result: response,
-      };
-    } else {
-      var count = await this.postModel
-        .find({ isDeleted: false })
-        .countDocuments();
-
-      var response = await this.postModel
-        .find({ isDeleted: false })
-        .skip((pageNumber - 1) * pageSize)
-        .limit(pageSize)
-        .sort([['createdOn', -1]])
-        .exec();
-
-      return {
-        count: count,
-        result: response,
+    if (location) {
+      filter['location.title'] = {
+        $regex: new RegExp(this.escapeRegex(location), 'gi'),
       };
     }
+
+    const count = await this.postModel.find(filter).countDocuments();
+
+    const result = await this.postModel
+      .find(filter)
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .sort([['createdOn', -1]])
+      .exec();
+
+    return {
+      count,
+      result,
+    };
   }
 
   escapeRegex(text: string) {
@@ -164,13 +161,6 @@ export class PostsService {
     );
 
     return post;
-  }
-
-  async getPostByLocation(location: string): Promise<Array<PostDocument>> {
-    return await this.postModel.find({
-      'location.title': { $regex: '.*' + location + '.*' },
-      isDeleted: false,
-    });
   }
 
   async myPost(username: any): Promise<Array<PostDocument>> {

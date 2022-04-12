@@ -41,21 +41,27 @@ export class PostsController {
   }
 
   @Get()
-  async getPosts(@Query("pageSize") pageSize?: number, @Query("pageNumber") pageNumber?: number, @Query('search') search?: string) {
-    console.log("search", search);
-    if (pageSize == null || pageSize < 1) pageSize = 10;
-    if (pageNumber == null || pageNumber < 1) pageNumber = 1;
-    
-    const posts = await this.postsSvc.getPosts(search, pageSize, pageNumber);
-    return {
-      list: posts,
-      sas: this.sasSvc.getNewSASKey(),
-    };
-  }
+  async getPosts(
+    @Query('pageSize') pageSize?: number,
+    @Query('location') location?: string,
+    @Query('pageNumber') pageNumber?: number,
+    @Query('search') search?: string,
+  ) {
+    if (pageSize == null || pageSize < 1) {
+      pageSize = 10;
+    }
 
-  @Get('recentPosts/:location')
-  async getRecentPost(@Param('location') location: string) {
-    const posts = await this.postsSvc.getPostByLocation(location);
+    if (pageNumber == null || pageNumber < 1) {
+      pageNumber = 1;
+    }
+
+    const posts = await this.postsSvc.getPosts(
+      search,
+      location,
+      pageSize,
+      pageNumber,
+    );
+
     return {
       list: posts,
       sas: this.sasSvc.getNewSASKey(),
@@ -91,7 +97,7 @@ export class PostsController {
 
     return favPost;
   }
-  
+
   @Get('/:id')
   async getPostById(@Param('id') id: string) {
     const post = await this.postsSvc.getPostById(id);

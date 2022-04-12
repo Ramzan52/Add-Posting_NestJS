@@ -4,7 +4,7 @@ GET http://localhost:5100/notifications
 ### POSTS
 
 ### get all posts
-GET http://localhost:5100/posts
+GET http://localhost:5100/posts?location=Lahore
 
 ### get my posts
 GET http://localhost:5100/posts/my
