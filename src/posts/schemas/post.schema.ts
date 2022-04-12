@@ -33,5 +33,8 @@ export class Post extends BaseSchema {
 
   @Prop({ required: true })
   location: PostLocationSchema;
+
+  @Prop()
+  creatorId: string;
 }
 export const PostSchema = SchemaFactory.createForClass(Post);
