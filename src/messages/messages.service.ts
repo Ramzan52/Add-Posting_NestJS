@@ -11,6 +11,7 @@ import { FcmTOkenService } from './fcmNotification.service';
 import { SendMessage } from './dto/sendMessage.dto';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { PostFirstMessage } from './dto/post.message.dto';
+import { Post, PostDocument } from 'src/posts/schemas/post.schema';
 
 @Injectable()
 export class MessagesService {
@@ -20,51 +21,53 @@ export class MessagesService {
     private readonly ConversationSvc: ConversationService,
     private readonly fcmSvc: FcmTOkenService,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
   ) {}
   async postMessage(dto: PostFirstMessage, id: string) {
     let reciever = await this.userModel.findById(dto.recieverId);
     let sender = await this.userModel.findById(id);
+    let post = await this.postModel.findById(dto.postId);
     let data = {
-      senderId: dto.senderId,
+      senderId: id,
       senderName: sender.name,
       recieverId: dto.recieverId,
       recieverName: reciever.name,
       timeStamp: new Date(),
+      post: post,
     };
 
     let flipData = {
-      recieverId: dto.senderId,
+      recieverId: id,
       recieverName: sender.name,
       senderId: dto.recieverId,
       senderName: reciever.name,
       timeStamp: new Date(),
+      post: post,
     };
     let conversation = {
-      senderId: dto.senderId,
+      senderId: id,
       senderName: sender.name,
       recieverId: dto.recieverId,
       recieverName: reciever.name,
-      post: dto.post,
 
       message: {
-        senderId: dto.senderId,
+        senderId: id,
         senderName: sender.name,
         recieverId: dto.recieverId,
         recieverName: reciever.name,
         timeStamp: new Date(),
-
-        post: dto.post,
+        post: post,
       },
     };
     this.ConversationSvc.postConversation(conversation, id);
     const existingMessage = await this.messageModel.findOneAndReplace(
-      { senderId: dto.senderId, recieverId: dto.recieverId },
+      { senderId: id, recieverId: dto.recieverId },
       data,
       { new: true },
     );
     if (existingMessage) {
       const existingMessageFlip = await this.messageModel.findOneAndReplace(
-        { recieverId: dto.senderId, senderId: dto.recieverId },
+        { recieverId: id, senderId: dto.recieverId },
         flipData,
         { new: true },
       );

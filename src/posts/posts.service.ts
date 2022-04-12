@@ -17,14 +17,13 @@ export class PostsService {
     location: string,
     pageSize: number,
     pageNumber: number,
-    userId: string
+    userId: string,
   ) {
-
-    if (typeof(pageNumber) === 'string') {
+    if (typeof pageNumber === 'string') {
       pageNumber = parseInt(pageNumber);
     }
 
-    if (typeof(pageSize) === 'string') {
+    if (typeof pageSize === 'string') {
       pageSize = parseInt(pageSize);
     }
 
@@ -60,7 +59,7 @@ export class PostsService {
 
     result.forEach((post) => {
       if (post.favPosts.length > 0) {
-        post.isFavorite = (post.favPosts.find(x => x.userId == userId) !== -1);
+        post.isFavorite = post.favPosts.find((x) => x.userId == userId) !== -1;
       } else {
         post.isFavorite = false;
       }
@@ -111,6 +110,7 @@ export class PostsService {
       isDeleted: false,
       isVend: false,
       createdByUsername: tokenData.user.username,
+      creatorId: tokenData.user.id,
       createdBy: tokenData.user.name,
       createdOn: new Date(new Date().toUTCString()),
       modifiedByUsername: tokenData.user.username,
