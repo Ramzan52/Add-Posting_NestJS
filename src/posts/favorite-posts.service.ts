@@ -1,8 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
 import { FavoritePosts } from './schemas/favorite-posts.schema';
 import { Post, PostDocument } from './schemas/post.schema';
 
@@ -32,6 +30,7 @@ export class FavoritePostsService {
       });
     }
   }
+
   async myFavPost(userId: string) {
     const favPost = await this.favoritePostModel
       .find({ userId: userId })

@@ -17,7 +17,55 @@ export class PostsService {
     location: string,
     pageSize: number,
     pageNumber: number,
+    userId: string
   ) {
+
+    if (typeof(pageNumber) === 'string') {
+      pageNumber = parseInt(pageNumber);
+    }
+
+    if (typeof(pageSize) === 'string') {
+      pageSize = parseInt(pageSize);
+    }
+
+    var favPosts = await this.postModel.aggregate([
+      {
+        $match: {
+          $and: [
+            {
+              title: new RegExp('.*sofa.*', 'i'), 
+              "location.title": new RegExp('.*l.*', 'i'), 
+              isDeleted: false
+            }
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: 'favoriteposts',
+          localField: '_id',
+          foreignField: 'postId',
+          as: 'favPosts'
+        }
+      }, {
+        $skip: (pageNumber - 1) * pageSize
+      }, {
+        $limit: pageSize
+      }, {
+        $sort: {
+          createdOn: -1
+        }
+      }
+    ]).exec();
+
+    favPosts.forEach((post) => {
+      if (post.favPosts.length > 0) {
+        post.isFavorite = (post.favPosts.find(x => x.userId == userId) !== -1);
+      } else {
+        post.isFavorite = false;
+      }
+    });
+
     const filter: any = { isDeleted: false };
 
     if (search) {
@@ -32,16 +80,9 @@ export class PostsService {
 
     const count = await this.postModel.find(filter).countDocuments();
 
-    const result = await this.postModel
-      .find(filter)
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .sort([['createdOn', -1]])
-      .exec();
-
     return {
       count,
-      result,
+      favPosts,
     };
   }
 

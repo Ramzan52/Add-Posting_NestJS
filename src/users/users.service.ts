@@ -85,7 +85,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    user.IsResetVerfied = false;
+    user.IsResetVerified = false;
     const code = Math.floor(100000 + Math.random() * 900000);
     const emailBody = {
       recipient: [`${username}`],

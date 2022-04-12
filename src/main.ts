@@ -5,17 +5,28 @@ import * as admin from 'firebase-admin';
 import { AppModule } from './app.module';
 import service from './auth/config/firebase-auth';
 
+let appInsights = require("applicationinsights");
+
 async function bootstrap() {
   try {
-    console.log('NODE_ENV', process.env.NODE_ENV);
-    console.log('HOST', process.env.HOST);
-    console.log('PORT', process.env.PORT);
-    console.log('MONGO_CONNECTION_STRING', process.env.MONGO_CONNECTION_STRING);
+    console.log(process.env);
 
     const app = await NestFactory.create(AppModule);
     admin.initializeApp({
       credential: admin.credential.cert(service),
     });
+
+    appInsights.setup()
+      .setAutoDependencyCorrelation(true)
+      .setAutoCollectRequests(true)
+      .setAutoCollectPerformance(true, true)
+      .setAutoCollectExceptions(true)
+      .setAutoCollectDependencies(true)
+      .setAutoCollectConsole(true)
+      .setUseDiskRetryCaching(true)
+      .setSendLiveMetrics(false)
+      .setDistributedTracingMode(appInsights.DistributedTracingModes.AI)
+      .start();
 
     app.useGlobalPipes(new ValidationPipe());
     const port = process.env.PORT;

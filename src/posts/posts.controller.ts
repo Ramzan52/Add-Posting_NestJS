@@ -40,11 +40,13 @@ export class PostsController {
     };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getPosts(
+    @Request() req: any,
     @Query('pageSize') pageSize?: number,
-    @Query('location') location?: string,
     @Query('pageNumber') pageNumber?: number,
+    @Query('location') location?: string,
     @Query('search') search?: string,
   ) {
     if (pageSize == null || pageSize < 1) {
@@ -56,10 +58,11 @@ export class PostsController {
     }
 
     const posts = await this.postsSvc.getPosts(
-      search,
-      location,
+      search ?? ".",
+      location ?? ".",
       pageSize,
       pageNumber,
+      req.user.id
     );
 
     return {

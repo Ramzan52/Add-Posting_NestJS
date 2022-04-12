@@ -28,6 +28,9 @@ export class Post extends BaseSchema {
   @Prop({ required: true })
   isVend: boolean;
 
+  @Prop({ required: false })
+  isFavorite: boolean = false;
+
   @Prop({ required: true })
   location: PostLocationSchema;
 }
