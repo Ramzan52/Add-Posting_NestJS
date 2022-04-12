@@ -24,19 +24,19 @@ export class FirebaseNotificationController {
   async getNotifications(
     @Req() req: any,
     @Query('pageSize') pageSize?: number,
-    @Query('pageNumber') pageNumber?: number
+    @Query('pageNumber') pageNumber?: number,
   ) {
     if (pageNumber == null || pageNumber < 1) pageNumber = 1;
     if (pageSize == null || pageSize < 1) pageSize = 10;
-    
-    let notification = await this.notificationSvc.getNotifications(
+
+    return await this.notificationSvc.getNotifications(
       req.user.id,
       pageSize,
       pageNumber,
     );
-    if (notification) {
-      return notification;
-    }
-    throw new NotFoundException('no notification found');
+    // if (notification) {
+    //   return notification;
+    // }
+    // throw new NotFoundException('no notification found');
   }
 }
