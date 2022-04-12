@@ -4,30 +4,41 @@ import {
 } from './schema/conversation.schema';
 import { PostMessage } from './dto/create.message.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Req } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { PostConversation } from './dto/create.conversation.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { send } from 'process';
 import { identity } from 'rxjs';
+import { User, UserDocument } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class ConversationService {
   constructor(
     @InjectModel(Conversation.name)
     private readonly conversationModel: Model<ConversationDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
-  async postConversation(dto: PostConversation) {
-    let data = {
+  async postConversation(dto: PostConversation, id: string) {
+    let reciever = await this.userModel.findById(dto.recieverId);
+    let sender = await this.userModel.findById(id);
+    let Data = {
+      senderId: dto.senderId,
+      recieverId: dto.recieverId,
+      senderName: sender.name,
+      recieverName: reciever.name,
+      message: dto.message,
+    };
+    let flipData = {
       recieverId: dto.senderId,
       senderId: dto.recieverId,
-      senderName: dto.recieverName,
-      recieverName: dto.senderName,
+      senderName: reciever.name,
+      recieverName: sender.name,
       message: dto.message,
     };
 
-    const conversation = new this.conversationModel(dto);
-    const conversationFlip = new this.conversationModel(data);
+    const conversation = new this.conversationModel(Data);
+    const conversationFlip = new this.conversationModel(flipData);
     conversationFlip.save();
     return conversation.save();
   }

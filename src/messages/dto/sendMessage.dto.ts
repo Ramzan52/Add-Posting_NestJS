@@ -20,4 +20,7 @@ export class SendMessage {
 
   @IsString()
   text: string;
+
+  @IsString()
+  type: string;
 }
