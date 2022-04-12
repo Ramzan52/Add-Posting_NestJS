@@ -14,14 +14,14 @@ export class Message {
   @Prop({ required: true })
   recieverId: string;
 
-  @Prop({ required: true })
-  recieverName: string;
+  @Prop()
+  recieverName?: string;
 
   @Prop({ required: true })
-  senderName: string;
+  senderName?: string;
 
-  @Prop({ required: true })
-  text: string;
+  // @Prop({ required: true })
+  // text: string;
 
   @Prop({ required: true })
   timeStamp: Date;

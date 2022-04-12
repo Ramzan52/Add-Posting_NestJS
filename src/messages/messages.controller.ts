@@ -1,3 +1,4 @@
+import { PostFirstMessage } from './dto/post.message.dto';
 import { SendMessage } from './dto/sendMessage.dto';
 import { ConversationService } from './conversation.service';
 import { MessagesService } from './messages.service';
@@ -11,6 +12,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -25,8 +27,8 @@ export class MessagesController {
     private readonly conversationSvc: ConversationService,
   ) {}
   @Post('create-chat')
-  async postMessage(@Body() body: PostMessage) {
-    let message = await this.messageSvc.postMessage(body);
+  async postMessage(@Body() body: PostFirstMessage, @Req() req: any) {
+    let message = await this.messageSvc.postMessage(body, req.user.id);
     if (message) {
       return message;
     } else {
@@ -52,19 +54,10 @@ export class MessagesController {
   ) {
     if (pageSize == null || pageSize < 1) pageSize = 10;
     if (pageNumber == null || pageNumber < 1) pageNumber = 1;
-    
-    let messages = await this.messageSvc.getMessage(
-      req.user.id,
-      pageSize,
-      pageNumber,
-    );
-    if (messages) {
-      return messages;
-    } else {
-      throw new InternalServerErrorException();
-    }
+
+    return await this.messageSvc.getMessage(req.user.id, pageSize, pageNumber);
   }
-  
+
   @Get('/conversation')
   async getConversation(@Param('recieverId') id: string, @Request() req: any) {
     let conversation = this.conversationSvc.getConversation(id, req.user.id);

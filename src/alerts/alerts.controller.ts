@@ -9,6 +9,7 @@ import {
   Get,
   Param,
   Post,
+  Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -19,8 +20,8 @@ import { ApiProperty, ApiTags } from '@nestjs/swagger';
 export class AlertsController {
   constructor(private alertSvc: AlertsService) {}
   @Post()
-  saveAlerts(@Body() body: CreateAlertDto) {
-    return this.alertSvc.saveAlerts(body);
+  saveAlerts(@Body() body: CreateAlertDto, @Req() req: any) {
+    return this.alertSvc.saveAlerts(body, req);
   }
 
   @Delete('/id')

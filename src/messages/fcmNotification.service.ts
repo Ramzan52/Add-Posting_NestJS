@@ -16,6 +16,7 @@ import {
   DeviceTokenDocument,
 } from 'src/device_token/schema/device_token.schema';
 import admin from 'firebase-admin';
+import { SendMessage } from './dto/sendMessage.dto';
 
 @Injectable()
 export class FcmTOkenService {
@@ -24,7 +25,7 @@ export class FcmTOkenService {
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
     private readonly firebaseSvc: Firebase_NotificationService,
   ) {}
-  async findDeviceToken(id: string, message: PostMessage) {
+  async findDeviceToken(id: string, message: SendMessage) {
     let fcmToken = await this.deviceTokenModal.findOne({ userId: id });
     if (fcmToken.token !== null) {
       let payload: admin.messaging.Message = {

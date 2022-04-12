@@ -9,6 +9,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { FcmTOkenService } from './fcmNotification.service';
 import { SendMessage } from './dto/sendMessage.dto';
+import { User, UserDocument } from 'src/users/schemas/user.schema';
+import { PostFirstMessage } from './dto/post.message.dto';
 
 @Injectable()
 export class MessagesService {
@@ -17,52 +19,60 @@ export class MessagesService {
     private readonly messageModel: Model<MessageDocument>,
     private readonly ConversationSvc: ConversationService,
     private readonly fcmSvc: FcmTOkenService,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
-  async postMessage(dto: PostMessage) {
+  async postMessage(dto: PostFirstMessage, id: string) {
+    let reciever = await this.userModel.findById(dto.recieverId);
+    let sender = await this.userModel.findById(id);
     let data = {
+      senderId: dto.senderId,
+      senderName: sender.name,
+      recieverId: dto.recieverId,
+      recieverName: reciever.name,
+      timeStamp: new Date(),
+    };
+
+    let flipData = {
       recieverId: dto.senderId,
-      recieverName: dto.senderName,
+      recieverName: sender.name,
       senderId: dto.recieverId,
-      senderName: dto.recieverName,
-      timeStamp: dto.timeStamp,
-      text: dto.text,
+      senderName: reciever.name,
+      timeStamp: new Date(),
     };
     let conversation = {
       senderId: dto.senderId,
-      senderName: dto.senderName,
+      senderName: sender.name,
       recieverId: dto.recieverId,
-      recieverName: dto.recieverName,
+      recieverName: reciever.name,
       post: dto.post,
 
       message: {
         senderId: dto.senderId,
-        senderName: dto.senderName,
+        senderName: sender.name,
         recieverId: dto.recieverId,
-        recieverName: dto.recieverName,
-        timeStamp: dto.timeStamp,
-        text: dto.text,
+        recieverName: reciever.name,
+        timeStamp: new Date(),
+
         post: dto.post,
       },
     };
-    this.ConversationSvc.postConversation(conversation);
+    this.ConversationSvc.postConversation(conversation, id);
     const existingMessage = await this.messageModel.findOneAndReplace(
       { senderId: dto.senderId, recieverId: dto.recieverId },
-      dto,
+      data,
       { new: true },
     );
     if (existingMessage) {
       const existingMessageFlip = await this.messageModel.findOneAndReplace(
         { recieverId: dto.senderId, senderId: dto.recieverId },
-        data,
+        flipData,
         { new: true },
       );
-      this.fcmSvc.findDeviceToken(dto.recieverId, dto);
       return existingMessage;
     } else {
-      const message = await new this.messageModel(dto);
-      const messageFlip = await new this.messageModel(data);
+      const message = await new this.messageModel(data);
+      const messageFlip = await new this.messageModel(flipData);
       messageFlip.save();
-      this.fcmSvc.findDeviceToken(dto.recieverId, dto);
       return message.save();
     }
   }
@@ -73,6 +83,8 @@ export class MessagesService {
     };
     try {
       const message = new this.messageModel(data);
+      this.fcmSvc.findDeviceToken(dto.recieverId, dto);
+
       return message;
     } catch {
       throw new NotFoundException();
@@ -89,7 +101,8 @@ export class MessagesService {
       .find({ senderId: id })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
-      .sort([['timeStamp', -1]]).exec();
+      .sort([['timeStamp', -1]])
+      .exec();
     return {
       count: count,
       result: response,
