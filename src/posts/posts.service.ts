@@ -28,7 +28,7 @@ export class PostsService {
       pageSize = parseInt(pageSize);
     }
 
-    var favPosts = await this.postModel.aggregate([
+    var result = await this.postModel.aggregate([
       {
         $match: {
           $and: [
@@ -58,7 +58,7 @@ export class PostsService {
       }
     ]).exec();
 
-    favPosts.forEach((post) => {
+    result.forEach((post) => {
       if (post.favPosts.length > 0) {
         post.isFavorite = (post.favPosts.find(x => x.userId == userId) !== -1);
       } else {
@@ -82,7 +82,7 @@ export class PostsService {
 
     return {
       count,
-      favPosts,
+      result,
     };
   }
 
