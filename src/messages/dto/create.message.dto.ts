@@ -24,8 +24,8 @@ export class PostMessage {
   @IsString()
   senderName: string;
 
-  // @IsString()
-  // text: string;
+  @IsString()
+  text: string;
 
   @IsString()
   timeStamp: Date;

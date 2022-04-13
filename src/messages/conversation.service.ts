@@ -1,3 +1,4 @@
+import { PostFirstMessage } from './dto/post.message.dto';
 import {
   Conversation,
   ConversationDocument,
@@ -19,21 +20,23 @@ export class ConversationService {
     private readonly conversationModel: Model<ConversationDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
-  async postConversation(dto: PostConversation, id: string) {
+  async postConversation(dto: Conversation, id: string) {
     let reciever = await this.userModel.findById(dto.recieverId);
     let sender = await this.userModel.findById(id);
     let Data = {
-      senderId: dto.senderId,
+      senderId: id,
       recieverId: dto.recieverId,
       senderName: sender.name,
       recieverName: reciever.name,
+      timeStamp: new Date(),
       message: dto.message,
     };
     let flipData = {
-      recieverId: dto.senderId,
+      recieverId: id,
       senderId: dto.recieverId,
       senderName: reciever.name,
       recieverName: sender.name,
+      timeStamp: new Date(),
       message: dto.message,
     };
 

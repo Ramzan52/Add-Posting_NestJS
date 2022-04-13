@@ -13,9 +13,12 @@ import {
 import { ChatPost } from './post.dto';
 
 export class PostFirstMessage {
-  @Prop({required: true})
+  @Prop({ required: true })
   recieverId: string;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   postId: string;
+
+  @Prop({ required: false })
+  latestText?: string;
 }

@@ -25,7 +25,7 @@ export class FcmTOkenService {
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
     private readonly firebaseSvc: Firebase_NotificationService,
   ) {}
-  async findDeviceToken(id: string, message: SendMessage) {
+  async findDeviceToken(id: string, message: Conversation) {
     let fcmToken = await this.deviceTokenModal.findOne({ userId: id });
     if (fcmToken.token !== null) {
       let payload: admin.messaging.Message = {
@@ -35,7 +35,7 @@ export class FcmTOkenService {
       admin.messaging().send(payload);
       this.firebaseSvc.PostNotification({
         type: 'new-message',
-        payLoad: message.text,
+        payLoad: JSON.stringify(message),
         sentOn: new Date(),
         userId: id,
       });

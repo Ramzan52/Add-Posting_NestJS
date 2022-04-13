@@ -43,6 +43,7 @@ export class MessagesService {
       recieverName: reciever.name,
       timeStamp: new Date(),
       post: post,
+      text: dto.latestText,
     };
 
     let flipData = {
@@ -52,24 +53,9 @@ export class MessagesService {
       senderName: reciever.name,
       timeStamp: new Date(),
       post: post,
-    };
-    let conversation = {
-      senderId: id,
-      senderName: sender.name,
-      recieverId: dto.recieverId,
-      recieverName: reciever.name,
-
-      message: {
-        senderId: id,
-        senderName: sender.name,
-        recieverId: dto.recieverId,
-        recieverName: reciever.name,
-        timeStamp: new Date(),
-        post: post,
-      },
+      text: dto.latestText,
     };
 
-    this.ConversationSvc.postConversation(conversation, id);
     const existingMessage = await this.messageModel.findOneAndReplace(
       { senderId: id, recieverId: dto.recieverId },
       data,
@@ -98,13 +84,33 @@ export class MessagesService {
       recieverId: dto.recieverId,
       senderName: sender.name,
       recieverName: receiver.name,
-      text: dto.text,
-      type: dto.type,
+      message: {
+        text: dto.text,
+        type: dto.type,
+        senderId: userID,
+        recieverId: dto.recieverId,
+      },
       timeStamp: new Date(),
     };
     try {
-      const message = new this.messageModel(data);
+      // const message = new this.messageModel(data);
+      let message = await this.ConversationSvc.postConversation(data, userID);
       this.fcmSvc.findDeviceToken(dto.recieverId, data);
+      const existingMessage = await this.messageModel.findOne({
+        senderId: userID,
+        recieverId: dto.recieverId,
+      });
+      if (existingMessage) {
+        existingMessage.text = dto.text;
+        existingMessage.save();
+        const existingMessageFlip = await this.messageModel.findOne({
+          recieverId: userID,
+          senderId: dto.recieverId,
+        });
+        existingMessageFlip.text = dto.text;
+        existingMessageFlip.save();
+        return existingMessage;
+      }
 
       return message;
     } catch {
