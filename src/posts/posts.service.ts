@@ -43,11 +43,11 @@ export class PostsService {
                 isDeleted: false,
               },
             ],
-            $or: [
-              {
-                categoryId: new mongo.ObjectId(categoryId),
-              },
-            ],
+            // $or: [
+            //   {
+            //     categoryId: categoryId ? new mongo.ObjectId(categoryId) : '',
+            //   },
+            // ],
           },
         },
         {
