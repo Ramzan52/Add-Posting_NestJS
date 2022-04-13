@@ -28,7 +28,7 @@ export class MessagesController {
     private readonly conversationSvc: ConversationService,
   ) {}
   @Post('create-chat')
-  async postMessage(@Body() body: PostFirstMessage, @Req() req: any) {
+  async postMessage(@Body() body: PostFirstMessage, @Request() req: any) {
     let message = await this.messageSvc.postMessage(body, req.user.id);
     if (message) {
       return message;

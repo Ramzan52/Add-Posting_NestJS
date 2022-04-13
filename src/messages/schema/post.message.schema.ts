@@ -12,7 +12,7 @@ export class Message {
   @Prop()
   senderId: string;
 
-  @Prop({ required: true })
+  @Prop()
   recieverId: string;
 
   @Prop()

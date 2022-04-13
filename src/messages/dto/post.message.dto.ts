@@ -1,3 +1,4 @@
+import { Prop } from '@nestjs/mongoose';
 import {
   IsArray,
   IsDate,
@@ -12,9 +13,9 @@ import {
 import { ChatPost } from './post.dto';
 
 export class PostFirstMessage {
-  @IsString()
+  @Prop({required: true})
   recieverId: string;
 
-  @IsString()
+  @Prop({required: true})
   postId: string;
 }
