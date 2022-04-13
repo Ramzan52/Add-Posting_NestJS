@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { exec } from 'child_process';
+import mongoose from 'mongoose';
 import { Model, mongo } from 'mongoose';
 import { Alert, AlertDocument } from 'src/alerts/schema/alert.schema';
 import { categories } from 'src/categories/category';
@@ -40,7 +41,11 @@ export class PostsService {
                 title: new RegExp(`.*${search}*`, 'i'), 
                 "location.title": new RegExp(`.*${location}*`, 'i'), 
                 isDeleted: false,
-                categoryId: categoryId,
+              },
+            ],
+            $or: [
+              {
+                categoryId: new mongo.ObjectId(categoryId),
               },
             ],
           },
