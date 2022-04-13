@@ -14,6 +14,9 @@ export class AuthService {
 
   async login(user: any) {
     const existingUser = await this.usersSvc.findOne(user.username);
+    // if (!existingUser.isUserVerified) {
+    //   throw new BadRequestException("Please verify your email before logging in");
+    // }
     if (existingUser) {
       const payload = {
         sub: existingUser.id,

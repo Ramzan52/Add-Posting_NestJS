@@ -5,6 +5,7 @@ import { MessagesService } from './messages.service';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from './../auth/auth-guards/jwt-auth.guard';
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -32,12 +33,12 @@ export class MessagesController {
     if (message) {
       return message;
     } else {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
   @Post('send-message')
-  async sendMessage(@Body() body: SendMessage) {
-    let message = await this.messageSvc.sendMessage(body);
+  async sendMessage(@Request() req: any ,@Body() body: SendMessage) {
+    let message = await this.messageSvc.sendMessage(body, req.user.id);
     if (message) {
       return message;
     } else {

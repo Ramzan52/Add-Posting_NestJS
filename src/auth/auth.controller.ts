@@ -4,26 +4,22 @@ import {
   BadRequestException,
   Body,
   Controller,
-  HttpStatus,
   Param,
   Post,
   Req,
   Request,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ProfileService } from 'src/profile/profile.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtAuthGuard, LocalAuthGuard } from './auth-guards';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RegisterDto } from './dto/register.dto';
-import admin from 'firebase-admin';
 import { LoginDto } from './dto/login.dto';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { VerifyDto } from './dto/verfiy.dto';
-import { ResetPassword } from './dto/reset.password';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {

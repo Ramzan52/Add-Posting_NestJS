@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { exec } from 'child_process';
 import { Model, mongo } from 'mongoose';
+import { Alert, AlertDocument } from 'src/alerts/schema/alert.schema';
+import { categories } from 'src/categories/category';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
@@ -10,6 +12,7 @@ import { Post, PostDocument } from './schemas/post.schema';
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
+    //@InjectModel(Alert.name) private readonly alertModel: Model<AlertDocument>
   ) {}
 
   async getPosts(
@@ -30,11 +33,11 @@ export class PostsService {
     var result = await this.postModel.aggregate([
       {
         $match: {
-          $and: [
+          $or: [
             {
-              title: new RegExp('.*sofa.*', 'i'), 
-              "location.title": new RegExp('.*l.*', 'i'), 
-              isDeleted: false
+              title: new RegExp(`.*${search}*`, 'i'), 
+              "location.title": new RegExp(`.*${location}*`, 'i'), 
+              isDeleted: false,
             }
           ]
         }
@@ -67,11 +70,11 @@ export class PostsService {
 
     const filter: any = { isDeleted: false };
 
-    if (search) {
+    if (search && search != ".") {
       filter.title = { $regex: new RegExp(this.escapeRegex(search), 'gi') };
     }
 
-    if (location) {
+    if (location && location != ".") {
       filter['location.title'] = {
         $regex: new RegExp(this.escapeRegex(location), 'gi'),
       };
@@ -117,6 +120,17 @@ export class PostsService {
       modifiedBy: tokenData.user.name,
       modifiedOn: new Date(new Date().toUTCString()),
     });
+
+    // var usernameList = [];
+
+    // var alerts = await this.alertModel.find({categoryId: categoryId}).exec();
+    // if (alerts) {
+    //   alerts.forEach(element => {
+    //     usernameList.push(element.createdByUsername);
+    //   });
+
+    // }
+
     return post;
   }
 

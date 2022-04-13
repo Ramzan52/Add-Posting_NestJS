@@ -13,7 +13,7 @@ import { ChatPost } from './post.dto';
 
 export class SendMessage {
   @IsString()
-  senderId: string;
+  senderId?: string;
 
   @IsString()
   recieverId: string;
