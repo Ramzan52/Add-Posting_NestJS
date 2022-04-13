@@ -25,9 +25,17 @@ export class MessagesService {
   ) {}
   async postMessage(dto: PostFirstMessage, id: string) {
     let reciever = await this.userModel.findById(dto.recieverId);
-    console.log("receiver", reciever);
     let sender = await this.userModel.findById(id);
     let post = await this.postModel.findById(dto.postId);
+    if (!reciever) {
+      throw new NotFoundException('Reciever not found');
+    }
+    if (!sender) {
+      throw new NotFoundException('sender not found');
+    }
+    if (!post) {
+      throw new NotFoundException('post not found');
+    }
     let data = {
       senderId: id,
       senderName: sender.name,
@@ -82,10 +90,8 @@ export class MessagesService {
     }
   }
   async sendMessage(dto: SendMessage, userID: string) {
-
     const sender = await this.userModel.findById(userID);
     const receiver = await this.userModel.findById(dto.recieverId);
-    
 
     let data = {
       senderId: userID,
