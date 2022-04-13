@@ -48,6 +48,7 @@ export class PostsController {
     @Query('pageNumber') pageNumber?: number,
     @Query('location') location?: string,
     @Query('search') search?: string,
+    @Query('categoryId') categoryId?: string,
   ) {
     if (pageSize == null || pageSize < 1) {
       pageSize = 10;
@@ -58,11 +59,12 @@ export class PostsController {
     }
 
     const posts = await this.postsSvc.getPosts(
-      search ?? ".",
-      location ?? ".",
+      search ?? '.',
+      location ?? '.',
       pageSize,
       pageNumber,
-      req.user.id
+      req.user.id,
+      categoryId,
     );
 
     return {
