@@ -18,6 +18,7 @@ export class PostsService {
     pageSize: number,
     pageNumber: number,
     userId: string,
+    categoryId: string,
   ) {
     if (typeof pageNumber === 'string') {
       pageNumber = parseInt(pageNumber);
@@ -27,35 +28,41 @@ export class PostsService {
       pageSize = parseInt(pageSize);
     }
 
-    var result = await this.postModel.aggregate([
-      {
-        $match: {
-          $and: [
-            {
-              title: new RegExp('.*sofa.*', 'i'), 
-              "location.title": new RegExp('.*l.*', 'i'), 
-              isDeleted: false
-            }
-          ]
-        }
-      },
-      {
-        $lookup: {
-          from: 'favoriteposts',
-          localField: '_id',
-          foreignField: 'postId',
-          as: 'favPosts'
-        }
-      }, {
-        $skip: (pageNumber - 1) * pageSize
-      }, {
-        $limit: pageSize
-      }, {
-        $sort: {
-          createdOn: -1
-        }
-      }
-    ]).exec();
+    var result = await this.postModel
+      .aggregate([
+        {
+          $match: {
+            $and: [
+              {
+                title: new RegExp('.*sofa.*', 'i'),
+                'location.title': new RegExp('.*l.*', 'i'),
+                isDeleted: false,
+                categoryId: categoryId,
+              },
+            ],
+          },
+        },
+        {
+          $lookup: {
+            from: 'favoriteposts',
+            localField: '_id',
+            foreignField: 'postId',
+            as: 'favPosts',
+          },
+        },
+        {
+          $skip: (pageNumber - 1) * pageSize,
+        },
+        {
+          $limit: pageSize,
+        },
+        {
+          $sort: {
+            createdOn: -1,
+          },
+        },
+      ])
+      .exec();
 
     result.forEach((post) => {
       if (post.favPosts.length > 0) {
