@@ -46,11 +46,20 @@ export class ConversationService {
     return conversation.save();
   }
   @ApiOkResponse({ status: 200, type: PostConversation })
-  getConversation(id: string, sender: string) {
-    let conversationList = this.conversationModel.find({
-      senderId: sender,
-      recieverId: id,
-    });
+  async getConversation(recieverId: string, sender: string) {
+
+    let conversationList = await this.conversationModel.aggregate([
+      {
+        $match : {
+          $and: [
+            {
+            senderId: sender,
+            recieverId: recieverId
+            }
+          ]
+        }
+      }
+    ]).exec();
     return conversationList;
   }
 }

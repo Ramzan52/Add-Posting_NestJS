@@ -60,8 +60,8 @@ export class MessagesController {
   }
 
   @Get('/conversation')
-  async getConversation(@Param('recieverId') id: string, @Request() req: any) {
-    let conversation = this.conversationSvc.getConversation(id, req.user.id);
+  async getConversation( @Request() req: any, @Query('recieverId') recieverId: string) {
+    let conversation = this.conversationSvc.getConversation(recieverId, req.user.id);
     return conversation;
   }
 }
