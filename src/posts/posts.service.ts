@@ -37,8 +37,8 @@ export class PostsService {
           $match: {
             $and: [
               {
-                title: new RegExp('.*sofa.*', 'i'),
-                'location.title': new RegExp('.*l.*', 'i'),
+                title: new RegExp(`.*${search}*`, 'i'), 
+                "location.title": new RegExp(`.*${location}*`, 'i'), 
                 isDeleted: false,
                 categoryId: categoryId,
               },
