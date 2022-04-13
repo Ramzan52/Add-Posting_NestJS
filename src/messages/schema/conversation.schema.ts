@@ -21,7 +21,7 @@ export class Conversation {
   @Prop()
   senderName?: string;
 
-  @Prop({ required: true })
+  @Prop()
   message: Message;
 }
 

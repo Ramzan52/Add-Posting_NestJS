@@ -9,7 +9,7 @@ export type MessageDocument = Message & Document;
 
 @Schema()
 export class Message {
-  @Prop({ required: true })
+  @Prop()
   senderId: string;
 
   @Prop({ required: true })
@@ -18,13 +18,16 @@ export class Message {
   @Prop()
   recieverName?: string;
 
-  @Prop({ required: true })
+  @Prop()
   senderName?: string;
+  
+  @Prop()
+  text?: string;
 
-  @Prop({ required: true })
-  post: Post;
+  @Prop()
+  type?: string;
 
-  @Prop({ required: true })
+  @Prop()
   timeStamp: Date;
 }
 

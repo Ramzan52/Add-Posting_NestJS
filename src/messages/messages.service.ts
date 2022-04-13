@@ -25,6 +25,7 @@ export class MessagesService {
   ) {}
   async postMessage(dto: PostFirstMessage, id: string) {
     let reciever = await this.userModel.findById(dto.recieverId);
+    console.log("receiver", reciever);
     let sender = await this.userModel.findById(id);
     let post = await this.postModel.findById(dto.postId);
     let data = {
@@ -59,6 +60,7 @@ export class MessagesService {
         post: post,
       },
     };
+
     this.ConversationSvc.postConversation(conversation, id);
     const existingMessage = await this.messageModel.findOneAndReplace(
       { senderId: id, recieverId: dto.recieverId },
@@ -79,14 +81,24 @@ export class MessagesService {
       return message.save();
     }
   }
-  async sendMessage(dto: SendMessage) {
+  async sendMessage(dto: SendMessage, userID: string) {
+
+    const sender = await this.userModel.findById(userID);
+    const receiver = await this.userModel.findById(dto.recieverId);
+    
+
     let data = {
-      dto,
+      senderId: userID,
+      recieverId: dto.recieverId,
+      senderName: sender.name,
+      recieverName: receiver.name,
+      text: dto.text,
+      type: dto.type,
       timeStamp: new Date(),
     };
     try {
       const message = new this.messageModel(data);
-      this.fcmSvc.findDeviceToken(dto.recieverId, dto);
+      this.fcmSvc.findDeviceToken(dto.recieverId, data);
 
       return message;
     } catch {
