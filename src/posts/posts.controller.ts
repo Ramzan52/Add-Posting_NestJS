@@ -83,10 +83,10 @@ export class PostsController {
     };
   }
   @UseGuards(JwtAuthGuard)
-  @Post('fav/:id/:like')
+  @Post('fav')
   async likePost(
-    @Param('postId') postId: string,
-    @Param('like') like: boolean,
+    @Query('postId') postId: string,
+    @Query('like') like: boolean,
     @Request() req: any,
   ) {
     let favPost = await this.favSvc.likePost(postId, like, req.user.id);
