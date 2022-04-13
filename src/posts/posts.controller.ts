@@ -64,7 +64,7 @@ export class PostsController {
       pageSize,
       pageNumber,
       req.user.id,
-      categoryId,
+      categoryId ?? '.',
     );
 
     return {
