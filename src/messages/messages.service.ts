@@ -93,7 +93,6 @@ export class MessagesService {
       timeStamp: new Date(),
     };
     try {
-      // const message = new this.messageModel(data);
       let message = await this.ConversationSvc.postConversation(data, userID);
       this.fcmSvc.findDeviceToken(dto.recieverId, data);
       const existingMessage = await this.messageModel.findOne({
