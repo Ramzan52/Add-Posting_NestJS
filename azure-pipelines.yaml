@@ -136,7 +136,7 @@ stages:
                   displayName: create imagePullSecret
                   inputs:
                     action: 'createSecret'
-                    kubernetesServiceConnection: 'k8s-scrap-ready-dev'
+                    kubernetesServiceConnection: 'k8s-scrap-ready-beta'
                     namespace: 'scrap-ready-beta'
                     secretType: 'dockerRegistry'
                     secretName: '$(imagePullSecret)'
@@ -146,8 +146,8 @@ stages:
                   displayName: deploy api to k8s cluster
                   inputs:
                     action: 'deploy'
-                    kubernetesServiceConnection: 'k8s-scrap-ready-dev'
+                    kubernetesServiceConnection: 'k8s-scrap-ready-beta'
                     namespace: 'scrap-ready-beta'
-                    manifests: '$(Pipeline.Workspace)/manifests/dev.yaml'
+                    manifests: '$(Pipeline.Workspace)/manifests/beta.yaml'
                     containers: '$(containerRegistry)/$(imageRepository):$(tag)'
                     imagePullSecrets: '$(imagePullSecret)'
