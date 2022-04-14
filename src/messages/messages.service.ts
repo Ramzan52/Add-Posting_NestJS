@@ -116,14 +116,28 @@ export class MessagesService {
       throw new NotFoundException();
     }
   }
-  async getMessage(id: String, pageSize: number, pageNumber: number) {
-    console.log(id);
+  async getMessage(id: String, pageSize: number, pageNumber: number, unread: boolean) {
+    
     var query = this.messageModel.find({ senderId: id });
     var count = await query.countDocuments();
     if (count === 0) {
       throw new NotFoundException('no message found');
     }
-    var response = await this.messageModel
+    if (unread) {
+      var response = await this.messageModel
+        .find( { $and: [
+          {senderId: id}, {isRead: false}
+        ]} )
+        .skip((pageNumber - 1) * pageSize)
+        .limit(pageSize)
+        .sort([['timeStamp', -1]])
+        .exec();
+      return {
+        count: count,
+        result: response,
+      };
+    } else {
+      var response = await this.messageModel
       .find({ senderId: id })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
@@ -133,6 +147,7 @@ export class MessagesService {
       count: count,
       result: response,
     };
+    }
   }
 
   async markAsRead(senderId: string, receiverId: string) {
@@ -150,6 +165,13 @@ export class MessagesService {
       }
     ]).exec();
 
+    existingMessage[0].isRead = true;
+    this.messageModel.findOneAndReplace(
+      { _id: existingMessage[0]._id },
+        existingMessage[0],
+        { new: true },
+    )
     console.log("existing message", existingMessage);
+    return existingMessage;
   }
 }

@@ -27,7 +27,7 @@ export class AuthService {
       console.log('payload', payload);
 
       return {
-        access_token: this.jwtSvc.sign(payload, { expiresIn: '30m' }),
+        access_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
         refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
       };
     } else {

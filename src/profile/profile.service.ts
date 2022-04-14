@@ -26,6 +26,10 @@ export class ProfileService {
     return await this.profileModel.findOne({ email: username });
   }
 
+  async findByUserId(id: string): Promise<ProfileDocument> {
+    return await this.profileModel.findOne({ userId: id });
+  }
+
   async editProfile(username: string, dto: SaveProfileDto) {
     const { name, profilePic, phoneNumber } = dto;
 

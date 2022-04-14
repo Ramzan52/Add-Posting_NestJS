@@ -12,6 +12,7 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { send } from 'process';
 import { identity } from 'rxjs';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
+import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 
 @Injectable()
 export class ConversationService {
@@ -19,6 +20,7 @@ export class ConversationService {
     @InjectModel(Conversation.name)
     private readonly conversationModel: Model<ConversationDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Profile.name) private readonly profileModel: Model<ProfileDocument>,
   ) {}
   async postConversation(dto: Conversation, id: string) {
     let reciever = await this.userModel.findById(dto.recieverId);
@@ -45,21 +47,17 @@ export class ConversationService {
     conversationFlip.save();
     return conversation.save();
   }
+
   @ApiOkResponse({ status: 200, type: PostConversation })
   async getConversation(recieverId: string, sender: string) {
+    console.log("receiver", sender);
+    var conversationList = await this.conversationModel
+      .find( { $and: [
+        {senderId: sender}, {recieverId: recieverId}
+      ]} )
+      .sort([['timeStamp', -1]])
+      .exec();
 
-    let conversationList = await this.conversationModel.aggregate([
-      {
-        $match : {
-          $and: [
-            {
-            senderId: sender,
-            recieverId: recieverId
-            }
-          ]
-        }
-      }
-    ]).exec();
     return conversationList;
   }
 }

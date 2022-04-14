@@ -18,6 +18,9 @@ import {
 import { User, UserSchema } from 'src/users/schemas/user.schema';
 import { Post, PostSchema } from 'src/posts/schemas/post.schema';
 import { UsersService } from 'src/users/users.service';
+import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
+import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
+import { ProfileService } from 'src/profile/profile.service';
 
 @Module({
   imports: [
@@ -35,6 +38,7 @@ import { UsersService } from 'src/users/users.service';
       },
     ]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: Profile.name, schema: ProfileSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
   ],
 
@@ -44,6 +48,8 @@ import { UsersService } from 'src/users/users.service';
     ConversationService,
     FcmTOkenService,
     Firebase_NotificationService,
+    AzureSASServiceService,
+    ProfileService
   ],
 })
 export class MessagesModule {}
