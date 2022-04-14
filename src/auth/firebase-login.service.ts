@@ -38,7 +38,7 @@ export class FireBaseLoginService {
           username: user.email,
         };
 
-        await this.usersSvc.create({
+        const createdUser = await this.usersSvc.create({
           username: user.email,
           name: user.name,
           password: '',
@@ -48,7 +48,7 @@ export class FireBaseLoginService {
           username: user.email,
           name: user.name,
           password: '',
-        });
+        }, createdUser.id);
 
         return {
           access_token: this.jwtSvc.sign(payload, {expiresIn: '30m'}),
