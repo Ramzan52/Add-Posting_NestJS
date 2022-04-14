@@ -49,7 +49,7 @@ stages:
   - stage: deploy2dev
     displayName: deploy to dev
     dependsOn: buildAndPushDev
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     variables:
       containerRegistry: 'inserito.azurecr.io'
       imagePullSecret: 'scrap-ready-api-dev'
@@ -82,7 +82,7 @@ stages:
                     manifests: '$(Pipeline.Workspace)/manifests/dev.yaml'
                     containers: '$(containerRegistry)/$(imageRepository):$(tag)'
                     imagePullSecrets: '$(imagePullSecret)'
-  
+
   - stage: buildAndPushBeta
     displayName: build and push to beta
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/beta')
@@ -118,7 +118,7 @@ stages:
   - stage: deploy2beta
     displayName: deploy to beta
     dependsOn: buildAndPushBeta
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/beta'))
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/beta')
     variables:
       containerRegistry: 'inserito.azurecr.io'
       imagePullSecret: 'scrap-ready-api-beta'
