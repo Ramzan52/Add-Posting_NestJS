@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { hashSync } from 'bcryptjs';
 import { auth } from 'firebase-admin';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -10,13 +11,32 @@ export class AuthService {
   constructor(
     private readonly jwtSvc: JwtService,
     private readonly usersSvc: UsersService,
+    private readonly busSvc: AzureServiceBusService,
   ) {}
 
   async login(user: any) {
     const existingUser = await this.usersSvc.findOne(user.username);
-    // if (!existingUser.isUserVerified) {
-    //   throw new BadRequestException("Please verify your email before logging in");
-    // }
+
+    if (!existingUser.isUserVerified) {
+
+      const code = Math.floor(100000 + Math.random() * 900000);
+        const emailBody = {
+          recipient: [`${user.username}`],
+          subject: 'Verification Code for Scrap Ready Application',
+          from: 'scrapreadyapp@gmail.com',
+          body: `Your code is ${code}`,
+        };
+
+        console.log("code", code);
+
+        this.busSvc.sendEmail(emailBody);
+        await this.usersSvc.update(existingUser, code);
+
+      return {
+        isVerified: false,
+        message: "Please verify your email"
+      }
+    }
     if (existingUser) {
       const payload = {
         sub: existingUser.id,

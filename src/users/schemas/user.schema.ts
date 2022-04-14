@@ -12,6 +12,9 @@ export class User {
   @Prop({ required: true })
   username: string;
 
+  @Prop()
+  phoneNumber: string;
+
   @Prop({ required: true })
   salt: string;
 

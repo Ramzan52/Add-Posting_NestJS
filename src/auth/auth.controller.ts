@@ -62,19 +62,42 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body: RegisterDto) {
+
+    let existingRegistration = await this.userSvc.findOne(body.username);
+
+    if (existingRegistration) {
+      if (!existingRegistration.isUserVerified) {
+        const code = Math.floor(100000 + Math.random() * 900000);
+        const emailBody = {
+          recipient: [`${body.username}`],
+          subject: 'Verification Code for Scrap Ready Application',
+          from: 'scrapreadyapp@gmail.com',
+          body: `Your code is ${code}`,
+        };
+
+        console.log("code", code);
+
+        this.busSvc.sendEmail(emailBody);
+        await this.userSvc.update(body, code);
+        return {
+          isVerified: false,
+          message: "Please verify your email"
+        }
+      }
+    }
     const code = Math.floor(100000 + Math.random() * 900000);
     const emailBody = {
       recipient: [`${body.username}`],
       subject: 'Verification Code for Scrap Ready Application',
       from: 'scrapreadyapp@gmail.com',
-      body: `Your code is 123456`,
+      body: `Your code is ${code}`,
     };
 
     console.log("code", code);
 
     this.busSvc.sendEmail(emailBody);
-    const user = await this.userSvc.create(body, 123456);
-    return await this.profileSvc.create(body, user.id);
+    const user = await this.userSvc.create(body, code);
+    return user;
   }
 
   @Post('verify-user/resend-code')
@@ -86,7 +109,7 @@ export class AuthController {
       recipient: [`${email}`],
       subject: 'Verification Code for Scrap Ready Application',
       from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${123456}`,
+      body: `Your code is ${code}`,
     };
 
     console.log("code", code);
@@ -102,7 +125,7 @@ export class AuthController {
       recipient: [`${email}`],
       subject: 'Verification Code for Scrap Ready Application',
       from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${123456}`,
+      body: `Your code is ${code}`,
     };
 
     console.log("code", code);
@@ -118,6 +141,7 @@ export class AuthController {
       const regDto: RegisterDto = new RegisterDto();
       regDto.name = user.name;
       regDto.username = user.username;
+      regDto.phoneNumber = user.phoneNumber;
       return await this.profileSvc.create(regDto, user._id);
     }
   }

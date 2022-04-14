@@ -45,6 +45,10 @@ export class UsersService {
       throw new BadRequestException('Email is already registered');
     }
 
+    if (exists.phoneNumber == dto.phoneNumber) {
+      throw new BadRequestException('Phone number is already registered');
+    }
+
     const salt = await genSalt(10);
     const hash = hashSync(dto.password, salt);
 
@@ -55,6 +59,7 @@ export class UsersService {
       hash,
       registerCode: code,
       isUserVerified: false,
+      phoneNumber: dto.phoneNumber
     });
 
     return {
@@ -66,6 +71,12 @@ export class UsersService {
 
   async findOne(username: string) {
     return await this.userModel.findOne({ username });
+  }
+
+  async update(user: any, code: number) {
+    let existUser = await this.userModel.findOne(user.username);
+    existUser.registerCode = code;
+    return await this.userModel.findOneAndReplace( { username: user.username}, user, {new: true});
   }
 
   async findById(id: string) {

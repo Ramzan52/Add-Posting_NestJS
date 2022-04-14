@@ -42,16 +42,18 @@ export class FireBaseLoginService {
           username: user.email,
           name: user.name,
           password: '',
+          phoneNumber: ''
         }, 0);
 
         await this.profileSvc.create({
           username: user.email,
           name: user.name,
           password: '',
+          phoneNumber: ''
         }, createdUser.id);
 
         return {
-          access_token: this.jwtSvc.sign(payload, {expiresIn: '30m'}),
+          access_token: this.jwtSvc.sign(payload, {expiresIn: '24h'}),
           refresh_token: this.jwtSvc.sign(payload, {expiresIn: '24h'}),
         };
       }

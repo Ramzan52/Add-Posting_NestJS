@@ -17,6 +17,7 @@ export class ProfileService {
       email: dto.username,
       name: dto.name,
       userId: userId,
+      phoneNumber: dto.phoneNumber
     });
 
     return profile;

@@ -9,4 +9,7 @@ export class RegisterDto {
 
   @IsString()
   password: string;
+
+  @IsString()
+  phoneNumber: string;
 }
