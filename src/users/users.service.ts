@@ -60,6 +60,7 @@ export class UsersService {
     return {
       username: user.username,
       name: user.name,
+      id: user._id,
     };
   }
 

@@ -71,7 +71,8 @@ export class AuthController {
     };
 
     this.busSvc.sendEmail(emailBody);
-    await this.userSvc.create(body, code);
+    const user = await this.userSvc.create(body, code);
+    return await this.profileSvc.create(body, user.id);
   }
 
   @Post('verify-user')
@@ -82,7 +83,7 @@ export class AuthController {
       const regDto: RegisterDto = new RegisterDto();
       regDto.name = user.name;
       regDto.username = user.username;
-      return await this.profileSvc.create(regDto);
+      return await this.profileSvc.create(regDto, user._id);
     }
   }
   @UseGuards(JwtAuthGuard)

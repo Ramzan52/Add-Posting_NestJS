@@ -4,5 +4,6 @@ export class GetProfileDto {
   profilePic: string;
   phoneNumber: string;
   email: string;
+  userId: string;
   sas: string;
 }

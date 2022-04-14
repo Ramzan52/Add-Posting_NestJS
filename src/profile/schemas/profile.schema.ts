@@ -14,6 +14,9 @@ export class Profile {
   @Prop()
   phoneNumber: string;
 
+  @Prop()
+  userId: string;
+
   @Prop({ required: true })
   email: string;
 }

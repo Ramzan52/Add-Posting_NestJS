@@ -30,6 +30,7 @@ export class ProfileController {
     const profile = await this.profileSvc.findOne(req.user.username);
     return {
       id: profile._id,
+      userId: profile.userId,
       name: profile.name,
       phoneNumber: profile.phoneNumber,
       email: profile.email,

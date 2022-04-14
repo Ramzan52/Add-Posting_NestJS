@@ -12,10 +12,11 @@ export class ProfileService {
     private readonly profileModel: Model<ProfileDocument>,
   ) {}
 
-  async create(dto: RegisterDto) {
+  async create(dto: RegisterDto, userId: string) {
     const profile = await this.profileModel.create({
       email: dto.username,
       name: dto.name,
+      userId: userId,
     });
 
     return profile;
