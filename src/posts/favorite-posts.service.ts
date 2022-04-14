@@ -40,6 +40,13 @@ export class FavoritePostsService {
       throw new NotFoundException(`No Favourite Post Found`);
     }
 
-    return favPost;
+    var favPostArray = [];
+    favPost.forEach((element) => {
+      favPostArray.push(element.postId);
+    });
+
+    console.log("favPosts", favPostArray);
+
+    return favPostArray;
   }
 }

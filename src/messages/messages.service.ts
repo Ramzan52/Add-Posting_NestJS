@@ -134,4 +134,22 @@ export class MessagesService {
       result: response,
     };
   }
+
+  async markAsRead(senderId: string, receiverId: string) {
+
+    var existingMessage = await this.messageModel.aggregate([
+      {
+        $match : {
+          $and: [
+            {
+            senderId: senderId,
+            recieverId: receiverId
+            }
+          ]
+        }
+      }
+    ]).exec();
+
+    console.log("existing message", existingMessage);
+  }
 }

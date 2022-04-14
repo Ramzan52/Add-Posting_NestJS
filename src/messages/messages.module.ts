@@ -17,6 +17,7 @@ import {
 } from 'src/firebase_notification/schema/post.notification.schema';
 import { User, UserSchema } from 'src/users/schemas/user.schema';
 import { Post, PostSchema } from 'src/posts/schemas/post.schema';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports: [

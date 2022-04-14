@@ -18,6 +18,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostMessage } from './dto/create.message.dto';
+import { UsersService } from 'src/users/users.service';
 
 @ApiTags('messages')
 @UseGuards(JwtAuthGuard)
@@ -42,7 +43,7 @@ export class MessagesController {
     if (message) {
       return message;
     } else {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
   }
 
@@ -62,6 +63,12 @@ export class MessagesController {
   @Get('/conversation')
   async getConversation( @Request() req: any, @Query('recieverId') recieverId: string) {
     let conversation = this.conversationSvc.getConversation(recieverId, req.user.id);
+    //let existingMessage = await this.messageSvc.markAsRead(req.user.id, recieverId);
+    //var receiverUser = await this.userSvc.findById(recieverId);
     return conversation;
+    // return {
+    //   list: conversation,
+    //   //receiver: receiverUser
+    // };
   }
 }

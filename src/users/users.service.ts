@@ -68,6 +68,10 @@ export class UsersService {
     return await this.userModel.findOne({ username });
   }
 
+  async findById(id: string) {
+    return await this.userModel.findById(id);
+  }
+
   async verify(dto: VerifyDto) {
     var username = dto.username;
     const user = await this.userModel.findOne({ username });

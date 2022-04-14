@@ -28,6 +28,9 @@ export class Message {
   type?: string;
 
   @Prop()
+  isRead?: boolean = false;
+
+  @Prop()
   timeStamp: Date;
 
   @Prop()

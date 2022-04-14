@@ -98,9 +98,11 @@ export class PostsController {
   async mypost(@Req() req: any) {
     console.log(req.user);
     let favPost = await this.favSvc.myFavPost(req.user.id);
-    // let favPost = await this.favSvc.myFavPost('623dc7488751e150d021c303');
 
-    return favPost;
+    return {
+      list: favPost,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
 
   @Get('/:id')
