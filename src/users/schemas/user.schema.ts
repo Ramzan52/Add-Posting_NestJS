@@ -39,6 +39,7 @@ export class User {
   @Prop()
   IsResetVerified: boolean = false;
 
+  @Prop()
   registerCode: number;
 
   @Prop()
