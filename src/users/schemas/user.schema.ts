@@ -34,7 +34,7 @@ export class User {
   avgRating: number;
 
   @Prop()
-  resetPasswordCode: string;
+  resetPasswordCode: number;
 
   @Prop()
   IsResetVerified: boolean = false;

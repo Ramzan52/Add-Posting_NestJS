@@ -21,6 +21,7 @@ import { LoginDto } from './dto/login.dto';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { VerifyDto } from './dto/verfiy.dto';
 import { ResetPasswordBody } from './dto/resetPassword.dto';
+import { UpdateResetPassword } from './dto/update.resetPassword.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -151,12 +152,18 @@ export class AuthController {
   async resetPassword(@Body() dto: ResetPasswordBody) {
     return await this.userSvc.resetPassword(dto.email);
   }
-  @UseGuards(JwtAuthGuard)
-  @Post('verify/reset-password')
+  
+  @Post('reset-password/verify-otp')
   async VerifyResetPassword(
     @Body() body: VerifyResetPassword,
-    @Req() req: any,
   ) {
-    return await this.userSvc.verifyResetPassword(body, req.user.username);
+    return await this.userSvc.verifyResetPassword(body, body.email);
+  }
+
+  @Post('reset-password/new')
+  async UpdatePassword(
+    @Body() body: UpdateResetPassword,
+  ) {
+    return await this.userSvc.updateResetPassword(body, body.email);
   }
 }

@@ -14,6 +14,7 @@ import { VerifyDto } from 'src/auth/dto/verfiy.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import mongoose from 'mongoose';
+import { UpdateResetPassword } from 'src/auth/dto/update.resetPassword.dto';
 
 @Injectable()
 export class UsersService {
@@ -50,7 +51,7 @@ export class UsersService {
       throw new BadRequestException('Phone number is already registered');
     }
 
-    const salt = await genSalt(10);
+    const salt = await genSalt(10); 
     const hash = hashSync(dto.password, salt);
 
     const user = await this.userModel.create({
@@ -94,6 +95,8 @@ export class UsersService {
       throw new BadRequestException('User already verified');
     }
     if (user.registerCode == dto.code) {
+      user.isUserVerified = true;
+      await this.userModel.replaceOne({_id: new mongo.ObjectId(user._id)}, user);
       return true;
     }
   }
@@ -112,20 +115,36 @@ export class UsersService {
     };
 
     this.busSvc.sendEmail(emailBody);
+    user.resetPasswordCode = code;
+    await this.userModel.replaceOne({_id: new mongo.ObjectId(user._id)}, user);
   }
+
   async verifyResetPassword(dto: VerifyResetPassword, username: string) {
     const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    if (user.isUserVerified) {
+    if (user.IsResetVerified) {
       throw new BadRequestException('User already verified');
     }
-    if (user.registerCode == dto.code) {
-      const { salt, hash } = user;
-      user.hash = hashSync(dto.password, salt);
-      user.isUserVerified = true;
+    if (user.resetPasswordCode == dto.code) {
+      user.IsResetVerified = true;
       await this.userModel.replaceOne({ _id: user._id }, user);
     }
+  }
+
+  async updateResetPassword(dto: UpdateResetPassword, username: string) {
+    const user = await this.userModel.findOne({ username });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!user.IsResetVerified) {
+      throw new BadRequestException('User not verified');
+    }
+    const { salt, hash } = user;
+    user.hash = hashSync(dto.password, salt);
+    user.IsResetVerified = true;
+    await this.userModel.replaceOne({ _id: user._id }, user);
+    return user;
   }
 }

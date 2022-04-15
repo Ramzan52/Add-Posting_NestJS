@@ -1,9 +1,9 @@
 import { IsNumber, IsString } from 'class-validator';
 
-export class VerifyResetPassword {
+export class UpdateResetPassword {
   @IsString()
   email: string;
 
-  @IsNumber()
-  code: number;
+  @IsString()
+  password: string;
 }
