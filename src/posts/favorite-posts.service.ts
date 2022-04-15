@@ -42,6 +42,7 @@ export class FavoritePostsService {
 
     var favPostArray = [];
     favPost.forEach((element) => {
+      element.postId.isFavorite = true;
       favPostArray.push(element.postId);
     });
 

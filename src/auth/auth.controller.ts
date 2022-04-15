@@ -20,6 +20,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { VerifyDto } from './dto/verfiy.dto';
+import { ResetPasswordBody } from './dto/resetPassword.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -145,10 +146,10 @@ export class AuthController {
       return await this.profileSvc.create(regDto, user._id);
     }
   }
-  @UseGuards(JwtAuthGuard)
+
   @Post('reset-password')
-  async resetPassword(@Req() req: any) {
-    return await this.userSvc.resetPassword(req.user.username);
+  async resetPassword(@Body() dto: ResetPasswordBody) {
+    return await this.userSvc.resetPassword(dto.email);
   }
   @UseGuards(JwtAuthGuard)
   @Post('verify/reset-password')

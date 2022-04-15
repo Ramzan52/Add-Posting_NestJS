@@ -7,12 +7,13 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { genSalt, hashSync } from 'bcryptjs';
-import { Model } from 'mongoose';
+import { Model, mongo } from 'mongoose';
 import { RegisterDto } from 'src/auth/dto/register.dto';
 import { ResetPassword } from 'src/auth/dto/reset.password';
 import { VerifyDto } from 'src/auth/dto/verfiy.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -74,9 +75,9 @@ export class UsersService {
   }
 
   async update(user: any, code: number) {
-    let existUser = await this.userModel.findOne(user.username);
+    let existUser = await this.findOne(user.username);
     existUser.registerCode = code;
-    return await this.userModel.findOneAndReplace( { username: user.username}, user, {new: true});
+    return await this.userModel.replaceOne( { _id: new mongo.ObjectId(existUser._id)}, existUser );
   }
 
   async findById(id: string) {
@@ -106,7 +107,7 @@ export class UsersService {
     const emailBody = {
       recipient: [`${username}`],
       subject: 'Verification Code to reset password',
-      from: 'scrap.ready@aquila360.com',
+      from: 'scrapreadyapp@gmail.com',
       body: `Your code is ${code}`,
     };
 
