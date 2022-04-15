@@ -34,7 +34,8 @@ export class AuthService {
       console.log('code', code);
 
       this.busSvc.sendEmail(emailBody);
-      await this.usersSvc.update(existingUser, code);
+      existingUser.registerCode = code;
+      await this.usersSvc.update(existingUser);
 
       return {
         isVerified: false,

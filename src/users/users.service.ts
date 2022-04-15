@@ -95,12 +95,10 @@ export class UsersService {
     return await this.userModel.findOne({ username });
   }
 
-  async update(user: any, code: number) {
-    let existUser = await this.findOne(user.username);
-    existUser.registerCode = code;
+  async update(user: any) {
     return await this.userModel.replaceOne(
-      { _id: new mongo.ObjectId(existUser._id) },
-      existUser,
+      { _id: new mongo.ObjectId(user.id) },
+      user,
     );
   }
 
