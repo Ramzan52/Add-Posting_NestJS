@@ -207,7 +207,7 @@ stages:
                   inputs:
                     action: 'createSecret'
                     kubernetesServiceConnection: 'k8s-scrap-ready-prod'
-                    namespace: 'scrap-ready-dev'
+                    namespace: 'scrap-ready-prod'
                     secretType: 'dockerRegistry'
                     secretName: '$(imagePullSecret)'
                     dockerRegistryEndpoint: 'container-registry-service-connection'
@@ -217,7 +217,7 @@ stages:
                   inputs:
                     action: 'deploy'
                     kubernetesServiceConnection: 'k8s-scrap-ready-prod'
-                    namespace: 'scrap-ready-dev'
+                    namespace: 'scrap-ready-prod'
                     manifests: '$(Pipeline.Workspace)/manifests/prod.yaml'
                     containers: '$(containerRegistry)/$(imageRepository):$(tag)'
                     imagePullSecrets: '$(imagePullSecret)'
