@@ -66,38 +66,7 @@ export class AuthController {
   async register(@Body() body: RegisterDto) {
     let existingRegistration = await this.userSvc.findOne(body.username);
 
-    if (existingRegistration) {
-      if (!existingRegistration.isUserVerified) {
-        const code = Math.floor(100000 + Math.random() * 900000);
-        const emailBody = {
-          recipient: [`${body.username}`],
-          subject: 'Verification Code for Scrap Ready Application',
-          from: 'scrapreadyapp@gmail.com',
-          body: `Your code is ${code}`,
-        };
-
-        console.log('code', code);
-
-        this.busSvc.sendEmail(emailBody);
-        await this.userSvc.update(body, code);
-        return {
-          isVerified: false,
-          message: 'Please verify your email',
-        };
-      }
-    }
-    const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [`${body.username}`],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
-
-    console.log('code', code);
-
-    this.busSvc.sendEmail(emailBody);
-    const user = await this.userSvc.create(body, code);
+    const user = await this.userSvc.create(body);
     return user;
   }
 

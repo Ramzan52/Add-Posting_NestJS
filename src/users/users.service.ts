@@ -41,15 +41,28 @@ export class UsersService {
     await this.userModel.replaceOne({ _id: user._id }, user);
   }
 
-  async create(dto: RegisterDto, code: number) {
+  async create(dto: RegisterDto) {
     const exists = await this.findOne(dto.username);
-    if (exists) {
+
+    if (exists && exists.username == dto.username) {
       throw new BadRequestException('Email is already registered');
     }
 
     if (exists && exists.phoneNumber == dto.phoneNumber) {
       throw new BadRequestException('Phone number is already registered');
     }
+
+    const code = Math.floor(100000 + Math.random() * 900000);
+    const emailBody = {
+      recipient: [`${dto.username}`],
+      subject: 'Verification Code for Scrap Ready Application',
+      from: 'scrapreadyapp@gmail.com',
+      body: `Your code is ${code}`,
+    };
+
+    console.log('code', code);
+
+    this.busSvc.sendEmail(emailBody);
 
     const salt = await genSalt(10);
     const hash = hashSync(dto.password, salt);
