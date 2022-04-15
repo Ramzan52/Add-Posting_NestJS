@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scrap-ready-api-deployment
+  namespace: scrap-ready-prod
+spec:
+  progressDeadlineSeconds: 300
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: scrap-ready-api
+  template:
+    metadata:
+      labels:
+        app: scrap-ready-api
+    spec:
+      containers:
+        - name: scrap-ready-api-container
+          image: inserito.azurecr.io/scrap-ready-api-prod:latest
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '64m'
+          env:
+            - name: NODE_ENV
+              value: development
+          ports:
+            - containerPort: 5100
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scrap-ready-api-svc
+  namespace: scrap-ready-prod
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 5100
+  selector:
+    app: scrap-ready-api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: scrap-ready-api-ingress
+  namespace: scrap-ready-prod
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    ingress.kubernetes.io/force-ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+spec:
+  tls:
+    - hosts:
+        - scrap-ready-api.aquila360.com
+      secretName: aquila360-com-tls
+  rules:
+    - host: scrap-ready-api.aquila360.com
+      http:
+        paths:
+          - path: /(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: scrap-ready-api-svc
+                port:
+                  number: 80

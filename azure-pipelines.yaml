@@ -4,6 +4,7 @@ trigger:
     include:
       - dev
       - beta
+      - master
 
 resources:
   - repo: self
@@ -149,5 +150,74 @@ stages:
                     kubernetesServiceConnection: 'k8s-scrap-ready-beta'
                     namespace: 'scrap-ready-beta'
                     manifests: '$(Pipeline.Workspace)/manifests/beta.yaml'
+                    containers: '$(containerRegistry)/$(imageRepository):$(tag)'
+                    imagePullSecrets: '$(imagePullSecret)'
+
+  - stage: buildAndPushProd
+    displayName: build and push to prod
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    variables:
+      imageRepository: 'scrap-ready-api-prod'
+    jobs:
+      - job: build
+        displayName: build and push
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: Docker@2
+            displayName: build api image
+            inputs:
+              containerRegistry: 'container-registry-service-connection'
+              repository: '$(imageRepository)'
+              command: 'build'
+              Dockerfile: $(dockerfilePath)
+              tags: '$(tag)'
+
+          - task: Docker@2
+            displayName: push api image to container registry
+            inputs:
+              containerRegistry: 'container-registry-service-connection'
+              repository: '$(imageRepository)'
+              command: 'push'
+              tags: '$(tag)'
+
+          - upload: manifests
+            displayName: publish k8s manifests
+            artifact: manifests
+
+  - stage: deploy2prod
+    displayName: deploy to prod
+    dependsOn: buildAndPushProd
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    variables:
+      containerRegistry: 'inserito.azurecr.io'
+      imagePullSecret: 'scrap-ready-api-prod'
+      imageRepository: 'scrap-ready-api-prod'
+    jobs:
+      - deployment: deploy
+        pool:
+          vmImage: $(vmImageName)
+        environment: 'scrap-ready-api-prod.scrap-ready-prod'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: KubernetesManifest@0
+                  displayName: create imagePullSecret
+                  inputs:
+                    action: 'createSecret'
+                    kubernetesServiceConnection: 'k8s-scrap-ready-prod'
+                    namespace: 'scrap-ready-dev'
+                    secretType: 'dockerRegistry'
+                    secretName: '$(imagePullSecret)'
+                    dockerRegistryEndpoint: 'container-registry-service-connection'
+
+                - task: KubernetesManifest@0
+                  displayName: deploy api to k8s cluster
+                  inputs:
+                    action: 'deploy'
+                    kubernetesServiceConnection: 'k8s-scrap-ready-prod'
+                    namespace: 'scrap-ready-dev'
+                    manifests: '$(Pipeline.Workspace)/manifests/prod.yaml'
                     containers: '$(containerRegistry)/$(imageRepository):$(tag)'
                     imagePullSecrets: '$(imagePullSecret)'
