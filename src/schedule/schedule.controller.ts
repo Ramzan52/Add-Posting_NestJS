@@ -1,6 +1,7 @@
 import { PostRating } from './dto/create.rating.dto';
 import { ScheduleService } from './schedule.service';
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -22,10 +23,7 @@ export class ScheduleController {
   @Get()
   async getSchedule(@Req() req: any) {
     let schedule = await this.scheduleSvc.getSchedule(req.user.id);
-    if (schedule) {
-      return schedule;
-    }
-    throw new InternalServerErrorException();
+    return schedule;
   }
   @Post()
   async postSchedule(@Req() req: any, @Body() body: PostSchedule) {
@@ -33,7 +31,7 @@ export class ScheduleController {
     if (schedule) {
       return schedule;
     }
-    throw new InternalServerErrorException();
+    throw new BadRequestException();
   }
   @Post('/rating')
   async postScheduleRating(@Body() body: PostRating) {
@@ -41,6 +39,6 @@ export class ScheduleController {
     if (rating) {
       return rating;
     }
-    throw new InternalServerErrorException();
+    throw new BadRequestException();
   }
 }

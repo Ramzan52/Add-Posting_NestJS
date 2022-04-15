@@ -28,8 +28,8 @@ export class FireBaseLoginService {
         };
 
         return {
-          access_token: this.jwtSvc.sign(payload, {expiresIn: '30m'}),
-          refresh_token: this.jwtSvc.sign(payload, {expiresIn: '24h'}),
+          access_token: this.jwtSvc.sign(payload, { expiresIn: '30m' }),
+          refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
         };
       } else {
         const payload = {
@@ -42,19 +42,22 @@ export class FireBaseLoginService {
           username: user.email,
           name: user.name,
           password: '',
-          phoneNumber: ''
-        }, 0);
+          phoneNumber: '',
+        });
 
-        await this.profileSvc.create({
-          username: user.email,
-          name: user.name,
-          password: '',
-          phoneNumber: ''
-        }, createdUser.id);
+        await this.profileSvc.create(
+          {
+            username: user.email,
+            name: user.name,
+            password: '',
+            phoneNumber: '',
+          },
+          createdUser.id,
+        );
 
         return {
-          access_token: this.jwtSvc.sign(payload, {expiresIn: '24h'}),
-          refresh_token: this.jwtSvc.sign(payload, {expiresIn: '24h'}),
+          access_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
+          refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
         };
       }
     } catch (error) {
