@@ -64,8 +64,6 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body: RegisterDto) {
-    let existingRegistration = await this.userSvc.findOne(body.username);
-
     const user = await this.userSvc.create(body);
     return user;
   }
@@ -76,12 +74,17 @@ export class AuthController {
     if (user.isUserVerified)
       throw new BadRequestException('User already verified');
     const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [`${email}`],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+    const emailBody = [
+      {
+        body: {
+          recipient: [`${email}`],
+          subject: 'Verification Code for Scrap Ready Application',
+          from: 'scrapreadyapp@gmail.com',
+          body: `Your code is ${code}`,
+        },
+        contentType: 'application/json',
+      },
+    ];
 
     console.log('code', code);
 
@@ -92,12 +95,17 @@ export class AuthController {
   async resendCodePassword(email: string) {
     let user = await this.userSvc.findOne(email);
     const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [`${email}`],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+    const emailBody = [
+      {
+        body: {
+          recipient: [`${email}`],
+          subject: 'Verification Code for Scrap Ready Application',
+          from: 'scrapreadyapp@gmail.com',
+          body: `Your code is ${code}`,
+        },
+        contentType: 'application/json',
+      },
+    ];
 
     console.log('code', code);
 

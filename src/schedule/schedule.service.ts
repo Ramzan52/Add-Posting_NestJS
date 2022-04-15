@@ -1,6 +1,6 @@
 import { PostRating } from './dto/create.rating.dto';
 import { Schedule, ScheduleDocument } from './schema/post.schedule.schema';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel, SchemaFactory } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostSchedule } from './dto/create.schedule.dto';
@@ -57,7 +57,7 @@ export class ScheduleService {
       throw new NotFoundException('No Schedule Found');
     }
     if (dto.rating > 5 || dto.rating < 0) {
-      throw new NotFoundException('Rating should be between 0 and 5');
+      throw new BadRequestException('Rating should be between 0 and 5');
     }
 
     let user = await this.userModel.findById(dto.vednorId);

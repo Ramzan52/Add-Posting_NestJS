@@ -53,12 +53,19 @@ export class UsersService {
     }
 
     const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [`${dto.username}`],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+    const emailBody = [
+      {
+        body: {
+          recipient: [`${dto.username}`],
+          subject: 'Verification Code for Scrap Ready Application',
+          from: 'scrapreadyapp@gmail.com',
+          body: `Your code is ${code}`,
+        },
+        contentType: 'application/json',
+      },
+    ];
+
+    console.log('email', emailBody);
 
     console.log('code', code);
 
@@ -126,12 +133,17 @@ export class UsersService {
     }
     user.IsResetVerified = false;
     const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [`${username}`],
-      subject: 'Verification Code to reset password',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+    const emailBody = [
+      {
+        body: {
+          recipient: [`${username}`],
+          subject: 'Verification Code for Scrap Ready Application',
+          from: 'scrapreadyapp@gmail.com',
+          body: `Your code is ${code}`,
+        },
+        contentType: 'application/json',
+      },
+    ];
 
     this.busSvc.sendEmail(emailBody);
     user.resetPasswordCode = code;
