@@ -13,11 +13,14 @@ export class FavoritePostsService {
   ) {}
 
   async likePost(postId: string, like: boolean, userId: string) {
+    
     const post = await this.postModel.findById(postId).exec();
     if (!post) {
       throw new NotFoundException(`Post with id ${postId} Not Found`);
     }
-    if (like) {
+    console.log("like", like);
+    if (typeof(like) === 'string') like = JSON.parse(like);
+    if (like == true) {
       const favoritePosts = await this.favoritePostModel.create({
         userId: userId,
         postId: new mongo.ObjectId(postId),
@@ -26,7 +29,7 @@ export class FavoritePostsService {
     } else {
       await this.favoritePostModel.deleteOne({
         userId: userId,
-        postId: new mongo.ObjectId(postId),
+        postId: postId,
       });
     }
   }

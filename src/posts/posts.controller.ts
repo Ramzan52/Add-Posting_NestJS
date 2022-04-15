@@ -89,6 +89,7 @@ export class PostsController {
     @Query('like') like: boolean,
     @Request() req: any,
   ) {
+    
     let favPost = await this.favSvc.likePost(postId, like, req.user.id);
     return favPost;
   }
