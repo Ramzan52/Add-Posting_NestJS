@@ -120,7 +120,7 @@ export class UsersService {
     if (user.registerCode == dto.code) {
       user.isUserVerified = true;
       await this.userModel.replaceOne(
-        { _id: new mongo.ObjectId(user._id) },
+        { _id: new mongo.ObjectId(user.id) },
         user,
       );
       return true;

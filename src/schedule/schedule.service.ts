@@ -1,6 +1,10 @@
 import { PostRating } from './dto/create.rating.dto';
 import { Schedule, ScheduleDocument } from './schema/post.schedule.schema';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel, SchemaFactory } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostSchedule } from './dto/create.schedule.dto';
@@ -35,6 +39,11 @@ export class ScheduleService {
     if (!post) {
       throw new NotFoundException('No Post Found');
     }
+
+    if (post[0].creatorId != id) {
+      throw new BadRequestException();
+    }
+
     let data = {
       buyerId: dto.buyerId,
       date: dto.date,
