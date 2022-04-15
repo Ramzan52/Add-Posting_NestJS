@@ -47,7 +47,7 @@ export class UsersService {
       throw new BadRequestException('Email is already registered');
     }
 
-    if (exists.phoneNumber == dto.phoneNumber) {
+    if (exists && exists.phoneNumber == dto.phoneNumber) {
       throw new BadRequestException('Phone number is already registered');
     }
 
