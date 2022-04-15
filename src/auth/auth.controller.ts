@@ -46,7 +46,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req, @Body() body: LoginDto) {
+  async login(@Body() body: LoginDto) {
     return this.authSvc.login(body);
   }
 
@@ -64,7 +64,6 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body: RegisterDto) {
-
     let existingRegistration = await this.userSvc.findOne(body.username);
 
     if (existingRegistration) {
@@ -77,14 +76,14 @@ export class AuthController {
           body: `Your code is ${code}`,
         };
 
-        console.log("code", code);
+        console.log('code', code);
 
         this.busSvc.sendEmail(emailBody);
         await this.userSvc.update(body, code);
         return {
           isVerified: false,
-          message: "Please verify your email"
-        }
+          message: 'Please verify your email',
+        };
       }
     }
     const code = Math.floor(100000 + Math.random() * 900000);
@@ -95,7 +94,7 @@ export class AuthController {
       body: `Your code is ${code}`,
     };
 
-    console.log("code", code);
+    console.log('code', code);
 
     this.busSvc.sendEmail(emailBody);
     const user = await this.userSvc.create(body, code);
@@ -105,7 +104,8 @@ export class AuthController {
   @Post('verify-user/resend-code')
   async resendCode(email: string) {
     let user = await this.userSvc.findOne(email);
-    if (user.isUserVerified) throw new BadRequestException("User already verified"); 
+    if (user.isUserVerified)
+      throw new BadRequestException('User already verified');
     const code = Math.floor(100000 + Math.random() * 900000);
     const emailBody = {
       recipient: [`${email}`],
@@ -114,7 +114,7 @@ export class AuthController {
       body: `Your code is ${code}`,
     };
 
-    console.log("code", code);
+    console.log('code', code);
 
     this.busSvc.sendEmail(emailBody);
   }
@@ -130,7 +130,7 @@ export class AuthController {
       body: `Your code is ${code}`,
     };
 
-    console.log("code", code);
+    console.log('code', code);
 
     this.busSvc.sendEmail(emailBody);
   }
@@ -152,18 +152,14 @@ export class AuthController {
   async resetPassword(@Body() dto: ResetPasswordBody) {
     return await this.userSvc.resetPassword(dto.email);
   }
-  
+
   @Post('reset-password/verify-otp')
-  async VerifyResetPassword(
-    @Body() body: VerifyResetPassword,
-  ) {
+  async VerifyResetPassword(@Body() body: VerifyResetPassword) {
     return await this.userSvc.verifyResetPassword(body, body.email);
   }
 
   @Post('reset-password/new')
-  async UpdatePassword(
-    @Body() body: UpdateResetPassword,
-  ) {
+  async UpdatePassword(@Body() body: UpdateResetPassword) {
     return await this.userSvc.updateResetPassword(body, body.email);
   }
 }

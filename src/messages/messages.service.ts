@@ -6,7 +6,7 @@ import { PostMessage } from './dto/create.message.dto';
 import { Message, MessageDocument } from './schema/post.message.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Model, mongo } from 'mongoose';
 import { FcmTOkenService } from './fcmNotification.service';
 import { SendMessage } from './dto/sendMessage.dto';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
@@ -152,25 +152,19 @@ export class MessagesService {
 
   async markAsRead(senderId: string, receiverId: string) {
 
-    var existingMessage = await this.messageModel.aggregate([
-      {
-        $match : {
-          $and: [
-            {
-            senderId: senderId,
-            recieverId: receiverId
-            }
-          ]
-        }
-      }
-    ]).exec();
+    console.log("sender", senderId);
+
+    var existingMessage = await this.messageModel.find( 
+      { $and: [
+      {senderId: senderId}, {recieverId: receiverId}
+    ]} ).exec();
 
     existingMessage[0].isRead = true;
-    this.messageModel.findOneAndReplace(
-      { _id: existingMessage[0]._id },
-        existingMessage[0],
-        { new: true },
-    )
+    await this.messageModel.replaceOne(
+      { _id: new mongo.ObjectId( existingMessage[0].id )},
+        existingMessage,
+    ).exec();
+    
     console.log("existing message", existingMessage);
     return existingMessage;
   }

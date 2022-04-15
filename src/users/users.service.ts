@@ -51,7 +51,7 @@ export class UsersService {
       throw new BadRequestException('Phone number is already registered');
     }
 
-    const salt = await genSalt(10); 
+    const salt = await genSalt(10);
     const hash = hashSync(dto.password, salt);
 
     const user = await this.userModel.create({
@@ -61,7 +61,7 @@ export class UsersService {
       hash,
       registerCode: code,
       isUserVerified: false,
-      phoneNumber: dto.phoneNumber
+      phoneNumber: dto.phoneNumber,
     });
 
     return {
@@ -78,7 +78,10 @@ export class UsersService {
   async update(user: any, code: number) {
     let existUser = await this.findOne(user.username);
     existUser.registerCode = code;
-    return await this.userModel.replaceOne( { _id: new mongo.ObjectId(existUser._id)}, existUser );
+    return await this.userModel.replaceOne(
+      { _id: new mongo.ObjectId(existUser._id) },
+      existUser,
+    );
   }
 
   async findById(id: string) {
@@ -96,7 +99,10 @@ export class UsersService {
     }
     if (user.registerCode == dto.code) {
       user.isUserVerified = true;
-      await this.userModel.replaceOne({_id: new mongo.ObjectId(user._id)}, user);
+      await this.userModel.replaceOne(
+        { _id: new mongo.ObjectId(user._id) },
+        user,
+      );
       return true;
     }
   }
@@ -116,7 +122,10 @@ export class UsersService {
 
     this.busSvc.sendEmail(emailBody);
     user.resetPasswordCode = code;
-    await this.userModel.replaceOne({_id: new mongo.ObjectId(user._id)}, user);
+    await this.userModel.replaceOne(
+      { _id: new mongo.ObjectId(user._id) },
+      user,
+    );
   }
 
   async verifyResetPassword(dto: VerifyResetPassword, username: string) {

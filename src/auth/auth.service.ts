@@ -1,9 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { hashSync } from 'bcryptjs';
 import { auth } from 'firebase-admin';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { UsersService } from 'src/users/users.service';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,28 +19,27 @@ export class AuthService {
     private readonly busSvc: AzureServiceBusService,
   ) {}
 
-  async login(user: any) {
+  async login(user: LoginDto) {
     const existingUser = await this.usersSvc.findOne(user.username);
 
     if (!existingUser.isUserVerified) {
-
       const code = Math.floor(100000 + Math.random() * 900000);
-        const emailBody = {
-          recipient: [`${user.username}`],
-          subject: 'Verification Code for Scrap Ready Application',
-          from: 'scrapreadyapp@gmail.com',
-          body: `Your code is ${code}`,
-        };
+      const emailBody = {
+        recipient: [`${user.username}`],
+        subject: 'Verification Code for Scrap Ready Application',
+        from: 'scrapreadyapp@gmail.com',
+        body: `Your code is ${code}`,
+      };
 
-        console.log("code", code);
+      console.log('code', code);
 
-        this.busSvc.sendEmail(emailBody);
-        await this.usersSvc.update(existingUser, code);
+      this.busSvc.sendEmail(emailBody);
+      await this.usersSvc.update(existingUser, code);
 
       return {
         isVerified: false,
-        message: "Please verify your email"
-      }
+        message: 'Please verify your email',
+      };
     }
     if (existingUser) {
       const payload = {
@@ -49,6 +53,7 @@ export class AuthService {
       return {
         access_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
         refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
+        user: existingUser,
       };
     } else {
       return null;
