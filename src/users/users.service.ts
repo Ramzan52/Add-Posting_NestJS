@@ -173,9 +173,11 @@ export class UsersService {
     if (!user.IsResetVerified) {
       throw new BadRequestException('User not verified');
     }
+
     const { salt, hash } = user;
     user.hash = hashSync(dto.password, salt);
-    user.IsResetVerified = true;
+    user.IsResetVerified = false;
+    user.resetPasswordCode = 0;
     await this.userModel.replaceOne({ _id: user._id }, user);
     return user;
   }

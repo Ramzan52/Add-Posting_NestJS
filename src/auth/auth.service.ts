@@ -42,6 +42,7 @@ export class AuthService {
         message: 'Please verify your email',
       };
     }
+
     if (existingUser) {
       const payload = {
         sub: existingUser.id,
