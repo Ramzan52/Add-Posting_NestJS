@@ -105,6 +105,7 @@ export class MessagesService {
 
       if (existingMessage) {
         existingMessage.text = dto.text;
+        existingMessage.isRead = false;
         await existingMessage.save();
         const existingMessageFlip = await this.messageModel.findOne({
           recieverId: userID,
@@ -112,6 +113,7 @@ export class MessagesService {
         });
         console.log('existing message', existingMessageFlip);
         existingMessageFlip.text = dto.text;
+        existingMessageFlip.isRead = false;
         await existingMessageFlip.save();
         return existingMessage;
       }
