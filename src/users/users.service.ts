@@ -13,6 +13,7 @@ import { VerifyDto } from 'src/auth/dto/verify.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { UpdateResetPassword } from 'src/auth/dto/update.resetPassword.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
@@ -87,7 +88,7 @@ export class UsersService {
   }
 
   async findOne(username: string) {
-    return await this.userModel.findOne({ username });
+    return await this.userModel.findOne({ username: username }).exec();
   }
 
   async update(user: any) {

@@ -48,7 +48,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() body: LoginDto) {
-    return this.authSvc.login(body);
+    return await this.authSvc.login(body);
   }
 
   @Post('/fb-login/:token')
