@@ -16,7 +16,7 @@ export class SendMessage {
   senderId?: string;
 
   @IsString()
-  recieverId: string;
+  receiverId: string;
 
   @IsString()
   text: string;

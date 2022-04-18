@@ -14,7 +14,7 @@ import { ChatPost } from './post.dto';
 
 export class PostFirstMessage {
   @Prop({ required: true })
-  recieverId: string;
+  receiverId: string;
 
   @Prop({ required: true })
   postId: string;

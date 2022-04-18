@@ -13,10 +13,10 @@ export class Message {
   senderId: string;
 
   @Prop()
-  recieverId: string;
+  receiverId: string;
 
   @Prop()
-  recieverName?: string;
+  receiverName?: string;
 
   @Prop()
   senderName?: string;

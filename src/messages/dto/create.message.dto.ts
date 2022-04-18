@@ -16,10 +16,10 @@ export class PostMessage {
   senderId: string;
 
   @IsString()
-  recieverId: string;
+  receiverId: string;
 
   @IsString()
-  recieverName: string;
+  receiverName: string;
 
   @IsString()
   senderName: string;
