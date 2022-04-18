@@ -24,12 +24,17 @@ export class AuthService {
 
     if (!existingUser.isUserVerified) {
       const code = Math.floor(100000 + Math.random() * 900000);
-      const emailBody = {
-        recipient: [`${user.username}`],
-        subject: 'Verification Code for Scrap Ready Application',
-        from: 'scrapreadyapp@gmail.com',
-        body: `Your code is ${code}`,
-      };
+      const emailBody = [
+        {
+          body: {
+            recipient: [`${user.username}`],
+            subject: 'Verification Code for Scrap Ready Application',
+            from: 'scrapreadyapp@gmail.com',
+            body: `Your code is ${code}`,
+          },
+          contentType: 'application/json',
+        },
+      ];
 
       this.busSvc.sendEmail(emailBody);
       existingUser.registerCode = code;
