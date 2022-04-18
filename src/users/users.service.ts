@@ -9,11 +9,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { genSalt, hashSync } from 'bcryptjs';
 import { Model, mongo } from 'mongoose';
 import { RegisterDto } from 'src/auth/dto/register.dto';
-import { ResetPassword } from 'src/auth/dto/reset.password';
 import { VerifyDto } from 'src/auth/dto/verfiy.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
-import mongoose from 'mongoose';
 import { UpdateResetPassword } from 'src/auth/dto/update.resetPassword.dto';
 
 @Injectable()
