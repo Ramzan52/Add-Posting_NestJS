@@ -55,7 +55,7 @@ export class UsersService {
     const emailBody = [
       {
         body: {
-          recipient: [`${dto.username}`],
+          recipient: [dto.username],
           subject: 'Verification Code for Scrap Ready Application',
           from: 'scrapreadyapp@gmail.com',
           body: `Your code is ${code}`,
@@ -133,7 +133,7 @@ export class UsersService {
     const emailBody = [
       {
         body: {
-          recipient: [`${username}`],
+          recipient: [username],
           subject: 'Verification Code for Scrap Ready Application',
           from: 'scrapreadyapp@gmail.com',
           body: `Your code is ${code}`,

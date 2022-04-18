@@ -78,7 +78,7 @@ export class AuthController {
     const emailBody = [
       {
         body: {
-          recipient: [`${email}`],
+          recipient: [email],
           subject: 'Verification Code for Scrap Ready Application',
           from: 'scrapreadyapp@gmail.com',
           body: `Your code is ${code}`,
@@ -129,7 +129,7 @@ export class AuthController {
     const emailBody = [
       {
         body: {
-          recipient: [`${email}`],
+          recipient: [email],
           subject: 'Verification Code for Scrap Ready Application',
           from: 'scrapreadyapp@gmail.com',
           body: `Your code is ${code}`,
