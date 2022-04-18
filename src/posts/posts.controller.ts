@@ -82,6 +82,7 @@ export class PostsController {
       sas: this.sasSvc.getNewSASKey(),
     };
   }
+
   @UseGuards(JwtAuthGuard)
   @Post('fav')
   async likePost(
@@ -89,9 +90,7 @@ export class PostsController {
     @Query('like') like: boolean,
     @Request() req: any,
   ) {
-    
-    let favPost = await this.favSvc.likePost(postId, like, req.user.id);
-    return favPost;
+    return await this.favSvc.likePost(postId, like, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -5,6 +5,7 @@ GET http://localhost:5100/notifications
 
 ### get all posts
 GET http://localhost:5100/posts?location=Lahore
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjU5NWIyZGEyZTdmMTQ2ZDk5MWEwZDEiLCJuYW1lIjoiT21lciIsInVzZXJuYW1lIjoib21lci5raGFuQGFxdWlsYTM2MC5jb20iLCJpYXQiOjE2NTAyNzgzMDMsImV4cCI6MTY1MDM2NDcwM30.sukLqx998JybchSIz9NOzuJzWnUg69uEv9lCBPFPSG0
 
 ### get my posts
 GET http://localhost:5100/posts/my
