@@ -13,13 +13,12 @@ export class FavoritePostsService {
   ) {}
 
   async likePost(postId: string, like: boolean, userId: string) {
-    
     const post = await this.postModel.findById(postId).exec();
     if (!post) {
       throw new NotFoundException(`Post with id ${postId} Not Found`);
     }
-    console.log("like", like);
-    if (typeof(like) === 'string') like = JSON.parse(like);
+
+    if (typeof like === 'string') like = JSON.parse(like);
     if (like == true) {
       const favoritePosts = await this.favoritePostModel.create({
         userId: userId,
@@ -43,13 +42,11 @@ export class FavoritePostsService {
       throw new NotFoundException(`No Favourite Post Found`);
     }
 
-    var favPostArray = [];
+    const favPostArray = [];
     favPost.forEach((element) => {
       element.postId.isFavorite = true;
       favPostArray.push(element.postId);
     });
-
-    console.log("favPosts", favPostArray);
 
     return favPostArray;
   }

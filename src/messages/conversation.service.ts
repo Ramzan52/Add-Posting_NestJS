@@ -51,12 +51,9 @@ export class ConversationService {
 
   @ApiOkResponse({ status: 200, type: PostConversation })
   async getConversation(recieverId: string, sender: string) {
-    console.log('receiver', recieverId);
-    var conversationList = await this.conversationModel
+    return await this.conversationModel
       .find({ $and: [{ senderId: sender }, { recieverId: recieverId }] })
       .sort([['timeStamp', -1]])
       .exec();
-
-    return conversationList;
   }
 }
