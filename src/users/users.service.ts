@@ -53,17 +53,12 @@ export class UsersService {
     }
 
     const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = [
-      {
-        body: {
-          recipient: [dto.username],
-          subject: 'Verification Code for Scrap Ready Application',
-          from: 'scrapreadyapp@gmail.com',
-          body: `Your code is ${code}`,
-        },
-        contentType: 'application/json',
-      },
-    ];
+    const emailBody = {
+      recipient: [dto.username],
+      subject: 'Verification Code for Scrap Ready Application',
+      from: 'scrapreadyapp@gmail.com',
+      body: `Your code is ${code}`,
+    };
 
     this.busSvc.sendEmail(emailBody);
 
@@ -131,20 +126,15 @@ export class UsersService {
     }
     user.IsResetVerified = false;
     const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = [
-      {
-        body: {
-          recipient: [username],
-          subject: 'Verification Code for Scrap Ready Application',
-          from: 'scrapreadyapp@gmail.com',
-          body: `Your code is ${code}`,
-        },
-        contentType: 'application/json',
-      },
-    ];
+    const emailBody = {
+      recipient: [username],
+      subject: 'Verification Code for Scrap Ready Application',
+      from: 'scrapreadyapp@gmail.com',
+      body: `Your code is ${code}`,
+    };
 
     this.busSvc.sendEmail(emailBody);
-    user.resetPasswordCode = code;
+    user.resetPasswordCode = code.toString();
     await this.userModel.replaceOne(
       { _id: new mongo.ObjectId(user._id) },
       user,
@@ -159,7 +149,7 @@ export class UsersService {
     if (user.IsResetVerified) {
       throw new BadRequestException('User already verified');
     }
-    if (user.resetPasswordCode == dto.code) {
+    if (user.resetPasswordCode == dto.code.toString()) {
       user.IsResetVerified = true;
       await this.userModel.replaceOne({ _id: user._id }, user);
     }

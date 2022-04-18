@@ -71,21 +71,19 @@ export class AuthController {
 
   @Post('verify-user/resend-code')
   async resendCode(@Query('email') email: string) {
-    let user = await this.userSvc.findOne(email);
-    if (user.isUserVerified)
+    const user = await this.userSvc.findOne(email);
+    if (user.isUserVerified) {
       throw new BadRequestException('User already verified');
+    }
+
     const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = [
-      {
-        body: {
-          recipient: [email],
-          subject: 'Verification Code for Scrap Ready Application',
-          from: 'scrapreadyapp@gmail.com',
-          body: `Your code is ${code}`,
-        },
-        contentType: 'application/json',
-      },
-    ];
+
+    const emailBody = {
+      recipient: [email],
+      subject: 'Verification Code for Scrap Ready Application',
+      from: 'scrapreadyapp@gmail.com',
+      body: `Your code is ${code}`,
+    };
 
     this.busSvc.sendEmail(emailBody);
     user.registerCode = code;
@@ -124,26 +122,17 @@ export class AuthController {
 
   @Post('forgot-password/resend-code')
   async resendCodePassword(@Query('email') email: string) {
-    let user = await this.userSvc.findOne(email);
+    const user = await this.userSvc.findOne(email);
     const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = [
-      {
-        body: {
-          recipient: [email],
-          subject: 'Verification Code for Scrap Ready Application',
-          from: 'scrapreadyapp@gmail.com',
-          body: `Your code is ${code}`,
-        },
-        contentType: 'application/json',
-      },
-    ];
-
-    console.log('code', code);
+    const emailBody = {
+      recipient: [email],
+      subject: 'Verification Code for Scrap Ready Application',
+      from: 'scrapreadyapp@gmail.com',
+      body: `Your code is ${code}`,
+    };
 
     this.busSvc.sendEmail(emailBody);
-
-    user.resetPasswordCode = code;
-
+    user.resetPasswordCode = code.toString();
     await this.userSvc.update(user);
   }
 }

@@ -19,6 +19,11 @@ export class AzureServiceBusService {
   }
 
   sendEmail(messageBody: any) {
-    this.emailSender.sendMessages(messageBody);
+    this.emailSender.sendMessages([
+      {
+        body: messageBody,
+        contentType: 'application/json',
+      },
+    ]);
   }
 }
