@@ -31,6 +31,20 @@ export class FavoritePostsService {
         postId: postId,
       });
     }
+
+    const favObj = {
+      userId,
+      postId: new mongo.ObjectId(postId),
+    };
+
+    if (like) {
+      if (!(await this.favoritePostModel.exists(favObj))) {
+        await this.favoritePostModel.create(favObj);
+        return;
+      }
+    }
+
+    await this.favoritePostModel.deleteOne(favObj);
   }
 
   async myFavPost(userId: string) {
