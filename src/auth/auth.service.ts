@@ -20,14 +20,11 @@ export class AuthService {
   ) {}
 
   async login(user: LoginDto) {
-    console.log('user', user);
     const existingUser = await this.usersSvc.findOne(user.username);
 
     if (!existingUser) {
       return new UnauthorizedException();
     }
-
-    console.log('user', existingUser);
 
     if (!existingUser.isUserVerified) {
       const code = Math.floor(100000 + Math.random() * 900000);
@@ -54,8 +51,6 @@ export class AuthService {
         name: existingUser.name,
         username: existingUser.username,
       };
-
-      console.log('payload', payload);
 
       return {
         access_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),

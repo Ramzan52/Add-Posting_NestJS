@@ -32,7 +32,6 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Get('/my')
   async myPosts(@Request() req: any) {
-    console.log(req);
     const posts = await this.postsSvc.myPost(req.user.username);
     return {
       posts,
@@ -89,7 +88,6 @@ export class PostsController {
     @Query('like') like: boolean,
     @Request() req: any,
   ) {
-    
     let favPost = await this.favSvc.likePost(postId, like, req.user.id);
     return favPost;
   }
@@ -97,11 +95,8 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Get('my-favourite/post')
   async mypost(@Req() req: any) {
-    console.log(req.user);
-    let favPost = await this.favSvc.myFavPost(req.user.id);
-
     return {
-      list: favPost,
+      list: await this.favSvc.myFavPost(req.user.id),
       sas: this.sasSvc.getNewSASKey(),
     };
   }

@@ -35,7 +35,6 @@ export class AttachmentsService {
 
   async uploadSingle(file: Express.Multer.File) {
     if (!file.mimetype.includes('image/')) {
-      console.log('not Image');
       throw new BadRequestException('Not a valid image');
     }
     try {

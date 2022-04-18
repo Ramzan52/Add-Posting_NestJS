@@ -101,8 +101,6 @@ export class MessagesService {
         recieverId: dto.recieverId,
       });
 
-      console.log('send-message', existingMessage);
-
       if (existingMessage) {
         existingMessage.text = dto.text;
         existingMessage.isRead = false;
@@ -111,7 +109,7 @@ export class MessagesService {
           recieverId: userID,
           senderId: dto.recieverId,
         });
-        console.log('existing message', existingMessageFlip);
+
         existingMessageFlip.text = dto.text;
         existingMessageFlip.isRead = false;
         await existingMessageFlip.save();
@@ -172,9 +170,9 @@ export class MessagesService {
         )
         .exec();
 
-      console.log('existing message', existingMessage);
       return existingMessage;
     }
+
     throw new NotFoundException('No conversation exists against this receiver');
   }
 }
