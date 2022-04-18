@@ -20,7 +20,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
-import { VerifyDto } from './dto/verfiy.dto';
+import { VerifyDto } from './dto/verify.dto';
 import { ResetPasswordBody } from './dto/resetPassword.dto';
 import { UpdateResetPassword } from './dto/update.resetPassword.dto';
 @ApiTags('auth')
@@ -87,12 +87,8 @@ export class AuthController {
       },
     ];
 
-    console.log('code', code);
-
     this.busSvc.sendEmail(emailBody);
-
     user.registerCode = code;
-
     await this.userSvc.update(user);
   }
 

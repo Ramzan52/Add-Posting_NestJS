@@ -20,7 +20,8 @@ export class ConversationService {
     @InjectModel(Conversation.name)
     private readonly conversationModel: Model<ConversationDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Profile.name) private readonly profileModel: Model<ProfileDocument>,
+    @InjectModel(Profile.name)
+    private readonly profileModel: Model<ProfileDocument>,
   ) {}
   async postConversation(dto: Conversation, id: string) {
     let reciever = await this.userModel.findById(dto.recieverId);
@@ -50,11 +51,9 @@ export class ConversationService {
 
   @ApiOkResponse({ status: 200, type: PostConversation })
   async getConversation(recieverId: string, sender: string) {
-    console.log("receiver", sender);
+    console.log('receiver', recieverId);
     var conversationList = await this.conversationModel
-      .find( { $and: [
-        {senderId: sender}, {recieverId: recieverId}
-      ]} )
+      .find({ $and: [{ senderId: sender }, { recieverId: recieverId }] })
       .sort([['timeStamp', -1]])
       .exec();
 

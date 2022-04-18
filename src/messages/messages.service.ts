@@ -5,7 +5,11 @@ import { ConversationService } from './conversation.service';
 import { PostMessage } from './dto/create.message.dto';
 import { Message, MessageDocument } from './schema/post.message.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Model, mongo } from 'mongoose';
 import { FcmTOkenService } from './fcmNotification.service';
 import { SendMessage } from './dto/sendMessage.dto';
@@ -23,6 +27,7 @@ export class MessagesService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
   ) {}
+
   async postMessage(dto: PostFirstMessage, id: string) {
     let reciever = await this.userModel.findById(dto.recieverId);
     let sender = await this.userModel.findById(id);
@@ -56,13 +61,18 @@ export class MessagesService {
       text: dto.latestText,
     };
 
-    const existingMessage = await this.messageModel.findOneAndReplace(
-      { senderId: id, recieverId: dto.recieverId },
-      data,
-      { new: true },
-    );
+    const existingMessage = await this.messageModel.findOne({
+      senderId: id,
+      recieverId: dto.recieverId,
+    });
+
     if (existingMessage) {
-      const existingMessageFlip = await this.messageModel.findOneAndReplace(
+      await this.messageModel.findOneAndReplace(
+        { senderId: id, recieverId: dto.recieverId },
+        data,
+        { new: true },
+      );
+      await this.messageModel.findOneAndReplace(
         { recieverId: id, senderId: dto.recieverId },
         flipData,
         { new: true },
@@ -95,39 +105,42 @@ export class MessagesService {
     try {
       let message = await this.ConversationSvc.postConversation(data, userID);
       this.fcmSvc.findDeviceToken(dto.recieverId, data);
+
       const existingMessage = await this.messageModel.findOne({
         senderId: userID,
         recieverId: dto.recieverId,
       });
+
       if (existingMessage) {
         existingMessage.text = dto.text;
-        existingMessage.save();
+        await existingMessage.save();
         const existingMessageFlip = await this.messageModel.findOne({
           recieverId: userID,
           senderId: dto.recieverId,
         });
+        console.log('existing message', existingMessageFlip);
         existingMessageFlip.text = dto.text;
-        existingMessageFlip.save();
+        await existingMessageFlip.save();
         return existingMessage;
       }
 
       return message;
     } catch {
-      throw new NotFoundException();
+      throw new BadRequestException();
     }
   }
-  async getMessage(id: String, pageSize: number, pageNumber: number, unread: boolean) {
-    
+  async getMessage(
+    id: String,
+    pageSize: number,
+    pageNumber: number,
+    unread: boolean,
+  ) {
     var query = this.messageModel.find({ senderId: id });
     var count = await query.countDocuments();
-    if (count === 0) {
-      throw new NotFoundException('no message found');
-    }
+
     if (unread) {
       var response = await this.messageModel
-        .find( { $and: [
-          {senderId: id}, {isRead: false}
-        ]} )
+        .find({ $and: [{ senderId: id }, { isRead: false }] })
         .skip((pageNumber - 1) * pageSize)
         .limit(pageSize)
         .sort([['timeStamp', -1]])
@@ -138,34 +151,35 @@ export class MessagesService {
       };
     } else {
       var response = await this.messageModel
-      .find({ senderId: id })
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .sort([['timeStamp', -1]])
-      .exec();
-    return {
-      count: count,
-      result: response,
-    };
+        .find({ senderId: id })
+        .skip((pageNumber - 1) * pageSize)
+        .limit(pageSize)
+        .sort([['timeStamp', -1]])
+        .exec();
+      return {
+        count: count,
+        result: response,
+      };
     }
   }
 
   async markAsRead(senderId: string, receiverId: string) {
+    var existingMessage = await this.messageModel
+      .find({ $and: [{ senderId: senderId }, { recieverId: receiverId }] })
+      .exec();
 
-    console.log("sender", senderId);
+    if (existingMessage) {
+      existingMessage[0].isRead = true;
+      await this.messageModel
+        .replaceOne(
+          { _id: new mongo.ObjectId(existingMessage[0].id) },
+          existingMessage,
+        )
+        .exec();
 
-    var existingMessage = await this.messageModel.find( 
-      { $and: [
-      {senderId: senderId}, {recieverId: receiverId}
-    ]} ).exec();
-
-    existingMessage[0].isRead = true;
-    await this.messageModel.replaceOne(
-      { _id: new mongo.ObjectId( existingMessage[0].id )},
-        existingMessage,
-    ).exec();
-    
-    console.log("existing message", existingMessage);
-    return existingMessage;
+      console.log('existing message', existingMessage);
+      return existingMessage;
+    }
+    throw new NotFoundException('No conversation exists against this receiver');
   }
 }

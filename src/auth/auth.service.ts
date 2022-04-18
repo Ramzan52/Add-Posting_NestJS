@@ -31,8 +31,6 @@ export class AuthService {
         body: `Your code is ${code}`,
       };
 
-      console.log('code', code);
-
       this.busSvc.sendEmail(emailBody);
       existingUser.registerCode = code;
       await this.usersSvc.update(existingUser);
@@ -58,7 +56,7 @@ export class AuthService {
         user: existingUser,
       };
     } else {
-      return null;
+      throw new BadRequestException('User not found');
     }
   }
 
@@ -81,10 +79,6 @@ export class AuthService {
     } catch (e) {
       throw new BadRequestException('Invalid or expired refresh token');
     }
-  }
-
-  async loginWithGoogle(payload: any) {
-    console.log('loginWithGoogle', payload);
   }
 
   async validateUser(username: string, password: string): Promise<any> {

@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { genSalt, hashSync } from 'bcryptjs';
 import { Model, mongo } from 'mongoose';
 import { RegisterDto } from 'src/auth/dto/register.dto';
-import { VerifyDto } from 'src/auth/dto/verfiy.dto';
+import { VerifyDto } from 'src/auth/dto/verify.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { UpdateResetPassword } from 'src/auth/dto/update.resetPassword.dto';
@@ -42,12 +42,13 @@ export class UsersService {
   async create(dto: RegisterDto) {
     const exists = await this.findOne(dto.username);
 
-    if (exists && exists.username == dto.username) {
-      throw new BadRequestException('Email is already registered');
-    }
-
-    if (exists && exists.phoneNumber == dto.phoneNumber) {
-      throw new BadRequestException('Phone number is already registered');
+    if (exists) {
+      if (exists.username == dto.username) {
+        throw new BadRequestException('Email is already registered');
+      }
+      if (exists.phoneNumber == dto.phoneNumber) {
+        throw new BadRequestException('Phone number is already registered');
+      }
     }
 
     const code = Math.floor(100000 + Math.random() * 900000);
@@ -62,10 +63,6 @@ export class UsersService {
         contentType: 'application/json',
       },
     ];
-
-    console.log('email', emailBody);
-
-    console.log('code', code);
 
     this.busSvc.sendEmail(emailBody);
 
@@ -107,12 +104,15 @@ export class UsersService {
   async verify(dto: VerifyDto) {
     var username = dto.username;
     const user = await this.userModel.findOne({ username });
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
     if (user.isUserVerified) {
       throw new BadRequestException('User already verified');
     }
+
     if (user.registerCode == dto.code) {
       user.isUserVerified = true;
       await this.userModel.replaceOne(
@@ -121,6 +121,7 @@ export class UsersService {
       );
       return true;
     }
+    return false;
   }
   async resetPassword(username: string) {
     const user = await this.userModel.findOne({ username });
