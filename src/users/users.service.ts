@@ -111,6 +111,7 @@ export class UsersService {
 
     if (user.registerCode == dto.code) {
       user.isUserVerified = true;
+      user.registerCode = 0;
       await this.userModel.replaceOne(
         { _id: new mongo.ObjectId(user.id) },
         user,
@@ -135,6 +136,7 @@ export class UsersService {
 
     this.busSvc.sendEmail(emailBody);
     user.resetPasswordCode = code;
+    user.IsResetVerified = false;
     await this.userModel.replaceOne(
       { _id: new mongo.ObjectId(user._id) },
       user,
@@ -151,6 +153,7 @@ export class UsersService {
     }
     if (user.resetPasswordCode == dto.code) {
       user.IsResetVerified = true;
+      user.resetPasswordCode = 0;
       await this.userModel.replaceOne({ _id: user._id }, user);
     }
   }

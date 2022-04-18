@@ -60,7 +60,14 @@ export class AuthService {
       return {
         access_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
         refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
-        user: existingUser,
+        user: {
+          _id: existingUser.id,
+          isUserVerified: existingUser.isUserVerified,
+          ratings: existingUser.ratings,
+          username: existingUser.username,
+          name: existingUser.name,
+          avg_rating: existingUser.avgRating,
+        },
       };
     } else {
       throw new BadRequestException('User not found');
