@@ -33,7 +33,7 @@ export class MessagesService {
     let sender = await this.userModel.findById(id);
     let post = await this.postModel.findById(dto.postId);
     if (!receiver) {
-      throw new NotFoundException('Reciever not found');
+      throw new NotFoundException('Receiver not found');
     }
     if (!sender) {
       throw new NotFoundException('sender not found');
