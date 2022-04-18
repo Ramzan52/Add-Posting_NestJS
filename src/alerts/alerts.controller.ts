@@ -19,8 +19,9 @@ import { ApiProperty, ApiTags } from '@nestjs/swagger';
 @Controller('alerts')
 export class AlertsController {
   constructor(private alertSvc: AlertsService) {}
+
   @Post()
-  saveAlerts(@Body() body: CreateAlertDto, @Req() req: any) {
+  saveAlerts(@Req() req: any, @Body() body: CreateAlertDto) {
     return this.alertSvc.saveAlerts(body, req);
   }
 

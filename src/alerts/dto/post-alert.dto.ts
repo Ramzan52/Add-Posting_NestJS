@@ -2,6 +2,7 @@ import { PostLocationDto } from './../../posts/dto/post-location.dto';
 import {
   IsArray,
   IsNotEmptyObject,
+  isNumber,
   IsNumber,
   IsString,
   Max,
@@ -13,8 +14,8 @@ export class CreateAlertDto {
   @IsString()
   categoryID: string;
 
-  @IsString()
-  radius: string;
+  @IsNumber()
+  radius: number;
 
   @IsNotEmptyObject()
   @ValidateNested()

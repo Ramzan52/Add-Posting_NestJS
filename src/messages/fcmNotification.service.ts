@@ -17,6 +17,7 @@ import {
 } from 'src/device_token/schema/device_token.schema';
 import admin from 'firebase-admin';
 import { SendMessage } from './dto/sendMessage.dto';
+import { Alert } from 'src/alerts/schema/alert.schema';
 
 @Injectable()
 export class FcmTOkenService {
@@ -25,6 +26,7 @@ export class FcmTOkenService {
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
     private readonly firebaseSvc: Firebase_NotificationService,
   ) {}
+
   async findDeviceToken(id: string, message: Conversation) {
     let fcmToken = await this.deviceTokenModal.findOne({ userId: id });
     if (fcmToken.token !== null) {
@@ -40,5 +42,19 @@ export class FcmTOkenService {
         userId: id,
       });
     }
+  }
+
+  async sendAlertNotification(id: string, tokens: any, alert: Alert) {
+    let payload: admin.messaging.Message = {
+      data: { message: JSON.stringify(alert), type: 'new-alert' },
+      token: tokens,
+    };
+    admin.messaging().send(payload);
+    this.firebaseSvc.PostNotification({
+      type: 'new-alert',
+      payLoad: JSON.stringify(alert),
+      sentOn: new Date(),
+      userId: id,
+    });
   }
 }
