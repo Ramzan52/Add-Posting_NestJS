@@ -97,9 +97,9 @@ export class AuthController {
   }
 
   @Post('verify-user')
-  async verfiyUser(@Body() body: VerifyDto) {
-    const isVerify = await this.userSvc.verify(body);
-    if (isVerify) {
+  async verifyUser(@Body() body: VerifyDto) {
+    const isVerified = await this.userSvc.verify(body);
+    if (isVerified) {
       const user = await this.userSvc.findOne(body.username);
       const regDto: RegisterDto = new RegisterDto();
       regDto.name = user.name;
@@ -107,6 +107,8 @@ export class AuthController {
       regDto.phoneNumber = user.phoneNumber;
       return await this.profileSvc.create(regDto, user._id);
     }
+
+    throw new BadRequestException('Invalid OTP');
   }
 
   @Post('reset-password')
