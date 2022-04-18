@@ -134,7 +134,7 @@ export class UsersService {
     };
 
     this.busSvc.sendEmail(emailBody);
-    user.resetPasswordCode = code.toString();
+    user.resetPasswordCode = code;
     await this.userModel.replaceOne(
       { _id: new mongo.ObjectId(user._id) },
       user,
@@ -149,7 +149,7 @@ export class UsersService {
     if (user.IsResetVerified) {
       throw new BadRequestException('User already verified');
     }
-    if (user.resetPasswordCode == dto.code.toString()) {
+    if (user.resetPasswordCode == dto.code) {
       user.IsResetVerified = true;
       await this.userModel.replaceOne({ _id: user._id }, user);
     }

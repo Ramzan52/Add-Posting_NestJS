@@ -132,7 +132,7 @@ export class AuthController {
     };
 
     this.busSvc.sendEmail(emailBody);
-    user.resetPasswordCode = code.toString();
+    user.resetPasswordCode = code;
     await this.userSvc.update(user);
   }
 }
