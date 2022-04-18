@@ -5,7 +5,7 @@ import * as admin from 'firebase-admin';
 import { AppModule } from './app.module';
 import service from './auth/config/firebase-auth';
 
-let appInsights = require("applicationinsights");
+let appInsights = require('applicationinsights');
 
 async function bootstrap() {
   try {
@@ -16,7 +16,8 @@ async function bootstrap() {
       credential: admin.credential.cert(service),
     });
 
-    appInsights.setup()
+    appInsights
+      .setup()
       .setAutoDependencyCorrelation(true)
       .setAutoCollectRequests(true)
       .setAutoCollectPerformance(true, true)
@@ -28,7 +29,9 @@ async function bootstrap() {
       .setDistributedTracingMode(appInsights.DistributedTracingModes.AI)
       .start();
 
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true }),
+    );
     const port = process.env.PORT;
 
     configureSwagger(app);

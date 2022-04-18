@@ -22,8 +22,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    console.log('google.strategy/validate/accessToken', accessToken);
-
     const { name, emails, photos } = profile;
 
     const user = {
@@ -33,7 +31,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       picture: photos[0].value,
       accessToken,
     };
-    
+
     done(null, user);
   }
 }

@@ -13,9 +13,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { GetPostsQueryDto } from './dto/get-posts-query.dto';
+import { LikePostQueryDto } from './dto/like-post-query.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FavoritePostsService } from './favorite-posts.service';
 import { PostsService } from './posts.service';
@@ -40,25 +43,12 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getPosts(
-    @Request() req: any,
-    @Query('pageSize') pageSize?: number,
-    @Query('pageNumber') pageNumber?: number,
-    @Query('location') location?: string,
-    @Query('search') search?: string,
-    @Query('categoryId') categoryId?: string,
-  ) {
-    if (pageSize == null || pageSize < 1) {
-      pageSize = 10;
-    }
-
-    if (pageNumber == null || pageNumber < 1) {
-      pageNumber = 1;
-    }
+  async getPosts(@Request() req: any, @Query() query: GetPostsQueryDto) {
+    const { categoryId, location, pageNumber, pageSize, search } = query;
 
     const posts = await this.postsSvc.getPosts(
-      search ?? '.',
-      location ?? '.',
+      search,
+      location,
       pageSize,
       pageNumber,
       req.user.id,
@@ -83,12 +73,8 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Post('fav')
-  async likePost(
-    @Query('postId') postId: string,
-    @Query('like') like: boolean,
-    @Request() req: any,
-  ) {
-    await this.favSvc.likePost(postId, like, req.user.id);
+  async likePost(@Query() query: LikePostQueryDto, @Request() req: any) {
+    await this.favSvc.likePost(query.postId, query.like, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)

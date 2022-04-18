@@ -18,33 +18,20 @@ export class FavoritePostsService {
       throw new NotFoundException(`Post with id ${postId} Not Found`);
     }
 
-    if (typeof like === 'string') like = JSON.parse(like);
-    if (like == true) {
-      const favoritePosts = await this.favoritePostModel.create({
-        userId: userId,
-        postId: new mongo.ObjectId(postId),
-      });
-      return favoritePosts;
-    } else {
-      await this.favoritePostModel.deleteOne({
-        userId: userId,
-        postId: postId,
-      });
-    }
-
-    const favObj = {
-      userId,
+    const favPost = {
       postId: new mongo.ObjectId(postId),
+      userId,
     };
 
     if (like) {
-      if (!(await this.favoritePostModel.exists(favObj))) {
-        await this.favoritePostModel.create(favObj);
-        return;
+      if (!(await this.favoritePostModel.exists(favPost))) {
+        await this.favoritePostModel.create(favPost);
       }
+
+      return;
     }
 
-    await this.favoritePostModel.deleteOne(favObj);
+    await this.favoritePostModel.deleteOne(favPost);
   }
 
   async myFavPost(userId: string) {
@@ -52,6 +39,7 @@ export class FavoritePostsService {
       .find({ userId: userId })
       .populate('postId')
       .exec();
+
     if (!favPost) {
       throw new NotFoundException(`No Favourite Post Found`);
     }

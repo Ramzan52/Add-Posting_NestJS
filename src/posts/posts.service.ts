@@ -2,8 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { AlertsService } from 'src/alerts/alerts.service';
-import { Alert, AlertDocument } from 'src/alerts/schema/alert.schema';
-import { calcCrow } from 'src/common/helper/calculate.distance';
 import {
   DeviceToken,
   DeviceTokenDocument,
@@ -31,30 +29,39 @@ export class PostsService {
     userId: string,
     categoryId: string,
   ) {
-    if (typeof pageNumber === 'string') {
-      pageNumber = parseInt(pageNumber);
+    const countFilter: any = { isDeleted: false };
+    const aggregateFilters: any[] = [
+      {
+        isDeleted: false,
+      },
+    ];
+
+    if (search) {
+      aggregateFilters.push({ title: new RegExp(`.*${search}*`, 'i') });
+      countFilter.title = {
+        $regex: new RegExp(this.escapeRegex(search), 'gi'),
+      };
     }
 
-    if (typeof pageSize === 'string') {
-      pageSize = parseInt(pageSize);
+    if (location) {
+      aggregateFilters.push({
+        'location.title': new RegExp(`.*${location}*`, 'i'),
+      });
+      countFilter['location.title'] = {
+        $regex: new RegExp(this.escapeRegex(location), 'gi'),
+      };
     }
 
-    var result = await this.postModel
+    if (categoryId) {
+      aggregateFilters.push({ categoryId: new mongo.ObjectId(categoryId) });
+      countFilter.categoryId = new mongo.ObjectId(categoryId);
+    }
+
+    const result = await this.postModel
       .aggregate([
         {
           $match: {
-            $and: [
-              {
-                title: new RegExp(`.*${search}*`, 'i'),
-                'location.title': new RegExp(`.*${location}*`, 'i'),
-                isDeleted: false,
-              },
-            ],
-            // $or: [
-            //   {
-            //     categoryId: categoryId ? new mongo.ObjectId(categoryId) : '',
-            //   },
-            // ],
+            $and: aggregateFilters,
           },
         },
         {
@@ -80,27 +87,14 @@ export class PostsService {
       ])
       .exec();
 
-    result.forEach((post) => {
-      if (post.favPosts.length > 0) {
-        post.isFavorite = post.favPosts.find((x) => x.userId == userId) !== -1;
-      } else {
-        post.isFavorite = false;
-      }
-    });
+    result.forEach(
+      (post) =>
+        (post.isFavorite =
+          post.favPosts.length > 0 &&
+          post.favPosts.findIndex((x) => x.userId === userId) !== -1),
+    );
 
-    const filter: any = { isDeleted: false };
-
-    if (search && search != '.') {
-      filter.title = { $regex: new RegExp(this.escapeRegex(search), 'gi') };
-    }
-
-    if (location && location != '.') {
-      filter['location.title'] = {
-        $regex: new RegExp(this.escapeRegex(location), 'gi'),
-      };
-    }
-
-    const count = await this.postModel.find(filter).countDocuments();
+    const count = await this.postModel.find(countFilter).countDocuments();
 
     return {
       count,
