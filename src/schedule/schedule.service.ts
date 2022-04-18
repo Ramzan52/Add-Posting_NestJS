@@ -1,15 +1,21 @@
 import { PostRating } from './dto/create.rating.dto';
 import { Schedule, ScheduleDocument } from './schema/post.schedule.schema';
 import {
-  BadRequestException,
   Injectable,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel, SchemaFactory } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostSchedule } from './dto/create.schedule.dto';
 import { Post, PostDocument } from 'src/posts/schemas/post.schema';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
+import admin from 'firebase-admin';
+import {
+  DeviceToken,
+  DeviceTokenDocument,
+} from 'src/device_token/schema/device_token.schema';
+import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
 
 @Injectable()
 export class ScheduleService {
@@ -19,6 +25,9 @@ export class ScheduleService {
     @InjectModel(Post.name)
     private readonly postModel: Model<PostDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(DeviceToken.name)
+    private readonly deviceTokenModal: Model<DeviceTokenDocument>,
+    private readonly firebaseSvc: Firebase_NotificationService,
   ) {}
 
   async getSchedule(id: string): Promise<Array<PostSchedule>> {
@@ -34,16 +43,17 @@ export class ScheduleService {
     }
     return Schedule;
   }
-  async PostSchedule(id: String, dto: PostSchedule) {
-    let post = await this.postModel.find({ isDeleted: false, _id: dto.postId });
+  async PostSchedule(id: string, dto: PostSchedule) {
+    let post = await this.postModel.findOne({
+      isDeleted: false,
+      _id: dto.postId,
+    });
     if (!post) {
       throw new NotFoundException('No Post Found');
     }
-
     if (post[0].creatorId != id) {
       throw new BadRequestException();
     }
-
     let data = {
       buyerId: dto.buyerId,
       date: dto.date,
@@ -53,6 +63,12 @@ export class ScheduleService {
     };
     let Schedule = await this.scheduleModel.create(data);
     Schedule.save();
+    let message = {
+      Schedule: Schedule,
+      text: `A schedule has been created against ${post.title}  on ${Schedule.date} ${Schedule.time}`,
+    };
+    await this.findDeviceToken(dto.buyerId, message);
+    await this.findDeviceToken(data.vendorId, message);
     return Schedule;
   }
   async postScheduleRating(dto: PostRating) {
@@ -82,5 +98,22 @@ export class ScheduleService {
     user.avgRating = totalRatings / user.ratings.length;
     user.save();
     return user;
+  }
+
+  async findDeviceToken(id: string, message: any) {
+    let fcmToken = await this.deviceTokenModal.findOne({ userId: id });
+    if (fcmToken.token !== null) {
+      let payload: admin.messaging.Message = {
+        data: { message: JSON.stringify(message), type: 'new-schedule' },
+        token: fcmToken.token,
+      };
+      admin.messaging().send(payload);
+      this.firebaseSvc.PostNotification({
+        type: 'new-schedule',
+        payLoad: JSON.stringify(message),
+        sentOn: new Date(),
+        userId: id,
+      });
+    }
   }
 }

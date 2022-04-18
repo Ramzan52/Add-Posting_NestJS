@@ -23,7 +23,9 @@ export class ScheduleController {
   @Get()
   async getSchedule(@Req() req: any) {
     let schedule = await this.scheduleSvc.getSchedule(req.user.id);
-    return schedule;
+    if (schedule) {
+      return schedule;
+    }
   }
   @Post()
   async postSchedule(@Req() req: any, @Body() body: PostSchedule) {
