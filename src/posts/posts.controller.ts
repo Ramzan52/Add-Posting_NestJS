@@ -1,10 +1,9 @@
-import { FavoritePostsService } from './favorite-posts.service';
 import {
   Body,
   Controller,
   Delete,
   Get,
-  NotFoundException,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -18,6 +17,7 @@ import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { FavoritePostsService } from './favorite-posts.service';
 import { PostsService } from './posts.service';
 
 @ApiTags('Post')
@@ -32,9 +32,8 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Get('/my')
   async myPosts(@Request() req: any) {
-    const posts = await this.postsSvc.myPost(req.user.username);
     return {
-      posts,
+      posts: await this.postsSvc.myPost(req.user.username),
       sas: this.sasSvc.getNewSASKey(),
     };
   }
@@ -75,26 +74,26 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async createPost(@Request() req: any, @Body() body: CreatePostDto) {
-    const post = await this.postsSvc.createPost(body, req);
     return {
-      post,
+      post: await this.postsSvc.createPost(body, req),
       sas: this.sasSvc.getNewSASKey(),
     };
   }
+
   @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
   @Post('fav')
   async likePost(
     @Query('postId') postId: string,
     @Query('like') like: boolean,
     @Request() req: any,
   ) {
-    let favPost = await this.favSvc.likePost(postId, like, req.user.id);
-    return favPost;
+    await this.favSvc.likePost(postId, like, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('my-favourite/post')
-  async mypost(@Req() req: any) {
+  @Get('fav')
+  async myFavPosts(@Req() req: any) {
     return {
       list: await this.favSvc.myFavPost(req.user.id),
       sas: this.sasSvc.getNewSASKey(),
@@ -103,9 +102,8 @@ export class PostsController {
 
   @Get('/:id')
   async getPostById(@Param('id') id: string) {
-    const post = await this.postsSvc.getPostById(id);
     return {
-      post,
+      post: await this.postsSvc.getPostById(id),
       sas: this.sasSvc.getNewSASKey(),
     };
   }
@@ -116,10 +114,8 @@ export class PostsController {
     @Param('id') id: string,
     @Param('isActive') isActive: boolean,
   ) {
-    const post = await this.postsSvc.activatePost(id, isActive);
-
     return {
-      post,
+      post: await this.postsSvc.activatePost(id, isActive),
       sas: this.sasSvc.getNewSASKey(),
     };
   }
@@ -130,9 +126,8 @@ export class PostsController {
     @Param('id') id: string,
     @Param('isVend') isVend: boolean,
   ) {
-    const post = await this.postsSvc.markVend(id, isVend);
     return {
-      post,
+      post: await this.postsSvc.markVend(id, isVend),
       sas: this.sasSvc.getNewSASKey(),
     };
   }
@@ -140,9 +135,8 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async markPostDeleted(@Param('id') id: string) {
-    const post = await this.postsSvc.delete(id);
     return {
-      post,
+      post: await this.postsSvc.delete(id),
       sas: this.sasSvc.getNewSASKey(),
     };
   }
@@ -150,9 +144,8 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Put()
   async editPost(@Body() body: UpdatePostDto) {
-    const post = await this.postsSvc.editPost(body);
     return {
-      post,
+      post: await this.postsSvc.editPost(body),
       sas: this.sasSvc.getNewSASKey(),
     };
   }
