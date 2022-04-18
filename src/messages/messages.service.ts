@@ -67,23 +67,13 @@ export class MessagesService {
     });
 
     if (existingMessage) {
-      await this.messageModel.findOneAndReplace(
-        { senderId: id, recieverId: dto.recieverId },
-        data,
-        { new: true },
-      );
-      await this.messageModel.findOneAndReplace(
-        { recieverId: id, senderId: dto.recieverId },
-        flipData,
-        { new: true },
-      );
       return existingMessage;
-    } else {
-      const message = await new this.messageModel(data);
-      const messageFlip = await new this.messageModel(flipData);
-      messageFlip.save();
-      return message.save();
     }
+
+    const message = await new this.messageModel(data);
+    const messageFlip = await new this.messageModel(flipData);
+    messageFlip.save();
+    return message.save();
   }
   async sendMessage(dto: SendMessage, userID: string) {
     const sender = await this.userModel.findById(userID);
@@ -104,12 +94,14 @@ export class MessagesService {
     };
     try {
       let message = await this.ConversationSvc.postConversation(data, userID);
-      this.fcmSvc.findDeviceToken(dto.recieverId, data);
+      await this.fcmSvc.findDeviceToken(dto.recieverId, data);
 
       const existingMessage = await this.messageModel.findOne({
         senderId: userID,
         recieverId: dto.recieverId,
       });
+
+      console.log('send-message', existingMessage);
 
       if (existingMessage) {
         existingMessage.text = dto.text;
@@ -164,15 +156,16 @@ export class MessagesService {
   }
 
   async markAsRead(senderId: string, receiverId: string) {
-    var existingMessage = await this.messageModel
-      .find({ $and: [{ senderId: senderId }, { recieverId: receiverId }] })
-      .exec();
+    const existingMessage = await this.messageModel.findOne({
+      senderId: senderId,
+      recieverId: receiverId,
+    });
 
     if (existingMessage) {
-      existingMessage[0].isRead = true;
+      existingMessage.isRead = true;
       await this.messageModel
         .replaceOne(
-          { _id: new mongo.ObjectId(existingMessage[0].id) },
+          { _id: new mongo.ObjectId(existingMessage.id) },
           existingMessage,
         )
         .exec();
