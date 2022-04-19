@@ -110,7 +110,7 @@ export class ScheduleService {
       admin.messaging().send(payload);
       this.firebaseSvc.PostNotification({
         type: 'new-schedule',
-        payLoad: JSON.stringify(message),
+        payLoad: message,
         sentOn: new Date(),
         userId: id,
       });

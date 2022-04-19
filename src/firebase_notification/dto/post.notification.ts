@@ -3,6 +3,7 @@ import {
   IsDate,
   IsNotEmptyObject,
   IsNumber,
+  IsObject,
   IsString,
   Max,
   Min,
@@ -16,8 +17,8 @@ export class PostNotification {
   @IsString()
   type: string;
 
-  @IsString()
-  payLoad: string;
+  @IsObject()
+  payLoad: any;
 
   @IsString()
   sentOn: Date;

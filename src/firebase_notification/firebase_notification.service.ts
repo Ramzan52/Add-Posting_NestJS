@@ -35,6 +35,7 @@ export class Firebase_NotificationService {
       .limit(pageSize)
       .sort([['sentOn', -1]])
       .exec();
+
     return {
       count: count,
       result: response,

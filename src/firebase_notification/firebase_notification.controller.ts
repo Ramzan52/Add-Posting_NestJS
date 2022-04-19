@@ -1,4 +1,13 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { PostNotification } from './dto/post.notification';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './../auth/auth-guards/jwt-auth.guard';
 import { GetNotificationsQueryDto } from './dto/get-notifications-query.dto';
@@ -26,4 +35,8 @@ export class FirebaseNotificationController {
     // }
     // throw new NotFoundException('no notification found');
   }
+  // @Post()
+  // async PostNotification(@Body() body: PostNotification) {
+  //   this.notificationSvc.PostNotification(body);
+  // }
 }

@@ -37,7 +37,7 @@ export class FcmTOkenService {
       admin.messaging().send(payload);
       this.firebaseSvc.PostNotification({
         type: 'new-message',
-        payLoad: JSON.stringify(message),
+        payLoad: message,
         sentOn: new Date(),
         userId: id,
       });
@@ -52,7 +52,7 @@ export class FcmTOkenService {
     admin.messaging().send(payload);
     this.firebaseSvc.PostNotification({
       type: 'new-alert',
-      payLoad: JSON.stringify(alert),
+      payLoad: alert,
       sentOn: new Date(),
       userId: id,
     });
