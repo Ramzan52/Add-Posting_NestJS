@@ -34,7 +34,6 @@ stages:
               command: 'build'
               Dockerfile: $(dockerfilePath)
               tags: '$(tag)'
-              arguments: "--build-arg NODE_ENV=Development"
 
           - task: Docker@2
             displayName: push api image to container registry
@@ -104,7 +103,6 @@ stages:
               command: 'build'
               Dockerfile: $(dockerfilePath)
               tags: '$(tag)'
-              arguments: "--build-arg NODE_ENV=Beta"
 
           - task: Docker@2
             displayName: push api image to container registry
@@ -174,7 +172,6 @@ stages:
               command: 'build'
               Dockerfile: $(dockerfilePath)
               tags: '$(tag)'
-              arguments: "--build-arg NODE_ENV=Production"
 
           - task: Docker@2
             displayName: push api image to container registry
