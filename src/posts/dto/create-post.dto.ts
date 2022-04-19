@@ -29,6 +29,5 @@ export class CreatePostDto {
   description: string;
 
   @IsNotEmptyObject()
-  @ValidateNested()
   location: PostLocationDto;
 }
