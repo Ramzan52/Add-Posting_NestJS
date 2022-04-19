@@ -36,7 +36,7 @@ export class AlertsService {
 
   async getAlertByID(id: string): Promise<any> {
     const alerts = await this.alertModel.findById(id);
-    if (!alert) {
+    if (!alerts) {
       throw new NotFoundException(`Alert with id ${id} Not Found`);
     }
     return alerts;

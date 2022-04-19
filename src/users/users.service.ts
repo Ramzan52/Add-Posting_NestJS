@@ -14,6 +14,10 @@ import { User, UserDocument } from './schemas/user.schema';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { UpdateResetPassword } from 'src/auth/dto/update.resetPassword.dto';
 import { use } from 'passport';
+import {
+  createEmailBody,
+  generateRandomSixDigitCode,
+} from 'src/common/helper/email.helper';
 
 @Injectable()
 export class UsersService {
@@ -57,13 +61,8 @@ export class UsersService {
       }
     }
 
-    const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [dto.username],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+    const code = generateRandomSixDigitCode();
+    const emailBody = createEmailBody(dto.username, code);
 
     this.busSvc.sendEmail(emailBody);
 
@@ -135,13 +134,8 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
     user.IsResetVerified = false;
-    const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [username],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+    const code = generateRandomSixDigitCode();
+    const emailBody = createEmailBody(username, code);
 
     this.busSvc.sendEmail(emailBody);
     user.resetPasswordCode = code;

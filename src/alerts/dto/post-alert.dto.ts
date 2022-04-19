@@ -1,14 +1,5 @@
 import { PostLocationDto } from './../../posts/dto/post-location.dto';
-import {
-  IsArray,
-  IsNotEmptyObject,
-  isNumber,
-  IsNumber,
-  IsString,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsNotEmptyObject, IsNumber, IsString } from 'class-validator';
 
 export class CreateAlertDto {
   @IsString()
@@ -18,6 +9,5 @@ export class CreateAlertDto {
   radius: number;
 
   @IsNotEmptyObject()
-  @ValidateNested()
   location: PostLocationDto;
 }

@@ -9,11 +9,13 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { PostLocationDto } from 'src/posts/dto/post-location.dto';
 @ApiTags('Alert')
 @UseGuards(JwtAuthGuard)
 @Controller('alerts')
@@ -22,16 +24,22 @@ export class AlertsController {
 
   @Post()
   saveAlerts(@Req() req: any, @Body() body: CreateAlertDto) {
+    body.location = {
+      title: body.location.title,
+      latitude: parseFloat(body.location.latitude.toFixed(7)),
+      longitude: parseFloat(body.location.longitude.toFixed(7)),
+    };
+
     return this.alertSvc.saveAlerts(body, req);
   }
 
-  @Delete('/id')
-  deleteAlert(@Param('id') id: string) {
+  @Delete()
+  deleteAlert(@Query('id') id: string) {
     return this.alertSvc.deleteAlert(id);
   }
-  @UseGuards(JwtAuthGuard)
+
   @Get('/my')
-  async myPosts(@Request() req: any): Promise<Array<AlertDocument>> {
+  async myAlerts(@Request() req: any): Promise<Array<AlertDocument>> {
     return await this.alertSvc.myAlert(req.user.username);
   }
 }

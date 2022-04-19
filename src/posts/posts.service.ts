@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { AlertsService } from 'src/alerts/alerts.service';
+import { calcCrow } from 'src/common/helper/calculate.distance';
 import {
   DeviceToken,
   DeviceTokenDocument,
@@ -162,8 +163,6 @@ export class PostsService {
     // records.map((record) => {
     //   tokenList.push(record.token);
     // });
-
-    // this.fcmSvc;
 
     // console.log({ records });
 
