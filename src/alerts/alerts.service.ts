@@ -44,7 +44,7 @@ export class AlertsService {
 
   async myAlert(username: string): Promise<Array<AlertDocument>> {
     const post = await this.alertModel
-      .find({ createdByUsername: username })
+      .find({ createdByUsername: username, isDeleted: false })
       .exec();
     return post;
   }
