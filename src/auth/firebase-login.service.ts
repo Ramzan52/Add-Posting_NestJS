@@ -61,7 +61,6 @@ export class FireBaseLoginService {
         };
       }
     } catch (error) {
-      console.error(error);
       throw new UnauthorizedException();
     }
   }

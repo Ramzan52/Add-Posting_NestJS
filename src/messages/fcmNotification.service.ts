@@ -35,7 +35,7 @@ export class FcmTOkenService {
         token: fcmToken.token,
       };
       admin.messaging().send(payload);
-      this.firebaseSvc.PostNotification({
+      let notif = await this.firebaseSvc.PostNotification({
         type: 'new-message',
         payLoad: message,
         sentOn: new Date(),
