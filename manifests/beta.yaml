@@ -29,7 +29,7 @@ spec:
               cpu: '64m'
           env:
             - name: NODE_ENV
-              value: development
+              value: Beta
           ports:
             - containerPort: 5100
 ---
