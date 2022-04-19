@@ -15,7 +15,10 @@ export class Alert extends BaseSchema {
   location: PostLocationSchema;
 
   @Prop({ required: true })
-  radius: string;
+  radius: number;
+
+  @Prop({ required: false })
+  userId: string;
 }
 
 export const AlertSchema = SchemaFactory.createForClass(Alert);

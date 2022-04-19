@@ -26,7 +26,6 @@ export class ProfileController {
   @Get()
   @ApiOkResponse({ status: 200, type: GetProfileDto })
   async getProfile(@Request() req): Promise<GetProfileDto> {
-    console.log('getProfile', req.user);
     const profile = await this.profileSvc.findOne(req.user.username);
     return {
       id: profile._id,

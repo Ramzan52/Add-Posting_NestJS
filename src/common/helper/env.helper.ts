@@ -5,7 +5,7 @@ export function getEnvPath(dest: string): string {
   const env: string | undefined = process.env.NODE_ENV;
 
   if (env) {
-    const filePath = resolve(`${dest}/${env}.env`);
+    const filePath = resolve(`${dest}/${env.toLowerCase()}.env`);
 
     if (existsSync(filePath)) {
       return filePath;

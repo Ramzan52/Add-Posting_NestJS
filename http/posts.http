@@ -4,8 +4,8 @@ GET http://localhost:5100/notifications
 ### POSTS
 
 ### get all posts
-GET http://localhost:5100/posts?location=Lahore
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjU5NWIyZGEyZTdmMTQ2ZDk5MWEwZDEiLCJuYW1lIjoiT21lciIsInVzZXJuYW1lIjoib21lci5raGFuQGFxdWlsYTM2MC5jb20iLCJpYXQiOjE2NTAyNzgzMDMsImV4cCI6MTY1MDM2NDcwM30.sukLqx998JybchSIz9NOzuJzWnUg69uEv9lCBPFPSG0
+GET http://localhost:5100/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjU5NWIyZGEyZTdmMTQ2ZDk5MWEwZDEiLCJuYW1lIjoiT21lciIsInVzZXJuYW1lIjoib21lci5raGFuQGFxdWlsYTM2MC5jb20iLCJpYXQiOjE2NTAyNzk3NTYsImV4cCI6MTY1MDM2NjE1Nn0.a438x2sQu-_AdHH4aVOVDBhMkH3dBh3njYv2vT14kpA
 
 ### get my posts
 GET http://localhost:5100/posts/my
@@ -21,6 +21,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0O
 ### vend item
 POST http://localhost:5100/posts/6246c1826e8b6eedf4116802/vend/false
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
+
+### fav item
+POST http://localhost:5100/posts/fav?postId=6257d04d47e8e6b07bc42531&like=false
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjU5NWIyZGEyZTdmMTQ2ZDk5MWEwZDEiLCJuYW1lIjoiT21lciIsInVzZXJuYW1lIjoib21lci5raGFuQGFxdWlsYTM2MC5jb20iLCJpYXQiOjE2NTAyNzk3NTYsImV4cCI6MTY1MDM2NjE1Nn0.a438x2sQu-_AdHH4aVOVDBhMkH3dBh3njYv2vT14kpA
 
 ### create post
 POST http://localhost:5100/posts

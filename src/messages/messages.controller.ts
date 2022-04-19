@@ -1,26 +1,23 @@
-import { PostFirstMessage } from './dto/post.message.dto';
-import { SendMessage } from './dto/sendMessage.dto';
-import { ConversationService } from './conversation.service';
-import { MessagesService } from './messages.service';
-import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from './../auth/auth-guards/jwt-auth.guard';
 import {
   BadRequestException,
   Body,
   Controller,
   Get,
-  InternalServerErrorException,
-  Param,
   Post,
   Query,
-  Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { PostMessage } from './dto/create.message.dto';
-import { UsersService } from 'src/users/users.service';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { ProfileService } from 'src/profile/profile.service';
+import { JwtAuthGuard } from './../auth/auth-guards/jwt-auth.guard';
+import { ConversationService } from './conversation.service';
+import { PostMessage } from './dto/create.message.dto';
+import { GetMessagesQueryDto } from './dto/get-messages-query.dto';
+import { PostFirstMessage } from './dto/post.message.dto';
+import { SendMessage } from './dto/sendMessage.dto';
+import { MessagesService } from './messages.service';
 
 @ApiTags('messages')
 @UseGuards(JwtAuthGuard)
@@ -42,7 +39,7 @@ export class MessagesController {
     }
   }
   @Post('send-message')
-  async sendMessage(@Request() req: any ,@Body() body: SendMessage) {
+  async sendMessage(@Request() req: any, @Body() body: SendMessage) {
     let message = await this.messageSvc.sendMessage(body, req.user.id);
     if (message) {
       return message;
@@ -55,36 +52,51 @@ export class MessagesController {
   @ApiOkResponse({ status: 200, type: PostMessage })
   async getUnreadMessage(
     @Request() req: any,
-    @Query('pageSize') pageSize?: number,
-    @Query('pageNumber') pageNumber?: number,
+    @Query() query: GetMessagesQueryDto,
   ) {
-    if (pageSize == null || pageSize < 1) pageSize = 10;
-    if (pageNumber == null || pageNumber < 1) pageNumber = 1;
+    const { pageNumber, pageSize } = query;
 
-    return await this.messageSvc.getMessage(req.user.id, pageSize, pageNumber, true);
+    return await this.messageSvc.getMessage(
+      req.user.id,
+      pageSize,
+      pageNumber,
+      true,
+    );
   }
 
   @Get()
   @ApiOkResponse({ status: 200, type: PostMessage })
-  async getMessage(
-    @Request() req: any,
-    @Query('pageSize') pageSize?: number,
-    @Query('pageNumber') pageNumber?: number,
-  ) {
-    if (pageSize == null || pageSize < 1) pageSize = 10;
-    if (pageNumber == null || pageNumber < 1) pageNumber = 1;
+  async getMessage(@Request() req: any, @Query() query: GetMessagesQueryDto) {
+    const { pageNumber, pageSize } = query;
 
-    return await this.messageSvc.getMessage(req.user.id, pageSize, pageNumber, false);
+    return await this.messageSvc.getMessage(
+      req.user.id,
+      pageSize,
+      pageNumber,
+      false,
+    );
   }
 
   @Get('/conversation')
-  async getConversation( @Request() req: any, @Query('recieverId') recieverId: string) {
-    let conversation = await this.conversationSvc.getConversation(recieverId, req.user.id);
-    let existingMessage = await this.messageSvc.markAsRead(req.user.id, recieverId);
-    let receiverUser = await this.profileSvc.findByUserId(recieverId);
+  async getConversation(
+    @Request() req: any,
+    @Query('receiverId') receiverId: string,
+  ) {
+    const conversation = await this.conversationSvc.getConversation(
+      receiverId,
+      req.user.id,
+    );
+
+    const existingMessage = await this.messageSvc.markAsRead(
+      req.user.id,
+      receiverId,
+    );
+
+    const receiverUser = await this.profileSvc.findByUserId(receiverId);
+
     return {
       list: conversation,
-      post: existingMessage[0].post,
+      post: existingMessage.post,
       receiverUser: receiverUser,
       sas: this.sasSvc.getNewSASKey(),
     };

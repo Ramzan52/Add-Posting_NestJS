@@ -15,10 +15,10 @@ export class Conversation {
   senderId: string;
 
   @Prop({ required: true })
-  recieverId: string;
+  receiverId: string;
 
   @Prop()
-  recieverName?: string;
+  receiverName?: string;
 
   @Prop()
   senderName?: string;

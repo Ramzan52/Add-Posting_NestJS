@@ -1,5 +1,3 @@
-import { VerifyResetPassword } from './dto/verify.resetPassword.dto';
-import { FireBaseLoginService } from './firebase-login.service';
 import {
   BadRequestException,
   Body,
@@ -8,21 +6,26 @@ import {
   Post,
   Query,
   Req,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
+import {
+  createEmailBody,
+  generateRandomSixDigitCode,
+} from 'src/common/helper/email.helper';
 import { ProfileService } from 'src/profile/profile.service';
 import { UsersService } from 'src/users/users.service';
 import { JwtAuthGuard, LocalAuthGuard } from './auth-guards';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
-import { VerifyDto } from './dto/verify.dto';
+import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordBody } from './dto/resetPassword.dto';
 import { UpdateResetPassword } from './dto/update.resetPassword.dto';
+import { VerifyDto } from './dto/verify.dto';
+import { VerifyResetPassword } from './dto/verify.resetPassword.dto';
+import { FireBaseLoginService } from './firebase-login.service';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -58,9 +61,11 @@ export class AuthController {
 
   @Post('refresh-token/:refresh')
   async refreshToken(@Param('refresh') refresh: string) {
-    var response = this.authSvc.refreshToken(refresh);
-    if (response != null) return response;
-    else throw new BadRequestException();
+    const response = this.authSvc.refreshToken(refresh);
+    if (response != null) {
+      return response;
+    }
+    throw new BadRequestException();
   }
 
   @Post('register')
@@ -76,14 +81,8 @@ export class AuthController {
       throw new BadRequestException('User already verified');
     }
 
-    const code = Math.floor(100000 + Math.random() * 900000);
-
-    const emailBody = {
-      recipient: [email],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+    const code = generateRandomSixDigitCode();
+    const emailBody = createEmailBody(email, code);
 
     this.busSvc.sendEmail(emailBody);
     user.registerCode = code;
@@ -123,13 +122,9 @@ export class AuthController {
   @Post('forgot-password/resend-code')
   async resendCodePassword(@Query('email') email: string) {
     const user = await this.userSvc.findOne(email);
-    const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [email],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+
+    const code = generateRandomSixDigitCode();
+    const emailBody = createEmailBody(email, code);
 
     this.busSvc.sendEmail(emailBody);
     user.resetPasswordCode = code;

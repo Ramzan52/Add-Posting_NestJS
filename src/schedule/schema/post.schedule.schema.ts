@@ -12,6 +12,9 @@ export class Schedule {
   buyerId: string;
 
   @Prop({ required: true })
+  vendorId: string;
+
+  @Prop({ required: true })
   postId: string;
 
   @Prop({ required: true })

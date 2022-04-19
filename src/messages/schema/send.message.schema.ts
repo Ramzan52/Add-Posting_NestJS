@@ -13,7 +13,7 @@ export class SendMessage {
   senderId: string;
 
   @Prop()
-  recieverId: string;
+  receiverId: string;
 
   @Prop()
   text?: string;

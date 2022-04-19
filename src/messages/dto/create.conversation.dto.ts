@@ -16,11 +16,11 @@ export class PostConversation {
   // @IsString()
   // senderId: string;
   // @IsString()
-  // recieverId: string;
+  // receiverId: string;
   // @IsString()
   // senderName: string;
   // @IsString()
-  // recieverName: string;
+  // receiverName: string;
   // @IsObject()
   // message: Message;
   // // @IsObject()

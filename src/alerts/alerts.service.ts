@@ -9,42 +9,55 @@ export class AlertsService {
   constructor(
     @InjectModel(Alert.name) private readonly alertModel: Model<AlertDocument>,
   ) {}
+
   async saveAlerts(dto: CreateAlertDto, tokenData: any) {
-    let data = {
+    const alert = await this.alertModel.create({
       location: dto.location,
-      categortId: dto.categoryID,
+      categoryId: dto.categoryID,
       radius: dto.radius,
+      userId: tokenData.user.id,
+      isDeleted: false,
       createdByUsername: tokenData.user.username,
       createdBy: tokenData.user.name,
       createdOn: new Date(new Date().toUTCString()),
       modifiedByUsername: tokenData.user.username,
       modifiedBy: tokenData.user.name,
       modifiedOn: new Date(new Date().toUTCString()),
-    };
-    const alert = new this.alertModel(data);
+    });
 
-    return alert.save();
+    return alert;
   }
+
   async deleteAlert(id: string) {
     const alert = await this.getAlertByID(id);
     alert.isDeleted = true;
     alert.save();
   }
+
   async getAlertByID(id: string): Promise<any> {
-    try {
-      const alert = await this.alertModel.findById(id);
-    } catch {
+    const alerts = await this.alertModel.findById(id);
+    if (!alerts) {
       throw new NotFoundException(`Alert with id ${id} Not Found`);
     }
-    if (!alert) {
-      throw new NotFoundException(`Alert with id ${id} Not Found`);
-    }
-    return alert;
+    return alerts;
   }
+
   async myAlert(username: string): Promise<Array<AlertDocument>> {
     const post = await this.alertModel
-      .find({ createdByUsername: username })
+      .find({ createdByUsername: username, isDeleted: false })
       .exec();
+    return post;
+  }
+
+  async find(categoryId: string) {
+    const post = await this.alertModel
+      .find({ categoryId: categoryId, isDeleted: false })
+      .exec();
+    return post;
+  }
+
+  async findByAggregate(query: any) {
+    const post = await this.alertModel.find(query).exec();
     return post;
   }
 }

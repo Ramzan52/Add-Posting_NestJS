@@ -7,6 +7,10 @@ import { JwtService } from '@nestjs/jwt';
 import { hashSync } from 'bcryptjs';
 import { auth } from 'firebase-admin';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
+import {
+  createEmailBody,
+  generateRandomSixDigitCode,
+} from 'src/common/helper/email.helper';
 import { UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
 
@@ -20,23 +24,15 @@ export class AuthService {
   ) {}
 
   async login(user: LoginDto) {
-    console.log('user', user);
     const existingUser = await this.usersSvc.findOne(user.username);
 
     if (!existingUser) {
       return new UnauthorizedException();
     }
 
-    console.log('user', existingUser);
-
     if (!existingUser.isUserVerified) {
-      const code = Math.floor(100000 + Math.random() * 900000);
-      const emailBody = {
-        recipient: [`${user.username}`],
-        subject: 'Verification Code for Scrap Ready Application',
-        from: 'scrapreadyapp@gmail.com',
-        body: `Your code is ${code}`,
-      };
+      const code = generateRandomSixDigitCode();
+      const emailBody = createEmailBody(user.username, code);
 
       this.busSvc.sendEmail(emailBody);
       existingUser.registerCode = code;
@@ -54,8 +50,6 @@ export class AuthService {
         name: existingUser.name,
         username: existingUser.username,
       };
-
-      console.log('payload', payload);
 
       return {
         access_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),

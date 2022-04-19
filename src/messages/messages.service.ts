@@ -29,11 +29,11 @@ export class MessagesService {
   ) {}
 
   async postMessage(dto: PostFirstMessage, id: string) {
-    let reciever = await this.userModel.findById(dto.recieverId);
+    let receiver = await this.userModel.findById(dto.receiverId);
     let sender = await this.userModel.findById(id);
     let post = await this.postModel.findById(dto.postId);
-    if (!reciever) {
-      throw new NotFoundException('Reciever not found');
+    if (!receiver) {
+      throw new NotFoundException('Receiver not found');
     }
     if (!sender) {
       throw new NotFoundException('sender not found');
@@ -44,18 +44,18 @@ export class MessagesService {
     let data = {
       senderId: id,
       senderName: sender.name,
-      recieverId: dto.recieverId,
-      recieverName: reciever.name,
+      receiverId: dto.receiverId,
+      receiverName: receiver.name,
       timeStamp: new Date(),
       post: post,
       text: dto.latestText,
     };
 
     let flipData = {
-      recieverId: id,
-      recieverName: sender.name,
-      senderId: dto.recieverId,
-      senderName: reciever.name,
+      receiverId: id,
+      receiverName: sender.name,
+      senderId: dto.receiverId,
+      senderName: receiver.name,
       timeStamp: new Date(),
       post: post,
       text: dto.latestText,
@@ -63,63 +63,55 @@ export class MessagesService {
 
     const existingMessage = await this.messageModel.findOne({
       senderId: id,
-      recieverId: dto.recieverId,
+      receiverId: dto.receiverId,
     });
 
     if (existingMessage) {
-      await this.messageModel.findOneAndReplace(
-        { senderId: id, recieverId: dto.recieverId },
-        data,
-        { new: true },
-      );
-      await this.messageModel.findOneAndReplace(
-        { recieverId: id, senderId: dto.recieverId },
-        flipData,
-        { new: true },
-      );
       return existingMessage;
-    } else {
-      const message = await new this.messageModel(data);
-      const messageFlip = await new this.messageModel(flipData);
-      messageFlip.save();
-      return message.save();
     }
+
+    const message = await new this.messageModel(data);
+    const messageFlip = await new this.messageModel(flipData);
+    messageFlip.save();
+    return message.save();
   }
   async sendMessage(dto: SendMessage, userID: string) {
     const sender = await this.userModel.findById(userID);
-    const receiver = await this.userModel.findById(dto.recieverId);
+    const receiver = await this.userModel.findById(dto.receiverId);
 
     let data = {
       senderId: userID,
-      recieverId: dto.recieverId,
+      receiverId: dto.receiverId,
       senderName: sender.name,
-      recieverName: receiver.name,
+      receiverName: receiver.name,
       message: {
         text: dto.text,
         type: dto.type,
         senderId: userID,
-        recieverId: dto.recieverId,
+        receiverId: dto.receiverId,
       },
       timeStamp: new Date(),
     };
     try {
       let message = await this.ConversationSvc.postConversation(data, userID);
-      this.fcmSvc.findDeviceToken(dto.recieverId, data);
+      await this.fcmSvc.findDeviceToken(dto.receiverId, data);
 
       const existingMessage = await this.messageModel.findOne({
         senderId: userID,
-        recieverId: dto.recieverId,
+        receiverId: dto.receiverId,
       });
 
       if (existingMessage) {
         existingMessage.text = dto.text;
+        existingMessage.isRead = false;
         await existingMessage.save();
         const existingMessageFlip = await this.messageModel.findOne({
-          recieverId: userID,
-          senderId: dto.recieverId,
+          receiverId: userID,
+          senderId: dto.receiverId,
         });
-        console.log('existing message', existingMessageFlip);
+
         existingMessageFlip.text = dto.text;
+        existingMessageFlip.isRead = false;
         await existingMessageFlip.save();
         return existingMessage;
       }
@@ -164,22 +156,23 @@ export class MessagesService {
   }
 
   async markAsRead(senderId: string, receiverId: string) {
-    var existingMessage = await this.messageModel
-      .find({ $and: [{ senderId: senderId }, { recieverId: receiverId }] })
-      .exec();
+    const existingMessage = await this.messageModel.findOne({
+      senderId: senderId,
+      receiverId: receiverId,
+    });
 
     if (existingMessage) {
-      existingMessage[0].isRead = true;
+      existingMessage.isRead = true;
       await this.messageModel
         .replaceOne(
-          { _id: new mongo.ObjectId(existingMessage[0].id) },
+          { _id: new mongo.ObjectId(existingMessage.id) },
           existingMessage,
         )
         .exec();
 
-      console.log('existing message', existingMessage);
       return existingMessage;
     }
+
     throw new NotFoundException('No conversation exists against this receiver');
   }
 }

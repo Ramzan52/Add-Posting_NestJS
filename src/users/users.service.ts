@@ -14,6 +14,10 @@ import { User, UserDocument } from './schemas/user.schema';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { UpdateResetPassword } from 'src/auth/dto/update.resetPassword.dto';
 import { use } from 'passport';
+import {
+  createEmailBody,
+  generateRandomSixDigitCode,
+} from 'src/common/helper/email.helper';
 
 @Injectable()
 export class UsersService {
@@ -47,18 +51,18 @@ export class UsersService {
       if (exists.username == dto.username) {
         throw new BadRequestException('Email is already registered');
       }
-      if (exists.phoneNumber == dto.phoneNumber) {
-        throw new BadRequestException('Phone number is already registered');
+    }
+
+    const phoneExists = await this.findByPhone(dto.phoneNumber);
+
+    if (phoneExists) {
+      if (phoneExists.phoneNumber == dto.phoneNumber) {
+        throw new BadRequestException('Phone Number is already registered');
       }
     }
 
-    const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [dto.username],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+    const code = generateRandomSixDigitCode();
+    const emailBody = createEmailBody(dto.username, code);
 
     this.busSvc.sendEmail(emailBody);
 
@@ -84,6 +88,10 @@ export class UsersService {
 
   async findOne(username: string) {
     return await this.userModel.findOne({ username: username }).exec();
+  }
+
+  async findByPhone(phoneNumber: string) {
+    return await this.userModel.findOne({ phoneNumber: phoneNumber }).exec();
   }
 
   async update(user: any) {
@@ -126,13 +134,8 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
     user.IsResetVerified = false;
-    const code = Math.floor(100000 + Math.random() * 900000);
-    const emailBody = {
-      recipient: [username],
-      subject: 'Verification Code for Scrap Ready Application',
-      from: 'scrapreadyapp@gmail.com',
-      body: `Your code is ${code}`,
-    };
+    const code = generateRandomSixDigitCode();
+    const emailBody = createEmailBody(username, code);
 
     this.busSvc.sendEmail(emailBody);
     user.resetPasswordCode = code;
