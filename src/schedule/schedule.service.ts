@@ -17,6 +17,7 @@ import {
   DeviceTokenDocument,
 } from 'src/device_token/schema/device_token.schema';
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
+import { mongo } from 'mongoose';
 
 @Injectable()
 export class ScheduleService {
@@ -31,13 +32,23 @@ export class ScheduleService {
     private readonly firebaseSvc: Firebase_NotificationService,
   ) {}
 
-  async getSchedule(id: string): Promise<Array<PostSchedule>> {
-    let Schedule = await this.scheduleModel
-      .find({
-        vendorId: id,
-      })
-      .sort([['date', -1]])
-      .exec();
+  async getSchedule(id: string) {
+    let Schedule = await this.scheduleModel.aggregate([
+      {
+        $match: {
+          vendorId: '6241a33b785539f1be41d20f111',
+        },
+      },
+      {
+        $lookup: {
+          from: 'posts',
+          localField: 'postId',
+          foreignField: '_id',
+          as: 'posts',
+        },
+      },
+    ]);
+
     if (!Schedule) {
       throw new NotFoundException('No schendule found');
     }
@@ -58,7 +69,7 @@ export class ScheduleService {
       buyerId: dto.buyerId,
       date: dto.date,
       vendorId: id,
-      postId: dto.postId,
+      postId: new mongo.ObjectId(dto.postId),
       time: dto.time,
     };
     let Schedule = await this.scheduleModel.create(data);

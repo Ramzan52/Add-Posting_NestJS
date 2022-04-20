@@ -2,6 +2,8 @@ import { Category } from '../../categories/schemas/category.schema';
 import { BaseSchema } from 'src/models/base-document.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Post } from 'src/posts/schemas/post.schema';
+import mongoose from 'mongoose';
 
 export type ScheduleDocument = Schedule & Document;
 
@@ -13,8 +15,8 @@ export class Schedule {
   @Prop({ required: true })
   vendorId: string;
 
-  @Prop({ required: true })
-  postId: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Post' })
+  postId: Post;
 
   @Prop({ required: true })
   time: Date;
