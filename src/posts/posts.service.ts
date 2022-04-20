@@ -11,13 +11,18 @@ import { FcmTOkenService } from 'src/messages/fcmNotification.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
+import admin from 'firebase-admin';
+import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
     @InjectModel(DeviceToken.name)
-    private readonly deviceTokenModel: Model<DeviceTokenDocument>,
+    private readonly deviceTokenModal: Model<DeviceTokenDocument>,
+
+    private readonly firebaseSvc: Firebase_NotificationService,
+
     private readonly alertSvc: AlertsService,
     private readonly fcmSvc: FcmTOkenService,
   ) {}
@@ -136,7 +141,7 @@ export class PostsService {
       modifiedOn: new Date(new Date().toUTCString()),
     });
 
-    //await this.createObjForNotification(categoryId, post);
+    await this.createObjForNotification(categoryId, post);
 
     return post;
   }
@@ -158,7 +163,7 @@ export class PostsService {
       );
 
       if (distance <= alert.radius) {
-        const token = await this.deviceTokenModel
+        const token = await this.deviceTokenModal
           .findOne({ userId: alert.userId })
           .exec();
 
@@ -171,10 +176,26 @@ export class PostsService {
         }
       }
     }
-
-    console.log({ usernameList });
+    usernameList.forEach((x) => {
+      this.sendNotification(x);
+    });
   }
-
+  async sendNotification(x: any) {
+    let fcmToken = await this.deviceTokenModal.findOne({ userId: x.userId });
+    if (fcmToken && fcmToken.token !== null) {
+      let payload: admin.messaging.Message = {
+        data: { message: JSON.stringify(x.alert), type: 'new-message' },
+        token: fcmToken.token,
+      };
+      admin.messaging().send(payload);
+      this.firebaseSvc.PostNotification({
+        type: 'new-alert',
+        payLoad: x.alert,
+        sentOn: new Date(),
+        userId: x.userId,
+      });
+    }
+  }
   async getPostById(id: string): Promise<PostDocument> {
     const post = await this.postModel.findById(id).exec();
     if (!post || post.isDeleted) {
