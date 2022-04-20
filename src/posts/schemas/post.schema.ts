@@ -36,5 +36,8 @@ export class Post extends BaseSchema {
 
   @Prop()
   creatorId: string;
+
+  @Prop()
+  keywords: [{ type: String }];
 }
 export const PostSchema = SchemaFactory.createForClass(Post);

@@ -1,5 +1,5 @@
 import { PostRating } from './dto/create.rating.dto';
-import { Schedule, ScheduleDocument } from './schema/post.schedule.schema';
+import { Schedule, ScheduleDocument } from './schema/schedule.schema';
 import {
   Injectable,
   NotFoundException,
@@ -73,10 +73,13 @@ export class ScheduleService {
   }
   async postScheduleRating(dto: PostRating) {
     let today = new Date();
-    let Schedule = await this.scheduleModel.findById(dto.scheduleId);
+    let Schedule = await this.scheduleModel.findById(dto.scheduleId).exec();
 
     if (!Schedule) {
       throw new NotFoundException('No Schedule Found');
+    }
+    if (Schedule.rating) {
+      return;
     }
     if (Schedule.date < today || Schedule.time < today) {
       throw new NotFoundException('No Schedule Found');
@@ -85,19 +88,14 @@ export class ScheduleService {
       throw new BadRequestException('Rating should be between 0 and 5');
     }
 
-    let user = await this.userModel.findById(dto.vednorId);
-    user.ratings.push({
-      postId: dto.postId,
-      scheduleId: dto.scheduleId,
-      rating: dto.rating,
-    });
-    var totalRatings = 0;
-    user.ratings.map((rating) => {
-      totalRatings += rating.rating;
-    });
-    user.avgRating = totalRatings / user.ratings.length;
+    Schedule.rating = dto.rating;
+    const user = await this.userModel.findById(Schedule.vendorId);
+    user.avgRating =
+      ((user.ratingsCount || 0) * (user.avgRating || 0) + dto.rating) /
+      ((user.ratingsCount || 0) + 1);
+    user.ratingsCount = (user.ratingsCount || 0) + 1;
+
     user.save();
-    return user;
   }
 
   async findDeviceToken(id: string, message: any) {

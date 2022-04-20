@@ -1,4 +1,4 @@
-import { Category } from './../../categories/schemas/category.schema';
+import { Category } from '../../categories/schemas/category.schema';
 import { BaseSchema } from 'src/models/base-document.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
@@ -22,6 +22,9 @@ export class Schedule {
 
   @Prop({ required: true })
   date: Date;
+
+  @Prop({ required: true })
+  rating: number;
 }
 
 export const ScheduleSchema = SchemaFactory.createForClass(Schedule);

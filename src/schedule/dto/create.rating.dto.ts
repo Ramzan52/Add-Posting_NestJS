@@ -1,4 +1,4 @@
-import { Schedule } from './../schema/post.schedule.schema';
+import { Schedule } from '../schema/schedule.schema';
 import {
   IsArray,
   IsDate,
@@ -12,12 +12,6 @@ import {
 import { StringifyOptions } from 'querystring';
 
 export class PostRating {
-  @IsString()
-  vednorId: string;
-
-  @IsString()
-  postId: string;
-
   @IsNumber()
   rating: number;
 

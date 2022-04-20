@@ -1,4 +1,4 @@
-import { Schedule, ScheduleSchema } from './schema/post.schedule.schema';
+import { Schedule, ScheduleSchema } from './schema/schedule.schema';
 import { Module } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
 import { ScheduleController } from './schedule.controller';
