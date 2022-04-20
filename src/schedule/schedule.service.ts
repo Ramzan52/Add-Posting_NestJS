@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel, SchemaFactory } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -33,7 +34,6 @@ export class ScheduleService {
   async getSchedule(id: string): Promise<Array<PostSchedule>> {
     let Schedule = await this.scheduleModel
       .find({
-        buyerId: id,
         vendorId: id,
       })
       .sort([['date', -1]])
@@ -51,8 +51,8 @@ export class ScheduleService {
     if (!post) {
       throw new NotFoundException('No Post Found');
     }
-    if (post[0].creatorId != id) {
-      throw new BadRequestException();
+    if (post.creatorId != id) {
+      throw new UnauthorizedException();
     }
     let data = {
       buyerId: dto.buyerId,
