@@ -1,11 +1,10 @@
-export async function createEmailBody(data: string, code: number) {
-  const emailBody = {
+export function createEmailBody(data: string, code: number) {
+  return {
     recipient: [data],
     subject: 'Verification Code for Scrap Ready Application',
     from: 'scrapreadyapp@gmail.com',
     body: `Your code is ${code}`,
   };
-  return emailBody;
 }
 
 export function generateRandomSixDigitCode() {
