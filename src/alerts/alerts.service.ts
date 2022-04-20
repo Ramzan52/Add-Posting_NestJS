@@ -23,6 +23,7 @@ export class AlertsService {
       modifiedByUsername: tokenData.user.username,
       modifiedBy: tokenData.user.name,
       modifiedOn: new Date(new Date().toUTCString()),
+      keywords: dto.keywords,
     });
 
     return alert;
