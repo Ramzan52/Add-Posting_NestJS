@@ -24,10 +24,10 @@ export class Schedule {
   @Prop({ required: true })
   date: Date;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   rating: number;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   comments: string;
 }
 

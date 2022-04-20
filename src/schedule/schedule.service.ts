@@ -85,7 +85,6 @@ export class ScheduleService {
   async postScheduleRating(dto: PostRating) {
     let today = new Date();
     let Schedule = await this.scheduleModel.findById(dto.scheduleId).exec();
-
     if (!Schedule) {
       throw new NotFoundException('No Schedule Found');
     }
@@ -113,7 +112,7 @@ export class ScheduleService {
 
   async findDeviceToken(id: string, message: any) {
     let fcmToken = await this.deviceTokenModal.findOne({ userId: id });
-    if (fcmToken.token !== null) {
+    if (fcmToken && fcmToken.token !== null) {
       let payload: admin.messaging.Message = {
         data: { message: JSON.stringify(message), type: 'new-schedule' },
         token: fcmToken.token,
