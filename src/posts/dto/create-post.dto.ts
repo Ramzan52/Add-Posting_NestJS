@@ -30,4 +30,7 @@ export class CreatePostDto {
 
   @IsNotEmptyObject()
   location: PostLocationDto;
+
+  @IsArray()
+  keywords: [string];
 }

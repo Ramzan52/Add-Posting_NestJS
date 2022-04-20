@@ -1,5 +1,5 @@
 import { PostLocationDto } from './../../posts/dto/post-location.dto';
-import { IsNotEmptyObject, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmptyObject, IsNumber, IsString } from 'class-validator';
 
 export class CreateAlertDto {
   @IsString()
@@ -10,4 +10,7 @@ export class CreateAlertDto {
 
   @IsNotEmptyObject()
   location: PostLocationDto;
+
+  @IsArray()
+  keywords: [string];
 }

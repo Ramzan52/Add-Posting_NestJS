@@ -57,10 +57,11 @@ export class AuthService {
         user: {
           _id: existingUser.id,
           isUserVerified: existingUser.isUserVerified,
-          ratings: existingUser.ratings,
+
           username: existingUser.username,
           name: existingUser.name,
           avg_rating: existingUser.avgRating,
+          ratingsCount: existingUser.ratingsCount,
         },
       };
     } else {

@@ -19,6 +19,9 @@ export class Alert extends BaseSchema {
 
   @Prop({ required: false })
   userId: string;
+
+  @Prop()
+  keywords: [{ type: String }];
 }
 
 export const AlertSchema = SchemaFactory.createForClass(Alert);

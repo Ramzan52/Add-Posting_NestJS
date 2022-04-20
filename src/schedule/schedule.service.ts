@@ -1,5 +1,5 @@
 import { PostRating } from './dto/create.rating.dto';
-import { Schedule, ScheduleDocument } from './schema/post.schedule.schema';
+import { Schedule, ScheduleDocument } from './schema/schedule.schema';
 import {
   Injectable,
   NotFoundException,
@@ -17,6 +17,7 @@ import {
   DeviceTokenDocument,
 } from 'src/device_token/schema/device_token.schema';
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
+import { mongo } from 'mongoose';
 
 @Injectable()
 export class ScheduleService {
@@ -31,13 +32,23 @@ export class ScheduleService {
     private readonly firebaseSvc: Firebase_NotificationService,
   ) {}
 
-  async getSchedule(id: string): Promise<Array<PostSchedule>> {
-    let Schedule = await this.scheduleModel
-      .find({
-        vendorId: id,
-      })
-      .sort([['date', -1]])
-      .exec();
+  async getSchedule(id: string) {
+    let Schedule = await this.scheduleModel.aggregate([
+      {
+        $match: {
+          vendorId: '6241a33b785539f1be41d20f111',
+        },
+      },
+      {
+        $lookup: {
+          from: 'posts',
+          localField: 'postId',
+          foreignField: '_id',
+          as: 'posts',
+        },
+      },
+    ]);
+
     if (!Schedule) {
       throw new NotFoundException('No schendule found');
     }
@@ -58,7 +69,7 @@ export class ScheduleService {
       buyerId: dto.buyerId,
       date: dto.date,
       vendorId: id,
-      postId: dto.postId,
+      postId: new mongo.ObjectId(dto.postId),
       time: dto.time,
     };
     let Schedule = await this.scheduleModel.create(data);
@@ -73,10 +84,13 @@ export class ScheduleService {
   }
   async postScheduleRating(dto: PostRating) {
     let today = new Date();
-    let Schedule = await this.scheduleModel.findById(dto.scheduleId);
+    let Schedule = await this.scheduleModel.findById(dto.scheduleId).exec();
 
     if (!Schedule) {
       throw new NotFoundException('No Schedule Found');
+    }
+    if (Schedule.rating) {
+      return;
     }
     if (Schedule.date < today || Schedule.time < today) {
       throw new NotFoundException('No Schedule Found');
@@ -85,19 +99,16 @@ export class ScheduleService {
       throw new BadRequestException('Rating should be between 0 and 5');
     }
 
-    let user = await this.userModel.findById(dto.vednorId);
-    user.ratings.push({
-      postId: dto.postId,
-      scheduleId: dto.scheduleId,
-      rating: dto.rating,
-    });
-    var totalRatings = 0;
-    user.ratings.map((rating) => {
-      totalRatings += rating.rating;
-    });
-    user.avgRating = totalRatings / user.ratings.length;
+    Schedule.rating = dto.rating;
+    Schedule.comments = dto.comments;
+    Schedule.save();
+    const user = await this.userModel.findById(Schedule.vendorId);
+    user.avgRating =
+      ((user.ratingsCount || 0) * (user.avgRating || 0) + dto.rating) /
+      ((user.ratingsCount || 0) + 1);
+    user.ratingsCount = (user.ratingsCount || 0) + 1;
+
     user.save();
-    return user;
   }
 
   async findDeviceToken(id: string, message: any) {
@@ -108,12 +119,12 @@ export class ScheduleService {
         token: fcmToken.token,
       };
       admin.messaging().send(payload);
-      this.firebaseSvc.PostNotification({
-        type: 'new-schedule',
-        payLoad: message,
-        sentOn: new Date(),
-        userId: id,
-      });
+      // this.firebaseSvc.PostNotification({
+      //   type: 'new-schedule',
+      //   payLoad: message,
+      //   sentOn: new Date(),
+      //   userId: id,
+      // });
     }
   }
 }

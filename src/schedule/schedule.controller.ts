@@ -5,6 +5,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   InternalServerErrorException,
   Post,
   Req,
@@ -22,10 +23,7 @@ export class ScheduleController {
 
   @Get()
   async getSchedule(@Req() req: any) {
-    let schedule = await this.scheduleSvc.getSchedule(req.user.id);
-    if (schedule) {
-      return schedule;
-    }
+    return await this.scheduleSvc.getSchedule(req.user.id);
   }
   @Post()
   async postSchedule(@Req() req: any, @Body() body: PostSchedule) {
@@ -36,11 +34,8 @@ export class ScheduleController {
     throw new BadRequestException();
   }
   @Post('/rating')
+  @HttpCode(204)
   async postScheduleRating(@Body() body: PostRating) {
-    let rating = await this.scheduleSvc.postScheduleRating(body);
-    if (rating) {
-      return rating;
-    }
-    throw new BadRequestException();
+    await this.scheduleSvc.postScheduleRating(body);
   }
 }
