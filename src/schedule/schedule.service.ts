@@ -119,12 +119,12 @@ export class ScheduleService {
         token: fcmToken.token,
       };
       admin.messaging().send(payload);
-      this.firebaseSvc.PostNotification({
-        type: 'new-schedule',
-        payLoad: message,
-        sentOn: new Date(),
-        userId: id,
-      });
+      // this.firebaseSvc.PostNotification({
+      //   type: 'new-schedule',
+      //   payLoad: message,
+      //   sentOn: new Date(),
+      //   userId: id,
+      // });
     }
   }
 }
