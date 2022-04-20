@@ -136,37 +136,43 @@ export class PostsService {
       modifiedOn: new Date(new Date().toUTCString()),
     });
 
-    // var usernameList = [];
-
-    // var alerts = await this.alertSvc.find(categoryId);
-
-    // console.log({ alerts });
-
-    // alerts.forEach((alert) => {
-    //   var distance = calcCrow(
-    //     post.location.latitude,
-    //     post.location.longitude,
-    //     alert.location.latitude,
-    //     alert.location.longitude,
-    //   );
-    //   if (distance <= alert.radius) {
-    //     usernameList.push(alert.userId);
-    //   }
-    // });
-
-    // const records = await this.deviceTokenModel.find({
-    //   userId: { $in: usernameList },
-    // });
-
-    // let tokenList = [];
-
-    // records.map((record) => {
-    //   tokenList.push(record.token);
-    // });
-
-    // console.log({ records });
+    //await this.createObjForNotification(categoryId, post);
 
     return post;
+  }
+
+  private async createObjForNotification(
+    categoryId: string,
+    post: Post & import('mongoose').Document<any, any, any> & { _id: any },
+  ) {
+    var usernameList = [];
+
+    var alerts = await this.alertSvc.find(categoryId);
+
+    for (var alert of alerts) {
+      var distance = calcCrow(
+        post.location.latitude,
+        post.location.longitude,
+        alert.location.latitude,
+        alert.location.longitude,
+      );
+
+      if (distance <= alert.radius) {
+        const token = await this.deviceTokenModel
+          .findOne({ userId: alert.userId })
+          .exec();
+
+        if (token) {
+          usernameList.push({
+            alert: alert,
+            userId: alert.userId,
+            token: token.token,
+          });
+        }
+      }
+    }
+
+    console.log({ usernameList });
   }
 
   async getPostById(id: string): Promise<PostDocument> {
