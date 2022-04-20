@@ -17,4 +17,7 @@ export class PostRating {
 
   @IsString()
   scheduleId: string;
+
+  @IsString()
+  comments: string;
 }

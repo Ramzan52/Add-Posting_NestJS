@@ -100,6 +100,8 @@ export class ScheduleService {
     }
 
     Schedule.rating = dto.rating;
+    Schedule.comments = dto.comments;
+    Schedule.save();
     const user = await this.userModel.findById(Schedule.vendorId);
     user.avgRating =
       ((user.ratingsCount || 0) * (user.avgRating || 0) + dto.rating) /

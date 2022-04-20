@@ -26,6 +26,9 @@ export class Schedule {
 
   @Prop({ required: true })
   rating: number;
+
+  @Prop({ required: true })
+  comments: string;
 }
 
 export const ScheduleSchema = SchemaFactory.createForClass(Schedule);
