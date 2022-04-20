@@ -11,8 +11,6 @@ FROM node:16-alpine as app
 WORKDIR /usr/src/app
 
 # Install deps for production only
-ARG NODE_ENV
-ENV NODE_ENV=$NODE_ENV
 COPY package.json yarn.lock ./
 RUN yarn install --production
 
