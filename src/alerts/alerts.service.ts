@@ -2,7 +2,7 @@ import { Alert, AlertDocument } from './schema/alert.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateAlertDto } from './dto/post-alert.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Model, mongo } from 'mongoose';
 
 @Injectable()
 export class AlertsService {
@@ -13,7 +13,7 @@ export class AlertsService {
   async saveAlerts(dto: CreateAlertDto, tokenData: any) {
     const alert = await this.alertModel.create({
       location: dto.location,
-      categoryId: dto.categoryID,
+      categoryId: new mongo.ObjectId(dto.categoryID),
       radius: dto.radius,
       userId: tokenData.user.id,
       isDeleted: false,
@@ -23,6 +23,7 @@ export class AlertsService {
       modifiedByUsername: tokenData.user.username,
       modifiedBy: tokenData.user.name,
       modifiedOn: new Date(new Date().toUTCString()),
+      keywords: dto.keywords,
     });
 
     return alert;
@@ -43,9 +44,25 @@ export class AlertsService {
   }
 
   async myAlert(username: string): Promise<Array<AlertDocument>> {
-    const post = await this.alertModel
-      .find({ createdByUsername: username, isDeleted: false })
-      .exec();
+    let post = await this.alertModel.aggregate([
+      {
+        $match: {
+          createdByUsername: username,
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'Category',
+        },
+      },
+    ]);
+    // const post = await this.alertModel
+    //   .find({ createdByUsername: username, isDeleted: false })
+    //   .exec();
     return post;
   }
 

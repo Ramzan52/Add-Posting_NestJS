@@ -11,13 +11,18 @@ import { FcmTOkenService } from 'src/messages/fcmNotification.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
+import admin from 'firebase-admin';
+import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
     @InjectModel(DeviceToken.name)
-    private readonly deviceTokenModel: Model<DeviceTokenDocument>,
+    private readonly deviceTokenModal: Model<DeviceTokenDocument>,
+
+    private readonly firebaseSvc: Firebase_NotificationService,
+
     private readonly alertSvc: AlertsService,
     private readonly fcmSvc: FcmTOkenService,
   ) {}
@@ -136,39 +141,61 @@ export class PostsService {
       modifiedOn: new Date(new Date().toUTCString()),
     });
 
-    // var usernameList = [];
-
-    // var alerts = await this.alertSvc.find(categoryId);
-
-    // console.log({ alerts });
-
-    // alerts.forEach((alert) => {
-    //   var distance = calcCrow(
-    //     post.location.latitude,
-    //     post.location.longitude,
-    //     alert.location.latitude,
-    //     alert.location.longitude,
-    //   );
-    //   if (distance <= alert.radius) {
-    //     usernameList.push(alert.userId);
-    //   }
-    // });
-
-    // const records = await this.deviceTokenModel.find({
-    //   userId: { $in: usernameList },
-    // });
-
-    // let tokenList = [];
-
-    // records.map((record) => {
-    //   tokenList.push(record.token);
-    // });
-
-    // console.log({ records });
+    await this.createObjForNotification(categoryId, post);
 
     return post;
   }
 
+  private async createObjForNotification(
+    categoryId: string,
+    post: Post & import('mongoose').Document<any, any, any> & { _id: any },
+  ) {
+    var usernameList = [];
+
+    var alerts = await this.alertSvc.find(categoryId);
+
+    for (var alert of alerts) {
+      var distance = calcCrow(
+        post.location.latitude,
+        post.location.longitude,
+        alert.location.latitude,
+        alert.location.longitude,
+      );
+
+      if (distance <= alert.radius) {
+        const token = await this.deviceTokenModal
+          .findOne({ userId: alert.userId })
+          .exec();
+
+        if (token) {
+          usernameList.push({
+            alert: alert,
+            userId: alert.userId,
+            token: token.token,
+          });
+        }
+      }
+    }
+    usernameList.forEach((x) => {
+      this.sendNotification(x);
+    });
+  }
+  async sendNotification(x: any) {
+    let fcmToken = await this.deviceTokenModal.findOne({ userId: x.userId });
+    if (fcmToken && fcmToken.token !== null) {
+      let payload: admin.messaging.Message = {
+        data: { message: JSON.stringify(x.alert), type: 'new-message' },
+        token: fcmToken.token,
+      };
+      admin.messaging().send(payload);
+      this.firebaseSvc.PostNotification({
+        type: 'new-alert',
+        payLoad: x.alert,
+        sentOn: new Date(),
+        userId: x.userId,
+      });
+    }
+  }
   async getPostById(id: string): Promise<PostDocument> {
     const post = await this.postModel.findById(id).exec();
     if (!post || post.isDeleted) {

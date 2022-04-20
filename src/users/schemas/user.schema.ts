@@ -1,4 +1,4 @@
-import { Schedule } from './../../schedule/schema/post.schedule.schema';
+import { Schedule } from '../../schedule/schema/schedule.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -22,16 +22,10 @@ export class User {
   hash: string;
 
   @Prop()
-  ratings: [
-    {
-      postId: string;
-      scheduleId: string;
-      rating: number;
-    },
-  ];
+  ratingsCount: number = 0;
 
   @Prop()
-  avgRating: number;
+  avgRating: number = 0;
 
   @Prop()
   resetPasswordCode: number;

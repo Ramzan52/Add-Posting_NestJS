@@ -29,18 +29,18 @@ export class FcmTOkenService {
 
   async findDeviceToken(id: string, message: Conversation) {
     let fcmToken = await this.deviceTokenModal.findOne({ userId: id });
-    if (fcmToken.token !== null) {
+    if (fcmToken && fcmToken.token !== null) {
       let payload: admin.messaging.Message = {
         data: { message: JSON.stringify(message), type: 'new-message' },
         token: fcmToken.token,
       };
       admin.messaging().send(payload);
-      let notif = await this.firebaseSvc.PostNotification({
-        type: 'new-message',
-        payLoad: message,
-        sentOn: new Date(),
-        userId: id,
-      });
+      // let notif = await this.firebaseSvc.PostNotification({
+      //   type: 'new-message',
+      //   payLoad: message,
+      //   sentOn: new Date(),
+      //   userId: id,
+      // });
     }
   }
 
