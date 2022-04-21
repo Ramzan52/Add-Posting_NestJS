@@ -157,6 +157,11 @@ export class PostsService {
     let alerts = await this.alertSvc.find(categoryId);
 
     for (let alert of alerts) {
+      const commonNames = [];
+      alert.keywords.forEach((name) => {
+        if (post.keywords.includes(name)) commonNames.push(name);
+      });
+
       let distance = calcCrow(
         post.location.latitude,
         post.location.longitude,
@@ -164,7 +169,7 @@ export class PostsService {
         alert.location.longitude,
       );
 
-      if (distance <= alert.radius) {
+      if (distance <= alert.radius || commonNames.length > 0) {
         const token = await this.deviceTokenModal
           .findOne({ userId: alert.userId })
           .exec();
