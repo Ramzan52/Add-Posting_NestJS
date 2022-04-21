@@ -13,6 +13,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
 import admin from 'firebase-admin';
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
+import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
+import { User, UserDocument } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class PostsService {
@@ -20,6 +22,9 @@ export class PostsService {
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
     @InjectModel(DeviceToken.name)
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
+    @InjectModel(Profile.name)
+    private readonly profileModel: Model<ProfileDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
 
     private readonly firebaseSvc: Firebase_NotificationService,
 
@@ -122,6 +127,12 @@ export class PostsService {
       location,
       keywords,
     } = dto;
+    let user = await this.userModel.findOne({
+      username: tokenData.user.username,
+    });
+    let profile = await this.profileModel.findOne({
+      email: tokenData.user.username,
+    });
 
     const post = await this.postModel.create({
       categoryId: new mongo.ObjectId(categoryId),
@@ -141,6 +152,9 @@ export class PostsService {
       modifiedBy: tokenData.user.name,
       modifiedOn: new Date(new Date().toUTCString()),
       keywords: keywords,
+      UserProfile: profile.profilePic,
+      UserRating: user.avgRating,
+      UserNumber: profile.phoneNumber,
     });
 
     await this.createObjForNotification(categoryId, post);
