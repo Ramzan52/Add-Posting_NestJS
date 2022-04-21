@@ -120,6 +120,7 @@ export class PostsService {
       condition,
       attachmentUrls,
       location,
+      keywords,
     } = dto;
 
     const post = await this.postModel.create({
@@ -139,6 +140,7 @@ export class PostsService {
       modifiedByUsername: tokenData.user.username,
       modifiedBy: tokenData.user.name,
       modifiedOn: new Date(new Date().toUTCString()),
+      keywords: keywords,
     });
 
     await this.createObjForNotification(categoryId, post);
