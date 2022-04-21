@@ -126,7 +126,9 @@ export class AuthController {
   @Post('forgot-password/resend-code')
   async resendCodePassword(@Query('email') email: string) {
     const user = await this.userSvc.findOne(email);
-
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
     const code = generateRandomSixDigitCode();
     const emailBody = createEmailBody(email, code);
 
