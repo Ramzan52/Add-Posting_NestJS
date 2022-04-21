@@ -150,12 +150,12 @@ export class PostsService {
     categoryId: string,
     post: Post & import('mongoose').Document<any, any, any> & { _id: any },
   ) {
-    var usernameList = [];
+    let usernameList = [];
 
-    var alerts = await this.alertSvc.find(categoryId);
+    let alerts = await this.alertSvc.find(categoryId);
 
-    for (var alert of alerts) {
-      var distance = calcCrow(
+    for (let alert of alerts) {
+      let distance = calcCrow(
         post.location.latitude,
         post.location.longitude,
         alert.location.latitude,

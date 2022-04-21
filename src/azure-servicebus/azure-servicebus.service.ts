@@ -18,8 +18,8 @@ export class AzureServiceBusService {
     this.emailSender = this.client.createSender(queueName);
   }
 
-  sendEmail(messageBody: any) {
-    this.emailSender.sendMessages([
+  async sendEmail(messageBody: any) {
+    await this.emailSender.sendMessages([
       {
         body: messageBody,
         contentType: 'application/json',
