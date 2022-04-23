@@ -7,10 +7,10 @@ const queueName = 'emails';
 
 @Injectable()
 export class AzureServiceBusService {
-  constructor(
-    private emailSender: ServiceBusSender,
-    private updateDocSender: ServiceBusSender,
-  ) {
+  private emailSender: ServiceBusSender;
+  private updateDocSender: ServiceBusSender;
+
+  constructor() {
     const client = new ServiceBusClient(
       process.env.SERVICE_BUS_CONNECTION_STRING,
     );
