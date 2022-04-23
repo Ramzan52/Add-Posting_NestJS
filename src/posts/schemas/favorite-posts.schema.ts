@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Document } from 'mongoose';
-import { BaseSchema } from 'src/models/base-document.schema';
 import { Post } from './post.schema';
 
 export type FavoritePostsDocument = FavoritePosts & Document;

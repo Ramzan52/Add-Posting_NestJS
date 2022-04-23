@@ -13,7 +13,6 @@ import { VerifyDto } from 'src/auth/dto/verify.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { UpdateResetPassword } from 'src/auth/dto/update.resetPassword.dto';
-import { use } from 'passport';
 import {
   createEmailBody,
   generateRandomSixDigitCode,

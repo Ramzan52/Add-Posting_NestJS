@@ -1,5 +1,3 @@
-import { Category } from '../../categories/schemas/category.schema';
-import { BaseSchema } from 'src/models/base-document.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Post } from 'src/posts/schemas/post.schema';

@@ -1,8 +1,4 @@
 import { PostNotification } from './dto/post.notification';
-import {
-  Notification,
-  NotificationDocument,
-} from './../notifications/schemas/notification.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';

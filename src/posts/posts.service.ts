@@ -41,9 +41,19 @@ export class PostsService {
     categoryId: string,
   ) {
     const countFilter: any = { isDeleted: false };
+    countFilter.creatorId = {
+      $not: {
+        $eq: userId,
+      },
+    };
     const aggregateFilters: any[] = [
       {
         isDeleted: false,
+        creatorId: {
+          $not: {
+            $eq: userId,
+          },
+        },
       },
     ];
 

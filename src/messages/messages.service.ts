@@ -1,8 +1,4 @@
-import { PostConversation } from './dto/create.conversation.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
-import { Conversation } from './schema/conversation.schema';
 import { ConversationService } from './conversation.service';
-import { PostMessage } from './dto/create.message.dto';
 import { Message, MessageDocument } from './schema/post.message.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import {

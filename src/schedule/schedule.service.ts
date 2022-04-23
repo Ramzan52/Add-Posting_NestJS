@@ -33,7 +33,7 @@ export class ScheduleService {
   ) {}
 
   async getSchedule(id: string) {
-    let Schedule = await this.scheduleModel.aggregate([
+    let scheduleAsVendor = await this.scheduleModel.aggregate([
       {
         $match: {
           vendorId: id,
@@ -49,10 +49,28 @@ export class ScheduleService {
       },
     ]);
 
-    if (!Schedule) {
+    let scheduleAsBuyer = await this.scheduleModel.aggregate([
+      {
+        $match: {
+          buyerId: id,
+        },
+      },
+      {
+        $lookup: {
+          from: 'posts',
+          localField: 'postId',
+          foreignField: '_id',
+          as: 'posts',
+        },
+      },
+    ]);
+
+    if (!scheduleAsVendor && !scheduleAsBuyer) {
       throw new NotFoundException('No schendule found');
     }
-    return Schedule;
+    var result = [...scheduleAsBuyer, ...scheduleAsVendor];
+    console.log({ result });
+    return result;
   }
   async PostSchedule(id: string, dto: PostSchedule) {
     let post = await this.postModel.findOne({

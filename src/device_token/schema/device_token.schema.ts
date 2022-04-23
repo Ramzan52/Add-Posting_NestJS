@@ -1,8 +1,5 @@
-import { Category } from './../../categories/schemas/category.schema';
-import { BaseSchema } from 'src/models/base-document.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
-import { PostLocationSchema } from 'src/posts/schemas/post-location.schema';
+import { Document } from 'mongoose';
 
 export type DeviceTokenDocument = DeviceToken & Document;
 
