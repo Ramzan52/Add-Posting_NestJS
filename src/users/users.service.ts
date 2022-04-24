@@ -135,6 +135,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
     user.isResetVerified = false;
     const code = generateRandomSixDigitCode();
     const emailBody = createEmailBody(username, code);
@@ -160,6 +161,10 @@ export class UsersService {
       user.isResetVerified = true;
       user.resetPasswordCode = 0;
       await this.userModel.replaceOne({ _id: user._id }, user);
+    } else {
+      user.isResetVerified = false;
+      await this.userModel.replaceOne({ _id: user._id }, user);
+      throw new BadRequestException('Invalid OTP');
     }
   }
 
@@ -169,7 +174,9 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
     if (!user.isResetVerified) {
-      throw new BadRequestException('User not verified');
+      throw new BadRequestException(
+        'Please verify OTP before changing password',
+      );
     }
 
     const { salt, hash } = user;
