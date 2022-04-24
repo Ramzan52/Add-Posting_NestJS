@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RegisterDto } from 'src/auth/dto/register.dto';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { UsersService } from 'src/users/users.service';
 import { SaveProfileDto } from './dto/save-profile.dto';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
@@ -11,6 +12,7 @@ export class ProfileService {
   constructor(
     @InjectModel(Profile.name)
     private readonly profileModel: Model<ProfileDocument>,
+    private serviceBusSvc: AzureServiceBusService,
     private readonly userSvc: UsersService,
   ) {}
 
@@ -40,18 +42,17 @@ export class ProfileService {
 
     if (!profile) {
       throw new NotFoundException('Profile not found');
-      // profile = await this.profileModel.create({
-      //   name,
-      //   email: username,
-      //   phoneNumber,
-      //   profilePic,
-      // });
     } else {
       profile.name = name;
       profile.phoneNumber = phoneNumber;
       profile.profilePic = profilePic;
 
       await this.profileModel.replaceOne({ _id: profile._id }, profile);
+
+      await this.serviceBusSvc.sendUpdateDocMessage({
+        messageType: 'profile',
+        message: profile,
+      });
 
       let user = await this.userSvc.findById(profile.userId);
       if (user) {
