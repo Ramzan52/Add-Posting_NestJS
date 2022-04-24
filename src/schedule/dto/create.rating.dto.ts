@@ -1,15 +1,4 @@
-import { Schedule } from '../schema/schedule.schema';
-import {
-  IsArray,
-  IsDate,
-  IsNotEmptyObject,
-  IsNumber,
-  IsString,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
-import { StringifyOptions } from 'querystring';
+import { IsNumber, IsString } from 'class-validator';
 
 export class PostRating {
   @IsNumber()

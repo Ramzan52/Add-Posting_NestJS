@@ -10,7 +10,6 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { SaveProfileDto } from './dto/save-profile.dto';
 import { ProfileService } from './profile.service';
-import { Profile } from './schemas/profile.schema';
 import { GetProfileDto } from './dto/get-profile.dto';
 import { AzureSASServiceService } from '../azure-sasservice/azure-sasservice.service';
 

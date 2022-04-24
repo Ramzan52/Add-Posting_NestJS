@@ -6,7 +6,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  InternalServerErrorException,
   Post,
   Req,
   UseGuards,

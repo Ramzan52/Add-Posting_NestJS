@@ -7,15 +7,13 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Post,
   Query,
   Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
-import { PostLocationDto } from 'src/posts/dto/post-location.dto';
+import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Alert')
 @UseGuards(JwtAuthGuard)
 @Controller('alerts')

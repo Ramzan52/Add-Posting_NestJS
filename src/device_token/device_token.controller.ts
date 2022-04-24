@@ -1,16 +1,8 @@
 import { CreateDeviceTokenDto } from './dto/post.device.token';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './../auth/auth-guards/jwt-auth.guard';
 import { DeviceTokenService } from './device_token.service';
-import {
-  Body,
-  Controller,
-  Get,
-  UseGuards,
-  Post,
-  Request,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, UseGuards, Post, Req } from '@nestjs/common';
 @UseGuards(JwtAuthGuard)
 @Controller('device-token')
 @ApiTags('device-token')

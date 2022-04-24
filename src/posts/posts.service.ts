@@ -13,6 +13,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
 import admin from 'firebase-admin';
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
+import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
+import { User, UserDocument } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class PostsService {
@@ -20,6 +22,9 @@ export class PostsService {
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
     @InjectModel(DeviceToken.name)
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
+    @InjectModel(Profile.name)
+    private readonly profileModel: Model<ProfileDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
 
     private readonly firebaseSvc: Firebase_NotificationService,
 
@@ -36,9 +41,19 @@ export class PostsService {
     categoryId: string,
   ) {
     const countFilter: any = { isDeleted: false };
+    countFilter.creatorId = {
+      $not: {
+        $eq: userId,
+      },
+    };
     const aggregateFilters: any[] = [
       {
         isDeleted: false,
+        creatorId: {
+          $not: {
+            $eq: userId,
+          },
+        },
       },
     ];
 
@@ -120,7 +135,14 @@ export class PostsService {
       condition,
       attachmentUrls,
       location,
+      keywords,
     } = dto;
+    let user = await this.userModel.findOne({
+      username: tokenData.user.username,
+    });
+    let profile = await this.profileModel.findOne({
+      email: tokenData.user.username,
+    });
 
     const post = await this.postModel.create({
       categoryId: new mongo.ObjectId(categoryId),
@@ -139,6 +161,10 @@ export class PostsService {
       modifiedByUsername: tokenData.user.username,
       modifiedBy: tokenData.user.name,
       modifiedOn: new Date(new Date().toUTCString()),
+      keywords: keywords,
+      UserProfile: profile.profilePic,
+      UserRating: user.avgRating,
+      UserNumber: profile.phoneNumber,
     });
 
     await this.createObjForNotification(categoryId, post);
@@ -150,19 +176,24 @@ export class PostsService {
     categoryId: string,
     post: Post & import('mongoose').Document<any, any, any> & { _id: any },
   ) {
-    var usernameList = [];
+    let usernameList = [];
 
-    var alerts = await this.alertSvc.find(categoryId);
+    let alerts = await this.alertSvc.find(categoryId);
 
-    for (var alert of alerts) {
-      var distance = calcCrow(
+    for (let alert of alerts) {
+      const commonNames = [];
+      alert.keywords.forEach((name) => {
+        if (post.keywords.includes(name)) commonNames.push(name);
+      });
+
+      let distance = calcCrow(
         post.location.latitude,
         post.location.longitude,
         alert.location.latitude,
         alert.location.longitude,
       );
 
-      if (distance <= alert.radius) {
+      if (distance <= alert.radius || commonNames.length > 0) {
         const token = await this.deviceTokenModal
           .findOne({ userId: alert.userId })
           .exec();

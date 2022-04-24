@@ -1,8 +1,4 @@
 import { PostNotification } from './dto/post.notification';
-import {
-  Notification,
-  NotificationDocument,
-} from './../notifications/schemas/notification.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
@@ -31,10 +27,11 @@ export class Firebase_NotificationService {
     if (!notifications) {
       throw new NotFoundException('no notification found');
     }
-    var count = await this.notificationModel.find({ userId }).countDocuments();
-    var query = this.notificationModel.find({ userId });
-    var count = await query.countDocuments();
-    var response = await this.notificationModel
+    const count = await this.notificationModel
+      .find({ userId })
+      .countDocuments();
+    const query = this.notificationModel.find({ userId });
+    const response = await this.notificationModel
       .find({ userId: userId })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)

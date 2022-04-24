@@ -1,22 +1,13 @@
 import { Firebase_NotificationService } from './../firebase_notification/firebase_notification.service';
-import {
-  Conversation,
-  ConversationDocument,
-} from './schema/conversation.schema';
-import { PostMessage } from './dto/create.message.dto';
+import { Conversation } from './schema/conversation.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { PostConversation } from './dto/create.conversation.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
-import { send } from 'process';
-import { identity } from 'rxjs';
 import {
   DeviceToken,
   DeviceTokenDocument,
 } from 'src/device_token/schema/device_token.schema';
 import admin from 'firebase-admin';
-import { SendMessage } from './dto/sendMessage.dto';
 import { Alert } from 'src/alerts/schema/alert.schema';
 
 @Injectable()

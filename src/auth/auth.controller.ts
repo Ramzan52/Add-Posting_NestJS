@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -77,6 +78,9 @@ export class AuthController {
   @Post('verify-user/resend-code')
   async resendCode(@Query('email') email: string) {
     const user = await this.userSvc.findOne(email);
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
     if (user.isUserVerified) {
       throw new BadRequestException('User already verified');
     }
@@ -121,8 +125,11 @@ export class AuthController {
 
   @Post('forgot-password/resend-code')
   async resendCodePassword(@Query('email') email: string) {
+    console.log({ email });
     const user = await this.userSvc.findOne(email);
-
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
     const code = generateRandomSixDigitCode();
     const emailBody = createEmailBody(email, code);
 

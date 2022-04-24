@@ -21,6 +21,8 @@ import {
   NotificationFirebaseSchema,
   PostFirebaseNotification,
 } from 'src/firebase_notification/schema/post.notification.schema';
+import { User, UserSchema } from 'src/users/schemas/user.schema';
+import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import {
         schema: NotificationFirebaseSchema,
       },
     ]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: Profile.name, schema: ProfileSchema }]),
   ],
   providers: [
     PostsService,

@@ -1,8 +1,4 @@
-import { PostConversation } from './dto/create.conversation.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
-import { Conversation } from './schema/conversation.schema';
 import { ConversationService } from './conversation.service';
-import { PostMessage } from './dto/create.message.dto';
 import { Message, MessageDocument } from './schema/post.message.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import {
@@ -127,11 +123,11 @@ export class MessagesService {
     pageNumber: number,
     unread: boolean,
   ) {
-    var query = this.messageModel.find({ senderId: id });
-    var count = await query.countDocuments();
+    const query = this.messageModel.find({ senderId: id });
+    const count = await query.countDocuments();
 
     if (unread) {
-      var response = await this.messageModel
+      const response = await this.messageModel
         .find({ $and: [{ senderId: id }, { isRead: false }] })
         .skip((pageNumber - 1) * pageSize)
         .limit(pageSize)
@@ -142,7 +138,7 @@ export class MessagesService {
         result: response,
       };
     } else {
-      var response = await this.messageModel
+      const response = await this.messageModel
         .find({ senderId: id })
         .skip((pageNumber - 1) * pageSize)
         .limit(pageSize)

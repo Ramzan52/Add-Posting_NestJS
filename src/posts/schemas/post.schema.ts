@@ -1,6 +1,8 @@
+import { Profile } from 'src/profile/schemas/profile.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { BaseSchema } from 'src/models/base-document.schema';
+import { User } from 'src/users/schemas/user.schema';
 import { Category } from '../../categories/schemas/category.schema';
 import { PostLocationSchema } from './post-location.schema';
 
@@ -39,5 +41,14 @@ export class Post extends BaseSchema {
 
   @Prop()
   keywords: [{ type: String }];
+
+  @Prop()
+  UserRating: number;
+
+  @Prop()
+  UserProfile: string;
+
+  @Prop()
+  UserNumber: number;
 }
 export const PostSchema = SchemaFactory.createForClass(Post);

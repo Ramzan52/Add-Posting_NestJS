@@ -4,6 +4,7 @@ export function createEmailBody(data: string, code: number) {
     subject: 'Verification Code for Scrap Ready Application',
     from: 'scrapreadyapp@gmail.com',
     body: `Your code is ${code}`,
+    mailservice: 'sendgrid',
   };
 }
 

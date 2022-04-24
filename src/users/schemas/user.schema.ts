@@ -1,4 +1,3 @@
-import { Schedule } from '../../schedule/schema/schedule.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -31,7 +30,7 @@ export class User {
   resetPasswordCode: number;
 
   @Prop()
-  IsResetVerified: boolean = false;
+  isResetVerified: boolean = false;
 
   @Prop()
   registerCode: number;

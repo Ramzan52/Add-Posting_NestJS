@@ -1,27 +1,39 @@
+import { ServiceBusClient, ServiceBusSender } from '@azure/service-bus';
 import { Injectable } from '@nestjs/common';
-
-const { ServiceBusClient } = require('@azure/service-bus');
-
-// connection string to your Service Bus namespace
-const connectionString =
-  'Endpoint=sb://inserito-basic.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Ryvwatl9+F8YoOFH0m2/3ULQwdHRR7DxK13Uu31Jpi0=';
+import { UpdateDocumentMessage } from './models/UpdateDocumentMessage';
 
 // name of the queue
 const queueName = 'emails';
 
 @Injectable()
 export class AzureServiceBusService {
-  private client;
-  private emailSender;
+  private emailSender: ServiceBusSender;
+  private updateDocSender: ServiceBusSender;
+
   constructor() {
-    this.client = new ServiceBusClient(connectionString);
-    this.emailSender = this.client.createSender(queueName);
+    const client = new ServiceBusClient(
+      process.env.SERVICE_BUS_CONNECTION_STRING,
+    );
+
+    this.emailSender = client.createSender(queueName);
+    this.updateDocSender = client.createSender(
+      process.env.UPDATE_DOC_QUEUE_NAME,
+    );
   }
 
-  sendEmail(messageBody: any) {
-    this.emailSender.sendMessages([
+  async sendEmail(messageBody: any) {
+    await this.emailSender.sendMessages([
       {
         body: messageBody,
+        contentType: 'application/json',
+      },
+    ]);
+  }
+
+  sendUpdateDocMessage(message: UpdateDocumentMessage) {
+    this.updateDocSender.sendMessages([
+      {
+        body: message,
         contentType: 'application/json',
       },
     ]);
