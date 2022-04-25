@@ -19,6 +19,12 @@ export class Message {
   senderName?: string;
 
   @Prop()
+  receiverImage?: string;
+
+  @Prop()
+  senderImage?: string;
+
+  @Prop()
   text?: string;
 
   @Prop()
