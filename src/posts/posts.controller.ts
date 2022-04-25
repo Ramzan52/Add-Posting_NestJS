@@ -13,6 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { AnyCatcher } from 'rxjs/internal/AnyCatcher';
 import { JwtAuthGuard } from 'src/auth/auth-guards';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -85,10 +86,11 @@ export class PostsController {
     };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/:id')
-  async getPostById(@Param('id') id: string) {
+  async getPostById(@Request() req: any, @Param('id') id: string) {
     return {
-      post: await this.postsSvc.getPostById(id),
+      post: await this.postsSvc.getPostDetails(id, req.user.id),
       sas: this.sasSvc.getNewSASKey(),
     };
   }
