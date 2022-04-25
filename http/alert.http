@@ -15,3 +15,8 @@ Content-Type: application/json
 #delete alert
 
 DELETE http://localhost:5100/alerts/id
+
+
+### get my alerts
+GET http://localhost:5100/alerts/my
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
