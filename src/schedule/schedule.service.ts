@@ -102,14 +102,16 @@ export class ScheduleService {
   }
   async postScheduleRating(dto: PostRating) {
     let today = new Date();
-    let Schedule = await this.scheduleModel.findOne({ id: dto.scheduleId });
+    let Schedule = await this.scheduleModel.findOne({ _id: dto.scheduleId });
+
     if (!Schedule) {
       throw new NotFoundException('No Schedule Found');
     }
     if (Schedule.rating) {
       return;
     }
-    if (Schedule.date < today || Schedule.time < today) {
+
+    if (Schedule.date > today || Schedule.time > today) {
       throw new BadRequestException('Schedule is not complete yet');
     }
     if (dto.rating > 5 || dto.rating < 0) {
