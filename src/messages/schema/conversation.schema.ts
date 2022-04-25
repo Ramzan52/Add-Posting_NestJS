@@ -20,6 +20,12 @@ export class Conversation {
   senderName?: string;
 
   @Prop()
+  senderImage?: string;
+
+  @Prop()
+  receiverImage?: string;
+
+  @Prop()
   message: SendMessage;
 
   @IsString()

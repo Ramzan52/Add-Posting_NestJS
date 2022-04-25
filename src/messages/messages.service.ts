@@ -12,6 +12,8 @@ import { SendMessage } from './dto/sendMessage.dto';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { PostFirstMessage } from './dto/post.message.dto';
 import { Post, PostDocument } from 'src/posts/schemas/post.schema';
+import { profile } from 'console';
+import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 
 @Injectable()
 export class MessagesService {
@@ -20,13 +22,14 @@ export class MessagesService {
     private readonly messageModel: Model<MessageDocument>,
     private readonly ConversationSvc: ConversationService,
     private readonly fcmSvc: FcmTOkenService,
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Profile.name)
+    private readonly profileModel: Model<ProfileDocument>,
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
   ) {}
 
   async postMessage(dto: PostFirstMessage, id: string) {
-    let receiver = await this.userModel.findById(dto.receiverId);
-    let sender = await this.userModel.findById(id);
+    let receiver = await this.profileModel.findOne({ userId: dto.receiverId });
+    let sender = await this.profileModel.findOne({ userId: id });
     let post = await this.postModel.findById(dto.postId);
     if (!receiver) {
       throw new NotFoundException('Receiver not found');
@@ -40,6 +43,8 @@ export class MessagesService {
     let data = {
       senderId: id,
       senderName: sender.name,
+      senderImage: sender.profilePic,
+      receiverImage: receiver.profilePic,
       receiverId: dto.receiverId,
       receiverName: receiver.name,
       timeStamp: new Date(),
@@ -50,6 +55,8 @@ export class MessagesService {
     let flipData = {
       receiverId: id,
       receiverName: sender.name,
+      senderImage: receiver.profilePic,
+      receiverImage: sender.profilePic,
       senderId: dto.receiverId,
       senderName: receiver.name,
       timeStamp: new Date(),
@@ -72,14 +79,18 @@ export class MessagesService {
     return message.save();
   }
   async sendMessage(dto: SendMessage, userID: string) {
-    const sender = await this.userModel.findById(userID);
-    const receiver = await this.userModel.findById(dto.receiverId);
+    const sender = await this.profileModel.findOne({ userId: userID });
+    const receiver = await this.profileModel.findOne({
+      userId: dto.receiverId,
+    });
 
     let data = {
       senderId: userID,
       receiverId: dto.receiverId,
       senderName: sender.name,
       receiverName: receiver.name,
+      senderImage: sender.profilePic,
+      receiverImage: receiver.profilePic,
       message: {
         text: dto.text,
         type: dto.type,
