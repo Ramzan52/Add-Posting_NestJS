@@ -208,20 +208,24 @@ export class PostsService {
       }
     }
     usernameList.forEach((x) => {
-      this.sendNotification(x);
+      this.sendNotification(x, post);
     });
   }
-  async sendNotification(x: any) {
+  async sendNotification(x: any, post: Post) {
     let fcmToken = await this.deviceTokenModal.findOne({ userId: x.userId });
+    let data = {
+      alert: x.alert,
+      post,
+    };
     if (fcmToken && fcmToken.token !== null) {
       let payload: admin.messaging.Message = {
-        data: { message: JSON.stringify(x.alert), type: 'new-message' },
+        data: { message: JSON.stringify(data), type: 'new-alert' },
         token: fcmToken.token,
       };
       admin.messaging().send(payload);
       this.firebaseSvc.PostNotification({
         type: 'new-alert',
-        payLoad: x.alert,
+        payLoad: data,
         sentOn: new Date(),
         userId: x.userId,
       });
