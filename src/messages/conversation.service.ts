@@ -1,16 +1,12 @@
-import { PostFirstMessage } from './dto/post.message.dto';
 import {
   Conversation,
   ConversationDocument,
 } from './schema/conversation.schema';
-import { PostMessage } from './dto/create.message.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable, Req } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { PostConversation } from './dto/create.conversation.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
-import { send } from 'process';
-import { identity } from 'rxjs';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 

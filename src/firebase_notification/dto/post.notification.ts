@@ -1,14 +1,4 @@
-import {
-  IsArray,
-  IsDate,
-  IsNotEmptyObject,
-  IsNumber,
-  IsObject,
-  IsString,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsObject, IsString } from 'class-validator';
 
 export class PostNotification {
   @IsString()

@@ -1,13 +1,8 @@
 import { CreateDeviceTokenDto } from './dto/post.device.token';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  Injectable,
-  InternalServerErrorException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { DeviceToken, DeviceTokenDocument } from './schema/device_token.schema';
 import { Model } from 'mongoose';
-import admin from 'firebase-admin';
 @Injectable()
 export class DeviceTokenService {
   constructor(

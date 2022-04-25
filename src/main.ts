@@ -8,9 +8,14 @@ import service from './auth/config/firebase-auth';
 let appInsights = require('applicationinsights');
 
 async function bootstrap() {
-  try {
-    console.log(process.env);
+  console.log(
+    'process.env.NODE_ENV',
+    process.env.NODE_ENV,
+    'process.env.MONGO_CONNECTION_STRING',
+    process.env.MONGO_CONNECTION_STRING,
+  );
 
+  try {
     const app = await NestFactory.create(AppModule);
     admin.initializeApp({
       credential: admin.credential.cert(service),

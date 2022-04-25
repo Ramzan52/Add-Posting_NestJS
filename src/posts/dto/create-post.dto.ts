@@ -1,4 +1,3 @@
-import { Category } from './../../categories/schemas/category.schema';
 import {
   IsArray,
   IsNotEmptyObject,
@@ -6,7 +5,6 @@ import {
   IsString,
   Max,
   Min,
-  ValidateNested,
 } from 'class-validator';
 import { PostLocationDto } from './post-location.dto';
 

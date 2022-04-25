@@ -1,13 +1,4 @@
-import { PostNotification } from './dto/post.notification';
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './../auth/auth-guards/jwt-auth.guard';
 import { GetNotificationsQueryDto } from './dto/get-notifications-query.dto';

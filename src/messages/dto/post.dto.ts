@@ -1,13 +1,4 @@
-import {
-  IsArray,
-  IsDate,
-  IsNotEmptyObject,
-  IsNumber,
-  IsString,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 export class ChatPost {
   @IsString()

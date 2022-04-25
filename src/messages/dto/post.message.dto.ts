@@ -1,16 +1,4 @@
-import { Prop } from '@nestjs/mongoose';
-import {
-  IsArray,
-  IsDate,
-  IsNotEmptyObject,
-  IsNumber,
-  IsObject,
-  IsString,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
-import { ChatPost } from './post.dto';
+import { IsString } from 'class-validator';
 
 export class PostFirstMessage {
   @IsString()
