@@ -209,10 +209,10 @@ export class PostsService {
       }
     }
     usernameList.forEach((x) => {
-      this.sendNotification(x);
+      this.sendNotification(x, post);
     });
   }
-  async sendNotification(x: any) {
+  async sendNotification(x: any, post: Post) {
     let notificationPayload = {
       alert: x.alert,
       post: x.post,

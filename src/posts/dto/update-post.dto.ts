@@ -32,6 +32,5 @@ export class UpdatePostDto {
   description: string;
 
   @IsNotEmptyObject()
-  @ValidateNested()
   location: PostLocationDto;
 }
