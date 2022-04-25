@@ -36,7 +36,7 @@ export class UsersService {
     const pwdHash = hashSync(password, salt);
 
     if (hash !== pwdHash) {
-      throw new UnauthorizedException();
+      throw new BadRequestException('Passwords do not match');
     }
 
     user.hash = hashSync(newPassword, salt);
