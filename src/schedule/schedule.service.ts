@@ -102,7 +102,7 @@ export class ScheduleService {
   }
   async postScheduleRating(dto: PostRating) {
     let today = new Date();
-    let Schedule = await this.scheduleModel.findById(dto.scheduleId).exec();
+    let Schedule = await this.scheduleModel.findOne({ id: dto.scheduleId });
     if (!Schedule) {
       throw new NotFoundException('No Schedule Found');
     }
@@ -110,7 +110,7 @@ export class ScheduleService {
       return;
     }
     if (Schedule.date < today || Schedule.time < today) {
-      throw new NotFoundException('No Schedule Found');
+      throw new BadRequestException('Schedule is not complete yet');
     }
     if (dto.rating > 5 || dto.rating < 0) {
       throw new BadRequestException('Rating should be between 0 and 5');
