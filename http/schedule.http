@@ -1,0 +1,28 @@
+### get schedule
+
+GET http://localhost:5100/schedule
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODI1MDM5OCwiZXhwIjoxNjQ4MjUzOTk4fQ.XIsDVRWA9Uza3bU-OyifbVb5XnwnpiZihhKHzxjCwuI
+
+###create schedule
+POST http://localhost:5100/schedule
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
+Content-Type: application/json
+
+{
+"buyerId": "625d3ee45627feb1197597e3",
+  "postId": "625fa66bed9bfb17ccf4c80c",
+  "date": "2022-04-25T10:48:58.093Z",
+  "time": "2022-04-25T10:48:58.093Z"
+}
+
+
+###create schedule rating
+POST http://localhost:5100/schedule/rating
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
+Content-Type: application/json
+
+{
+"comments": "Ok", 
+"rating": 5, 
+"scheduleId": "626656eddfbf591fc2bf1282"
+}

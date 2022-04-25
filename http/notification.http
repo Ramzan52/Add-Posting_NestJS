@@ -1,0 +1,3 @@
+### get all notification
+GET http://localhost:5100/firebase-notification
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjU5NWIyZGEyZTdmMTQ2ZDk5MWEwZDEiLCJuYW1lIjoiT21lciIsInVzZXJuYW1lIjoib21lci5raGFuQGFxdWlsYTM2MC5jb20iLCJpYXQiOjE2NTAyNzk3NTYsImV4cCI6MTY1MDM2NjE1Nn0.a438x2sQu-_AdHH4aVOVDBhMkH3dBh3njYv2vT14kpA
