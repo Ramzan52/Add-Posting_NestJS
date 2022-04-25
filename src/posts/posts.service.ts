@@ -235,6 +235,35 @@ export class PostsService {
       });
     }
   }
+
+  async getPostDetails(id: string, userId: string) {
+    const post = await this.postModel
+      .aggregate([
+        {
+          $match: {
+            _id: new mongo.ObjectId(id),
+          },
+        },
+        {
+          $lookup: {
+            from: 'favoriteposts',
+            localField: '_id',
+            foreignField: 'postId',
+            as: 'favPosts',
+          },
+        },
+      ])
+      .exec();
+
+    post.forEach(
+      (post) =>
+        (post.isFavorite =
+          post.favPosts.length > 0 &&
+          post.favPosts.findIndex((x) => x.userId === userId) !== -1),
+    );
+    return post[0];
+  }
+
   async getPostById(id: string): Promise<PostDocument> {
     const post = await this.postModel.findById(id).exec();
     if (!post || post.isDeleted) {
