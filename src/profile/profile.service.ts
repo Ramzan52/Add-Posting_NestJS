@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RegisterDto } from 'src/auth/dto/register.dto';
@@ -37,6 +41,12 @@ export class ProfileService {
 
   async editProfile(username: string, dto: SaveProfileDto) {
     const { name, profilePic, phoneNumber } = dto;
+    let existinguser = await this.profileModel.findOne({
+      phoneNumber: phoneNumber,
+    });
+    if (existinguser) {
+      throw new BadRequestException('Phone number already being used');
+    }
 
     let profile = await this.findOne(username);
 

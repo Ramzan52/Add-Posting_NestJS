@@ -215,7 +215,7 @@ export class PostsService {
   async sendNotification(x: any, post: Post) {
     let notificationPayload = {
       alert: x.alert,
-      post: x.post,
+      post: post,
     };
     let fcmToken = await this.deviceTokenModal.findOne({ userId: x.userId });
     if (fcmToken && fcmToken.token !== null) {

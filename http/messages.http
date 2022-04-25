@@ -1,0 +1,38 @@
+### get unread message
+
+GET http://localhost:5100/messages/unread
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODI1MDM5OCwiZXhwIjoxNjQ4MjUzOTk4fQ.XIsDVRWA9Uza3bU-OyifbVb5XnwnpiZihhKHzxjCwuI
+
+### get messages
+
+GET http://localhost:5100/messages
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODI1MDM5OCwiZXhwIjoxNjQ4MjUzOTk4fQ.XIsDVRWA9Uza3bU-OyifbVb5XnwnpiZihhKHzxjCwuI
+ 
+### get conversation
+
+GET http://localhost:5100/messages/conversation?receiverId=id
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODI1MDM5OCwiZXhwIjoxNjQ4MjUzOTk4fQ.XIsDVRWA9Uza3bU-OyifbVb5XnwnpiZihhKHzxjCwuI
+ 
+###create message
+POST http://localhost:5100/messages/create-chat
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
+Content-Type: application/json
+
+{
+  "receiverId": "625faa9c9e02e293918d0fd0",
+  "postId": "625fa66bed9bfb17ccf4c80c",
+  "latestText": "st1111ring"
+}
+
+
+###create conversation
+POST http://localhost:5100/messages/create-chat
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
+Content-Type: application/json
+
+{
+  "senderId": "625d3ee45627feb1197597e3",
+  "receiverId": "625faa9c9e02e293918d0fd0",
+  "text": "12334dsfsf",
+  "type": "text"
+}
