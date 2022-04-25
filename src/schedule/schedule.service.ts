@@ -66,7 +66,7 @@ export class ScheduleService {
     ]);
 
     if (!scheduleAsVendor && !scheduleAsBuyer) {
-      throw new NotFoundException('No schendule found');
+      throw new NotFoundException('No schedule found');
     }
     var result = [...scheduleAsBuyer, ...scheduleAsVendor];
     console.log({ result });
