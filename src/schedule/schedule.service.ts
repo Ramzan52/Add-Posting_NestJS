@@ -109,7 +109,8 @@ export class ScheduleService {
     if (Schedule.rating) {
       return;
     }
-    if (Schedule.date < today || Schedule.time < today) {
+
+    if (Schedule.date < today) {
       throw new BadRequestException('Schedule is not complete yet');
     }
     if (dto.rating > 5 || dto.rating < 0) {
