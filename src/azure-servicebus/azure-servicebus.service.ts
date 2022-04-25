@@ -30,8 +30,8 @@ export class AzureServiceBusService {
     ]);
   }
 
-  sendUpdateDocMessage(message: UpdateDocumentMessage) {
-    this.updateDocSender.sendMessages([
+  async sendUpdateDocMessage(message: UpdateDocumentMessage) {
+    await this.updateDocSender.sendMessages([
       {
         body: message,
         contentType: 'application/json',
