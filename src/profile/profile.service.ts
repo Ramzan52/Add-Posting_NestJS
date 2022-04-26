@@ -41,14 +41,18 @@ export class ProfileService {
 
   async editProfile(username: string, dto: SaveProfileDto) {
     const { name, profilePic, phoneNumber } = dto;
-    let existinguser = await this.profileModel.findOne({
-      phoneNumber: phoneNumber,
-    });
-    if (existinguser) {
-      throw new BadRequestException('Phone number already being used');
-    }
 
     let profile = await this.findOne(username);
+
+    if (profile.phoneNumber != dto.phoneNumber) {
+      let existingUser = await this.profileModel.findOne({
+        phoneNumber: phoneNumber,
+      });
+
+      if (existingUser) {
+        throw new BadRequestException('Phone number already being used');
+      }
+    }
 
     if (!profile) {
       throw new NotFoundException('Profile not found');
@@ -72,7 +76,6 @@ export class ProfileService {
         await this.userSvc.update(user);
       }
     }
-
     return profile;
   }
 }
