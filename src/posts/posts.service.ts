@@ -49,6 +49,8 @@ export class PostsService {
     const aggregateFilters: any[] = [
       {
         isDeleted: false,
+        isVend: false,
+        isActive: true,
         creatorId: {
           $not: {
             $eq: userId,
