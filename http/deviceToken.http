@@ -1,0 +1,8 @@
+### Post my device token for fcm
+Post http://localhost:5100/device-token
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjNkYzc0ODg3NTFlMTUwZDAyMWMzMDMiLCJuYW1lIjoiQWRlZWwgTmF5eWVyIiwidXNlcm5hbWUiOiJhZGVlbCIsImlhdCI6MTY0ODgwNDAxMCwiZXhwIjoxNjQ4ODA3NjEwfQ.pRWDw_rWJkmkZi5k9rSjqVinFOMavSqt5XGm4zaXAlY
+Content-Type: application/json
+
+{
+  "token":"dEgQVdl-SDa3Jmd53IXkpr:APA91bE3VZTxowsEgoyKyUaU4KPfxF7i5Nk0ye8qi_Mgw0cv3kPMuF5nnHYg5q_Q1f28l32njtX7R54YIvNAIaYWqAMufuoo_0R1Uu45PSJU9LsZRe8SxGPLOjo2rLFGtJzqQcsZodE7"
+}

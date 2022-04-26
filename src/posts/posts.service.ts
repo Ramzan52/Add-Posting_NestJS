@@ -215,7 +215,7 @@ export class PostsService {
   async sendNotification(x: any, post: Post) {
     let notificationPayload = {
       alert: x.alert,
-      post: x.post,
+      post: post,
     };
     let fcmToken = await this.deviceTokenModal.findOne({ userId: x.userId });
     if (fcmToken && fcmToken.token !== null) {
@@ -235,6 +235,35 @@ export class PostsService {
       });
     }
   }
+
+  async getPostDetails(id: string, userId: string) {
+    const post = await this.postModel
+      .aggregate([
+        {
+          $match: {
+            _id: new mongo.ObjectId(id),
+          },
+        },
+        {
+          $lookup: {
+            from: 'favoriteposts',
+            localField: '_id',
+            foreignField: 'postId',
+            as: 'favPosts',
+          },
+        },
+      ])
+      .exec();
+
+    post.forEach(
+      (post) =>
+        (post.isFavorite =
+          post.favPosts.length > 0 &&
+          post.favPosts.findIndex((x) => x.userId === userId) !== -1),
+    );
+    return post[0];
+  }
+
   async getPostById(id: string): Promise<PostDocument> {
     const post = await this.postModel.findById(id).exec();
     if (!post || post.isDeleted) {

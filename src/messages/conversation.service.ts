@@ -20,12 +20,14 @@ export class ConversationService {
     private readonly profileModel: Model<ProfileDocument>,
   ) {}
   async postConversation(dto: Conversation, id: string) {
-    let receiver = await this.userModel.findById(dto.receiverId);
-    let sender = await this.userModel.findById(id);
+    let receiver = await this.profileModel.findOne({ userId: dto.receiverId });
+    let sender = await this.profileModel.findOne({ userId: id });
     let Data = {
       senderId: id,
       receiverId: dto.receiverId,
       senderName: sender.name,
+      senderImage: sender.profilePic,
+      receiverImage: receiver.profilePic,
       receiverName: receiver.name,
       timeStamp: new Date(),
       message: dto.message,
@@ -35,6 +37,9 @@ export class ConversationService {
       senderId: dto.receiverId,
       senderName: receiver.name,
       receiverName: sender.name,
+      receiverImage: sender.profilePic,
+      senderImage: receiver.profilePic,
+
       timeStamp: new Date(),
       message: dto.message,
     };
