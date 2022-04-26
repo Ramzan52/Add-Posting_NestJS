@@ -14,6 +14,7 @@ import {
   PostFirebaseNotification,
 } from 'src/firebase_notification/schema/post.notification.schema';
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
+import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 
 @Module({
   imports: [
@@ -33,7 +34,11 @@ import { Firebase_NotificationService } from 'src/firebase_notification/firebase
     ]),
   ],
 
-  providers: [ScheduleService, Firebase_NotificationService],
+  providers: [
+    ScheduleService,
+    Firebase_NotificationService,
+    AzureSASServiceService,
+  ],
   controllers: [ScheduleController],
 })
 export class ScheduleModule {}
