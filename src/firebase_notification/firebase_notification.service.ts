@@ -6,12 +6,14 @@ import {
   FirebaseNotificationDocument,
   PostFirebaseNotification,
 } from './schema/post.notification.schema';
+import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 
 @Injectable()
 export class Firebase_NotificationService {
   constructor(
     @InjectModel(PostFirebaseNotification.name)
     private readonly notificationModel: Model<FirebaseNotificationDocument>,
+    private sasSvc: AzureSASServiceService,
   ) {}
   async PostNotification(dto: PostNotification) {
     const notification = await this.notificationModel.create({
@@ -41,6 +43,7 @@ export class Firebase_NotificationService {
     return {
       count: count,
       result: response,
+      sas: this.sasSvc.getNewSASKey(),
     };
   }
 }
