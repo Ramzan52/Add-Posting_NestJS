@@ -14,6 +14,7 @@ import { PostFirstMessage } from './dto/post.message.dto';
 import { Post, PostDocument } from 'src/posts/schemas/post.schema';
 import { profile } from 'console';
 import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
+import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 
 @Injectable()
 export class MessagesService {
@@ -25,6 +26,7 @@ export class MessagesService {
     @InjectModel(Profile.name)
     private readonly profileModel: Model<ProfileDocument>,
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
+    private sasSvc: AzureSASServiceService,
   ) {}
 
   async postMessage(dto: PostFirstMessage, id: string) {
@@ -147,6 +149,7 @@ export class MessagesService {
       return {
         count: count,
         result: response,
+        sas: this.sasSvc.getNewSASKey(),
       };
     } else {
       const response = await this.messageModel
@@ -158,6 +161,7 @@ export class MessagesService {
       return {
         count: count,
         result: response,
+        sas: this.sasSvc.getNewSASKey(),
       };
     }
   }
