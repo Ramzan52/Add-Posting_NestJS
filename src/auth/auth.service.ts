@@ -52,7 +52,7 @@ export class AuthService {
       };
 
       return {
-        access_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
+        access_token: this.jwtSvc.sign(payload, { expiresIn: '5m' }),
         refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
         user: {
           _id: existingUser.id,
