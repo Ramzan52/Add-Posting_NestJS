@@ -129,17 +129,19 @@ export class ScheduleService {
 
     Schedule.rating = dto.rating;
     Schedule.comments = dto.comments;
-    Schedule.save();
     const user = await this.userModel.findById(Schedule.vendorId);
-    const profile = await this.profileModel.findById(Schedule.vendorId);
+    const profile = await this.profileModel.findOne({
+      userId: Schedule.vendorId,
+    });
 
     user.avgRating =
       ((user.ratingsCount || 0) * (user.avgRating || 0) + dto.rating) /
       ((user.ratingsCount || 0) + 1);
     user.ratingsCount = (user.ratingsCount || 0) + 1;
-    profile.avgRating = user.avgRating;
-    profile.save();
-    user.save();
+    if (profile) profile.avgRating = user.avgRating;
+    if (profile) await profile.save();
+    await user.save();
+    await Schedule.save();
   }
 
   async findDeviceToken(id: string, message: any) {
