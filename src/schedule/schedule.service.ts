@@ -18,6 +18,7 @@ import {
 } from 'src/device_token/schema/device_token.schema';
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
 import { mongo } from 'mongoose';
+import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 
 @Injectable()
 export class ScheduleService {
@@ -30,6 +31,7 @@ export class ScheduleService {
     @InjectModel(DeviceToken.name)
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
     private readonly firebaseSvc: Firebase_NotificationService,
+    private sasSvc: AzureSASServiceService,
   ) {}
 
   async getSchedule(id: string) {
@@ -69,8 +71,11 @@ export class ScheduleService {
       throw new NotFoundException('No schedule found');
     }
     var result = [...scheduleAsBuyer, ...scheduleAsVendor];
-    console.log({ result });
-    return result;
+
+    return {
+      result: result,
+      sas: this.sasSvc.getNewSASKey(),
+    };
   }
   async PostSchedule(id: string, dto: PostSchedule) {
     let post = await this.postModel.findOne({
