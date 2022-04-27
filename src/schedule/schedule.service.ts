@@ -129,7 +129,6 @@ export class ScheduleService {
 
     Schedule.rating = dto.rating;
     Schedule.comments = dto.comments;
-    Schedule.save();
     const user = await this.userModel.findById(Schedule.vendorId);
     const profile = await this.profileModel.findById(Schedule.vendorId);
 
