@@ -27,6 +27,8 @@ export class ConversationService {
       receiverId: dto.receiverId,
       senderName: sender.name,
       senderImage: sender.profilePic,
+      senderRating: sender.avgRating,
+      receiverRating: sender.avgRating,
       receiverImage: receiver.profilePic,
       receiverName: receiver.name,
       timeStamp: new Date(),

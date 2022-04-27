@@ -26,6 +26,12 @@ export class Conversation {
   receiverImage?: string;
 
   @Prop()
+  receiverRating?: number;
+
+  @Prop()
+  senderRating?: number;
+
+  @Prop()
   message: SendMessage;
 
   @IsString()

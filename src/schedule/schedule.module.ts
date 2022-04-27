@@ -15,6 +15,7 @@ import {
 } from 'src/firebase_notification/schema/post.notification.schema';
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
+import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
 
 @Module({
   imports: [
@@ -30,6 +31,12 @@ import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.se
       {
         name: PostFirebaseNotification.name,
         schema: NotificationFirebaseSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: Profile.name,
+        schema: ProfileSchema,
       },
     ]),
   ],

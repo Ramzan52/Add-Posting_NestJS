@@ -93,6 +93,9 @@ export class MessagesService {
       receiverName: receiver.name,
       senderImage: sender.profilePic,
       receiverImage: receiver.profilePic,
+      senderRating: sender.avgRating,
+      receiverRating: receiver.avgRating,
+
       message: {
         text: dto.text,
         type: dto.type,

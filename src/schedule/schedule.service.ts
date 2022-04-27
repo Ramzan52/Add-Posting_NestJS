@@ -1,3 +1,4 @@
+import { profile } from 'console';
 import { PostRating } from './dto/create.rating.dto';
 import { Schedule, ScheduleDocument } from './schema/schedule.schema';
 import {
@@ -19,6 +20,7 @@ import {
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
 import { mongo } from 'mongoose';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
+import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 
 @Injectable()
 export class ScheduleService {
@@ -28,6 +30,8 @@ export class ScheduleService {
     @InjectModel(Post.name)
     private readonly postModel: Model<PostDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Profile.name)
+    private readonly profileModel: Model<ProfileDocument>,
     @InjectModel(DeviceToken.name)
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
     private readonly firebaseSvc: Firebase_NotificationService,
@@ -127,11 +131,14 @@ export class ScheduleService {
     Schedule.comments = dto.comments;
     Schedule.save();
     const user = await this.userModel.findById(Schedule.vendorId);
+    const profile = await this.profileModel.findById(Schedule.vendorId);
+
     user.avgRating =
       ((user.ratingsCount || 0) * (user.avgRating || 0) + dto.rating) /
       ((user.ratingsCount || 0) + 1);
     user.ratingsCount = (user.ratingsCount || 0) + 1;
-
+    profile.avgRating = user.avgRating;
+    profile.save();
     user.save();
   }
 
