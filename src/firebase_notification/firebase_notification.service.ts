@@ -22,6 +22,7 @@ export class Firebase_NotificationService {
       payLoad: dto.payLoad,
       userId: dto.userId,
     });
+    console.log(notification);
     return notification;
   }
   async getNotifications(userId: string, pageSize: number, pageNumber: number) {
