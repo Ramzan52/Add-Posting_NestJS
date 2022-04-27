@@ -228,7 +228,9 @@ export class PostsService {
         },
         token: fcmToken.token,
       };
-      await admin.messaging().send(payload);
+
+      admin.messaging().send(payload);
+
       await this.firebaseSvc.PostNotification({
         type: 'new-alert',
         payLoad: notificationPayload,
