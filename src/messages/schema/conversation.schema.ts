@@ -26,6 +26,9 @@ export class Conversation {
   receiverImage?: string;
 
   @Prop()
+  postId?: string;
+
+  @Prop()
   receiverRating?: number;
 
   @Prop()

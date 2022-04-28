@@ -33,6 +33,7 @@ export class ConversationService {
       receiverName: receiver.name,
       timeStamp: new Date(),
       message: dto.message,
+      postId: dto.postId,
     };
     let flipData = {
       receiverId: id,
@@ -44,6 +45,7 @@ export class ConversationService {
 
       timeStamp: new Date(),
       message: dto.message,
+      postId: dto.postId,
     };
 
     const conversation = new this.conversationModel(Data);
@@ -53,9 +55,15 @@ export class ConversationService {
   }
 
   @ApiOkResponse({ status: 200, type: PostConversation })
-  async getConversation(receiverId: string, sender: string) {
+  async getConversation(receiverId: string, sender: string, postId: string) {
     return await this.conversationModel
-      .find({ $and: [{ senderId: sender }, { receiverId: receiverId }] })
+      .find({
+        $and: [
+          { senderId: sender },
+          { receiverId: receiverId },
+          { postId: postId },
+        ],
+      })
       .sort([['timeStamp', -1]])
       .exec();
   }

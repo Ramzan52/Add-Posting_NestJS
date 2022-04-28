@@ -81,10 +81,12 @@ export class MessagesController {
   async getConversation(
     @Request() req: any,
     @Query('receiverId') receiverId: string,
+    @Query('postId') postId: string,
   ) {
     const conversation = await this.conversationSvc.getConversation(
       receiverId,
       req.user.id,
+      postId,
     );
 
     const existingMessage = await this.messageSvc.markAsRead(

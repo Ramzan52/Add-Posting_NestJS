@@ -95,6 +95,7 @@ export class MessagesService {
       receiverImage: receiver.profilePic,
       senderRating: sender.avgRating,
       receiverRating: receiver.avgRating,
+      postId: dto.postId,
 
       message: {
         text: dto.text,

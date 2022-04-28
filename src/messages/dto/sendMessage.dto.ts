@@ -8,6 +8,9 @@ export class SendMessage {
   receiverId: string;
 
   @IsString()
+  postId?: string;
+
+  @IsString()
   text: string;
 
   @IsString()
