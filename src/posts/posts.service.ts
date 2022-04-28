@@ -183,36 +183,38 @@ export class PostsService {
     let alerts = await this.alertSvc.find(categoryId);
 
     for (let alert of alerts) {
-      const commonNames = [];
-      alert.keywords.forEach((name) => {
-        if (post.keywords.includes(name)) commonNames.push(name);
-      });
+      if (alert.userId !== post.creatorId) {
+        const commonNames = [];
+        alert.keywords.forEach((name) => {
+          if (post.keywords.includes(name)) commonNames.push(name);
+        });
 
-      let distance = calcCrow(
-        post.location.latitude,
-        post.location.longitude,
-        alert.location.latitude,
-        alert.location.longitude,
-      );
+        let distance = calcCrow(
+          post.location.latitude,
+          post.location.longitude,
+          alert.location.latitude,
+          alert.location.longitude,
+        );
 
-      if (distance <= alert.radius || commonNames.length > 0) {
-        const token = await this.deviceTokenModal
-          .findOne({ userId: alert.userId })
-          .exec();
+        if (distance <= alert.radius || commonNames.length > 0) {
+          const token = await this.deviceTokenModal
+            .findOne({ userId: alert.userId })
+            .exec();
 
-        if (token) {
-          usernameList.push({
-            alert: alert,
-            userId: alert.userId,
-            token: token.token,
-            post: post,
-          });
+          if (token) {
+            usernameList.push({
+              alert: alert,
+              userId: alert.userId,
+              token: token.token,
+              post: post,
+            });
+          }
         }
       }
+      usernameList.forEach((x) => {
+        this.sendNotification(x, post);
+      });
     }
-    usernameList.forEach((x) => {
-      this.sendNotification(x, post);
-    });
   }
   async sendNotification(x: any, post: Post) {
     let notificationPayload = {
