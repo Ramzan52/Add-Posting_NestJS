@@ -15,6 +15,7 @@ import { Post, PostDocument } from 'src/posts/schemas/post.schema';
 import { profile } from 'console';
 import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class MessagesService {
@@ -31,9 +32,10 @@ export class MessagesService {
 
   async postMessage(dto: PostFirstMessage, id: string) {
     let receiver = await this.profileModel.findOne({ userId: dto.receiverId });
-    let sender = await this.profileModel.findOne({ userId: id });
-    // console.log(dto.postId);
-    let post = await this.postModel.find({ _id: dto.postId });
+    let sender = await this.profileModel.findOne({
+      userId: id,
+    });
+    let post = await this.postModel.findOne({ _id: dto.postId });
     if (!receiver) {
       throw new NotFoundException('Receiver not found');
     }
@@ -53,6 +55,7 @@ export class MessagesService {
       timeStamp: new Date(),
       post: post,
       text: dto.latestText,
+      postId: dto.postId,
     };
 
     let flipData = {
@@ -65,14 +68,19 @@ export class MessagesService {
       timeStamp: new Date(),
       post: post,
       text: dto.latestText,
+      postId: dto.postId,
     };
+    let existingMessage = await this.messageModel.aggregate([
+      {
+        $match: {
+          senderId: id,
+          receiverId: dto.receiverId,
+          'post._id': new mongo.ObjectId(dto.postId),
+        },
+      },
+    ]);
 
-    const existingMessage = await this.messageModel.findOne({
-      senderId: id,
-      receiverId: dto.receiverId,
-    });
-
-    if (existingMessage) {
+    if (existingMessage.length > 0) {
       return existingMessage;
     }
 
@@ -82,10 +90,22 @@ export class MessagesService {
     return message.save();
   }
   async sendMessage(dto: SendMessage, userID: string) {
-    const sender = await this.profileModel.findOne({ userId: userID });
+    const sender = await this.profileModel.findOne({
+      userId: userID,
+    });
     const receiver = await this.profileModel.findOne({
       userId: dto.receiverId,
     });
+    let post = await this.postModel.findOne({ _id: dto.postId });
+    if (!receiver) {
+      throw new NotFoundException('Receiver not found');
+    }
+    if (!sender) {
+      throw new NotFoundException('sender not found');
+    }
+    if (!post) {
+      throw new NotFoundException('post not found');
+    }
 
     let data = {
       senderId: userID,
@@ -110,24 +130,38 @@ export class MessagesService {
       let message = await this.ConversationSvc.postConversation(data, userID);
       await this.fcmSvc.findDeviceToken(dto.receiverId, data);
 
-      const existingMessage = await this.messageModel.findOne({
+      let existingMessage = await this.messageModel.find({
         senderId: userID,
         receiverId: dto.receiverId,
       });
+      let msg;
+      existingMessage.forEach((x) => {
+        if (x.postId === dto.postId) {
+          msg = x;
+        }
+      });
 
-      if (existingMessage) {
-        existingMessage.text = dto.text;
-        existingMessage.isRead = false;
-        await existingMessage.save();
-        const existingMessageFlip = await this.messageModel.findOne({
-          receiverId: userID,
+      if (msg) {
+        let existmessageobj = msg;
+        existmessageobj.text = dto.text;
+        existmessageobj.isRead = false;
+        await existmessageobj.save();
+        let existingMessage = await this.messageModel.find({
           senderId: dto.receiverId,
+          receiverId: userID,
+        });
+        let flipmsg;
+        existingMessage.forEach((x) => {
+          if (x.postId === dto.postId) {
+            flipmsg = x;
+          }
         });
 
-        existingMessageFlip.text = dto.text;
-        existingMessageFlip.isRead = false;
-        await existingMessageFlip.save();
-        return existingMessage;
+        let flipObj = flipmsg;
+        flipObj.text = dto.text;
+        flipObj.isRead = false;
+        await flipObj.save();
+        return existmessageobj;
       }
 
       return message;
