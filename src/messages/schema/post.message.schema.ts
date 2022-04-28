@@ -38,6 +38,9 @@ export class Message {
 
   @Prop()
   post: Post;
+
+  @Prop({ isRequired: false })
+  postId?: string;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);
