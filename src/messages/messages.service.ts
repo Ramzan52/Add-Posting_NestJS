@@ -32,7 +32,7 @@ export class MessagesService {
   async postMessage(dto: PostFirstMessage, id: string) {
     let receiver = await this.profileModel.findOne({ userId: dto.receiverId });
     let sender = await this.profileModel.findOne({ userId: id });
-    let post = await this.postModel.findOne({ _id: dto.postId });
+    let post = await this.postModel.findOne({ id: dto.postId });
     if (!receiver) {
       throw new NotFoundException('Receiver not found');
     }
