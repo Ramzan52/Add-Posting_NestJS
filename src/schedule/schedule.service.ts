@@ -22,6 +22,7 @@ import { mongo } from 'mongoose';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 import { scheduled } from 'rxjs';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 
 @Injectable()
 export class ScheduleService {
@@ -37,6 +38,7 @@ export class ScheduleService {
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
     private readonly firebaseSvc: Firebase_NotificationService,
     private sasSvc: AzureSASServiceService,
+    private serviceBusSvc: AzureServiceBusService,
   ) {}
 
   async getSchedule(id: string) {
@@ -171,24 +173,28 @@ export class ScheduleService {
         profile.avgRating = user.avgRating;
         profile.save();
         user.save();
+        await this.serviceBusSvc.sendUpdateDocMessage({
+          messageType: 'rating',
+          message: profile,
+        });
       }
     }
   }
 
   async findDeviceToken(id: string, message: any) {
-    let fcmToken = await this.deviceTokenModal.findOne({ userId: id });
-    if (fcmToken && fcmToken.token !== null) {
-      let payload: admin.messaging.Message = {
-        data: { message: JSON.stringify(message), type: 'new-schedule' },
-        token: fcmToken.token,
-      };
-      admin.messaging().send(payload);
-      // this.firebaseSvc.PostNotification({
-      //   type: 'new-schedule',
-      //   payLoad: message,
-      //   sentOn: new Date(),
-      //   userId: id,
-      // });
+    let fcmToken = await this.deviceTokenModal.find({ userId: id });
+    if (fcmToken.length > 0) {
+      for (let token of fcmToken) {
+        let payload: admin.messaging.Message = {
+          data: {
+            message: JSON.stringify(message),
+            type: 'new-schedule',
+          },
+          token: token.token,
+        };
+
+        admin.messaging().send(payload);
+      }
     }
   }
 }

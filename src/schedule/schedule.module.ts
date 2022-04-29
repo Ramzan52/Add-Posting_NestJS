@@ -16,6 +16,7 @@ import {
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
     ScheduleService,
     Firebase_NotificationService,
     AzureSASServiceService,
+    AzureServiceBusService,
   ],
   controllers: [ScheduleController],
 })
