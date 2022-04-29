@@ -56,6 +56,11 @@ export class ScheduleService {
           as: 'posts',
         },
       },
+      {
+        $sort: {
+          createdOn: -1,
+        },
+      },
     ]);
 
     let scheduleAsBuyer = await this.scheduleModel
