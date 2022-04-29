@@ -81,7 +81,7 @@ export class MessagesService {
     ]);
 
     if (existingMessage.length > 0) {
-      return existingMessage;
+      return existingMessage[0];
     }
 
     const message = await new this.messageModel(data);
