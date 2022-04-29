@@ -21,6 +21,7 @@ import { Firebase_NotificationService } from 'src/firebase_notification/firebase
 import { mongo } from 'mongoose';
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
+import { scheduled } from 'rxjs';
 
 @Injectable()
 export class ScheduleService {
@@ -109,15 +110,13 @@ export class ScheduleService {
     await this.findDeviceToken(data.vendorId, message);
     return Schedule;
   }
-  async postScheduleRating(dto: PostRating) {
+  async postScheduleRating(dto: PostRating, id: string) {
     let today = new Date();
     let Schedule = await this.scheduleModel.findOne({ _id: dto.scheduleId });
 
     if (!Schedule) {
       throw new NotFoundException('No Schedule Found');
-    }
-    if (Schedule.rating) {
-      return;
+      console.log('No Schedule Found');
     }
 
     if (Schedule.date > today || Schedule.time > today) {
@@ -126,23 +125,54 @@ export class ScheduleService {
     if (dto.rating > 5 || dto.rating < 0) {
       throw new BadRequestException('Rating should be between 0 and 5');
     }
-
-    Schedule.rating = dto.rating;
-    Schedule.comments = dto.comments;
-    const user = await this.userModel.findById(Schedule.vendorId);
-    const profile = await this.profileModel.findOne({
-      userId: Schedule.vendorId,
-    });
-
-    user.avgRating =
-      ((user.ratingsCount || 0) * (user.avgRating || 0) + dto.rating) /
-      ((user.ratingsCount || 0) + 1);
-    user.ratingsCount = (user.ratingsCount || 0) + 1;
-    if (profile) {
-      profile.avgRating = user.avgRating;
-      profile.save();
+    if (Schedule.rating.find((x) => x.userId === id)) {
+      throw new BadRequestException('Schedule is already being rated by you');
     }
-    user.save();
+    if (id === Schedule.vendorId) {
+      Schedule.rating.push({
+        userId: id,
+        ratingId: Schedule.buyerId,
+        rating: dto.rating,
+        comments: dto.comments,
+      });
+
+      const user = await this.userModel.findById(Schedule.buyerId);
+      const profile = await this.profileModel.findOne({
+        userId: Schedule.buyerId,
+      });
+      if (user) {
+        user.avgRating =
+          ((user.ratingsCount || 0) * (user.avgRating || 0) + dto.rating) /
+          ((user.ratingsCount || 0) + 1);
+        user.ratingsCount = (user.ratingsCount || 0) + 1;
+        profile.avgRating = user.avgRating;
+        profile.save();
+        user.save();
+        Schedule.save();
+      }
+    } else if (id === Schedule.buyerId) {
+      Schedule.rating.push({
+        userId: id,
+        ratingId: Schedule.vendorId,
+        rating: dto.rating,
+        comments: dto.comments,
+      });
+
+      Schedule.save();
+      const user = await this.userModel.findById(Schedule.vendorId);
+      const profile = await this.profileModel.findOne({
+        userId: Schedule.vendorId,
+      });
+      if (user) {
+        user.avgRating =
+          ((user.ratingsCount || 0) * (user.avgRating || 0) + dto.rating) /
+          ((user.ratingsCount || 0) + 1);
+        user.ratingsCount = (user.ratingsCount || 0) + 1;
+        profile.avgRating = user.avgRating;
+        profile.save();
+        user.save();
+      }
+    }
   }
 
   async findDeviceToken(id: string, message: any) {

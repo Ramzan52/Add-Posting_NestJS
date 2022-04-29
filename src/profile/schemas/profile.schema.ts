@@ -21,7 +21,7 @@ export class Profile {
   email: string;
 
   @Prop({ required: false })
-  avgRating?: number;
+  avgRating?: number = 0;
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);

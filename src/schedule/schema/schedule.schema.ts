@@ -1,3 +1,4 @@
+import { IsArray } from 'class-validator';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Post } from 'src/posts/schemas/post.schema';
@@ -23,10 +24,18 @@ export class Schedule {
   date: Date;
 
   @Prop({ required: false })
-  rating: number;
+  @IsArray()
+  rating: [
+    {
+      userId: string;
+      ratingId: string;
+      rating: number;
+      comments: string;
+    },
+  ];
 
-  @Prop({ required: false })
-  comments: string;
+  // @Prop({ required: false })
+  // comments: string;
 }
 
 export const ScheduleSchema = SchemaFactory.createForClass(Schedule);
