@@ -58,21 +58,28 @@ export class ScheduleService {
       },
     ]);
 
-    let scheduleAsBuyer = await this.scheduleModel.aggregate([
-      {
-        $match: {
-          buyerId: id,
+    let scheduleAsBuyer = await this.scheduleModel
+      .aggregate([
+        {
+          $match: {
+            buyerId: id,
+          },
         },
-      },
-      {
-        $lookup: {
-          from: 'posts',
-          localField: 'postId',
-          foreignField: '_id',
-          as: 'posts',
+        {
+          $lookup: {
+            from: 'posts',
+            localField: 'postId',
+            foreignField: '_id',
+            as: 'posts',
+          },
         },
-      },
-    ]);
+        {
+          $sort: {
+            createdOn: -1,
+          },
+        },
+      ])
+      .exec();
 
     if (!scheduleAsVendor && !scheduleAsBuyer) {
       throw new NotFoundException('No schedule found');
@@ -101,6 +108,7 @@ export class ScheduleService {
       vendorId: id,
       postId: new mongo.ObjectId(dto.postId),
       time: dto.time,
+      createdOn: new Date(),
     };
     let Schedule = await this.scheduleModel.create(data);
     Schedule.save();

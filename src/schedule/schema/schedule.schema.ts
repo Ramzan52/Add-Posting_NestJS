@@ -34,6 +34,9 @@ export class Schedule {
     },
   ];
 
+  @Prop({ required: false })
+  createdOn: Date;
+
   // @Prop({ required: false })
   // comments: string;
 }

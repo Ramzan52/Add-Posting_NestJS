@@ -233,13 +233,13 @@ export class PostsService {
         };
 
         admin.messaging().send(payload);
-        await this.firebaseSvc.PostNotification({
-          type: 'new-alert',
-          payLoad: notificationPayload,
-          sentOn: new Date(),
-          userId: token.userId,
-        });
       }
+      await this.firebaseSvc.PostNotification({
+        type: 'new-alert',
+        payLoad: notificationPayload,
+        sentOn: new Date(),
+        userId: fcmToken[0].userId,
+      });
     }
   }
 
