@@ -1,7 +1,7 @@
 import { Firebase_NotificationService } from './../firebase_notification/firebase_notification.service';
 import { Conversation } from './schema/conversation.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import {
   DeviceToken,
@@ -29,8 +29,11 @@ export class FcmTOkenService {
           },
           token: token.token,
         };
-
-        admin.messaging().send(payload);
+        try {
+          admin.messaging().send(payload);
+        } catch (e) {
+          console.log('message', e);
+        }
       }
     }
     // let fcmToken = await this.deviceTokenModal.findOne({ userId: id });

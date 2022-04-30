@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { AlertsService } from 'src/alerts/alerts.service';
@@ -232,7 +236,11 @@ export class PostsService {
           token: token.token,
         };
 
-        admin.messaging().send(payload);
+        try {
+          admin.messaging().send(payload);
+        } catch (e) {
+          console.log('alert', e);
+        }
       }
       await this.firebaseSvc.PostNotification({
         type: 'new-alert',
