@@ -19,6 +19,7 @@ import admin from 'firebase-admin';
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
 import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
+import { DeviceTokenService } from 'src/device_token/device_token.service';
 
 @Injectable()
 export class PostsService {
@@ -34,6 +35,7 @@ export class PostsService {
 
     private readonly alertSvc: AlertsService,
     private readonly fcmSvc: FcmTOkenService,
+    private readonly DeviceTokenSvc: DeviceTokenService,
   ) {}
 
   async getPosts(
@@ -244,6 +246,11 @@ export class PostsService {
               console.log('send post');
             })
             .catch((error) => {
+              this.DeviceTokenSvc.deleteToken(token.token, token.userId).then(
+                (err) => {
+                  console.log(err);
+                },
+              );
               console.log('error', error);
             });
         } catch (e) {

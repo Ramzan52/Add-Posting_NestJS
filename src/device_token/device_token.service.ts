@@ -68,4 +68,21 @@ export class DeviceTokenService {
       throw new BadRequestException();
     }
   }
+  async deleteToken(token: String, userId: string) {
+    try {
+      const existingToken = await this.deviceTokenModal.findOne({
+        token: token,
+        userId: userId,
+      });
+      if (existingToken) {
+        await this.deviceTokenModal.deleteOne({
+          token: token,
+          userId: userId,
+        });
+      }
+      return;
+    } catch {
+      console.log('token not deleted');
+    }
+  }
 }

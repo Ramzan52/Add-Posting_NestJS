@@ -9,6 +9,7 @@ import {
 } from 'src/device_token/schema/device_token.schema';
 import admin from 'firebase-admin';
 import { Alert } from 'src/alerts/schema/alert.schema';
+import { DeviceTokenService } from 'src/device_token/device_token.service';
 
 @Injectable()
 export class FcmTOkenService {
@@ -16,6 +17,7 @@ export class FcmTOkenService {
     @InjectModel(DeviceToken.name)
     private readonly deviceTokenModal: Model<DeviceTokenDocument>,
     private readonly firebaseSvc: Firebase_NotificationService,
+    private readonly DeviceTokenSvc: DeviceTokenService,
   ) {}
 
   async findDeviceToken(id: string, message: Conversation) {
@@ -37,6 +39,11 @@ export class FcmTOkenService {
               console.log('send');
             })
             .catch((error) => {
+              this.DeviceTokenSvc.deleteToken(token.token, token.userId).then(
+                (err) => {
+                  console.log(err);
+                },
+              );
               console.log('error', error);
             });
         } catch (e) {

@@ -23,6 +23,7 @@ import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.se
 import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 import { scheduled } from 'rxjs';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
+import { DeviceTokenService } from 'src/device_token/device_token.service';
 
 @Injectable()
 export class ScheduleService {
@@ -39,6 +40,7 @@ export class ScheduleService {
     private readonly firebaseSvc: Firebase_NotificationService,
     private sasSvc: AzureSASServiceService,
     private serviceBusSvc: AzureServiceBusService,
+    private DeviceTokenSvc: DeviceTokenService,
   ) {}
 
   async getSchedule(id: string) {
@@ -213,6 +215,11 @@ export class ScheduleService {
               console.log('send schedule');
             })
             .catch((error) => {
+              this.DeviceTokenSvc.deleteToken(token.token, token.userId).then(
+                (err) => {
+                  console.log(err);
+                },
+              );
               console.log('error', error);
             });
         } catch (e) {

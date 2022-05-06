@@ -17,6 +17,7 @@ import { Firebase_NotificationService } from 'src/firebase_notification/firebase
 import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.service';
 import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
+import { DeviceTokenService } from 'src/device_token/device_token.service';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.se
     Firebase_NotificationService,
     AzureSASServiceService,
     AzureServiceBusService,
+    DeviceTokenService,
   ],
   controllers: [ScheduleController],
 })
