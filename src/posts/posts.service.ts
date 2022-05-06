@@ -237,7 +237,15 @@ export class PostsService {
         };
 
         try {
-          admin.messaging().send(payload);
+          admin
+            .messaging()
+            .send(payload)
+            .then((response) => {
+              console.log('send post');
+            })
+            .catch((error) => {
+              console.log('error', error);
+            });
         } catch (e) {
           console.log('alert', e);
         }

@@ -30,7 +30,15 @@ export class FcmTOkenService {
           token: token.token,
         };
         try {
-          admin.messaging().send(payload);
+          admin
+            .messaging()
+            .send(payload)
+            .then((response) => {
+              console.log('send');
+            })
+            .catch((error) => {
+              console.log('error', error);
+            });
         } catch (e) {
           console.log('message', e);
         }

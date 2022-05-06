@@ -206,7 +206,15 @@ export class ScheduleService {
           token: token.token,
         };
         try {
-          admin.messaging().send(payload);
+          admin
+            .messaging()
+            .send(payload)
+            .then((response) => {
+              console.log('send schedule');
+            })
+            .catch((error) => {
+              console.log('error', error);
+            });
         } catch (e) {
           console.log('schedule', e);
         }
