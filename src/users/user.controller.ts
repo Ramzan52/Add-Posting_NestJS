@@ -1,3 +1,4 @@
+import { UserLocation } from './dto/user.location.dto';
 import {
   BadRequestException,
   Body,
@@ -20,8 +21,8 @@ export class userController {
   constructor(private readonly userSvc: UsersService) {}
 
   @Post('/current-location')
-  async postCurrentLocation(@Req() req: any, @Body() dto: PostLocationSchema) {
-    return await this.userSvc.postCurrentLocation(req.user.id, dto);
+  async postCurrentLocation(@Req() req: any, @Body() body: UserLocation) {
+    return await this.userSvc.postCurrentLocation(req.user.id, body);
   }
 
   @Post('/general-notification')

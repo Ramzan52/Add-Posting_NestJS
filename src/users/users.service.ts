@@ -198,7 +198,9 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    user.location = dto;
+    user.location.title = dto.title;
+    user.location.latitude = dto.latitude;
+    user.location.longitude = dto.longitude;
     await this.userModel.replaceOne(
       { _id: new mongo.ObjectId(user._id) },
       user,
