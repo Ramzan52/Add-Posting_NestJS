@@ -6,4 +6,5 @@ export class GetProfileDto {
   email: string;
   userId: string;
   sas: string;
+  generalNotification: boolean;
 }

@@ -34,6 +34,7 @@ export class ProfileController {
       email: profile.email,
       profilePic: profile.profilePic,
       sas: this.sasSvc.getNewSASKey(),
+      generalNotification: profile.generalNotification,
     };
   }
 
