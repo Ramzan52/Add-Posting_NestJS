@@ -20,6 +20,7 @@ import { Firebase_NotificationService } from 'src/firebase_notification/firebase
 import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
 import { DeviceTokenService } from 'src/device_token/device_token.service';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 
 @Injectable()
 export class PostsService {
@@ -36,6 +37,7 @@ export class PostsService {
     private readonly alertSvc: AlertsService,
     private readonly fcmSvc: FcmTOkenService,
     private readonly DeviceTokenSvc: DeviceTokenService,
+    private serviceBusSvc: AzureServiceBusService,
   ) {}
 
   async getPosts(
@@ -176,6 +178,10 @@ export class PostsService {
     });
 
     await this.createObjForNotification(categoryId, post);
+    await this.serviceBusSvc.sendUpdateDocMessage({
+      messageType: 'post',
+      message: post,
+    });
 
     return post;
   }

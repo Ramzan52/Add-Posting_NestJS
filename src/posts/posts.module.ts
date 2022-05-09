@@ -24,6 +24,7 @@ import {
 import { User, UserSchema } from 'src/users/schemas/user.schema';
 import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
 import { DeviceTokenService } from 'src/device_token/device_token.service';
+import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { DeviceTokenService } from 'src/device_token/device_token.service';
     FcmTOkenService,
     Firebase_NotificationService,
     DeviceTokenService,
+    AzureServiceBusService,
   ],
   controllers: [PostsController],
 })

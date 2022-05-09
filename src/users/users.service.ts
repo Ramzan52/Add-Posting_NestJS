@@ -17,6 +17,7 @@ import {
   createEmailBody,
   generateRandomSixDigitCode,
 } from 'src/common/helper/email.helper';
+import { PostLocationSchema } from 'src/posts/schemas/post-location.schema';
 
 @Injectable()
 export class UsersService {
@@ -185,5 +186,22 @@ export class UsersService {
     user.resetPasswordCode = 0;
     await this.userModel.replaceOne({ _id: user._id }, user);
     return user;
+  }
+  async postCurrentLocation(userId: string, dto: PostLocationSchema) {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.location = dto;
+    await this.userModel.replaceOne({ _id: user._id }, user);
+  }
+
+  async postGeneralNotification(userId: string, dto: boolean) {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.generalNotification = dto;
+    await this.userModel.replaceOne({ _id: user._id }, user);
   }
 }

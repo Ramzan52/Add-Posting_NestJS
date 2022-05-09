@@ -1,3 +1,4 @@
+import { Profile } from 'src/profile/schemas/profile.schema';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { auth } from 'firebase-admin';
@@ -20,6 +21,8 @@ export class FireBaseLoginService {
       const email = user.email;
 
       const existingUser = await this.usersSvc.findOne(email);
+      const existingProfile = await this.profileSvc.findOne(email);
+
       if (existingUser) {
         const payload = {
           sub: existingUser._id,
@@ -30,6 +33,7 @@ export class FireBaseLoginService {
         return {
           access_token: this.jwtSvc.sign(payload, { expiresIn: '30m' }),
           refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
+          profile: existingProfile,
         };
       } else {
         const payload = {
@@ -45,7 +49,7 @@ export class FireBaseLoginService {
           phoneNumber: '',
         });
 
-        await this.profileSvc.create(
+        const createdProfile = await this.profileSvc.create(
           {
             username: user.email,
             name: user.name,
@@ -58,6 +62,7 @@ export class FireBaseLoginService {
         return {
           access_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
           refresh_token: this.jwtSvc.sign(payload, { expiresIn: '24h' }),
+          profile: createdProfile,
         };
       }
     } catch (error) {
