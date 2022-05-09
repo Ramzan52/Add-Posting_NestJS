@@ -58,9 +58,9 @@ export class ProfileService {
     if (!profile) {
       throw new NotFoundException('Profile not found');
     } else {
-      profile.name = name;
-      profile.phoneNumber = phoneNumber;
-      profile.profilePic = profilePic;
+      profile.name = name ? name : profile.name;
+      profile.phoneNumber = phoneNumber ? phoneNumber : profile.phoneNumber;
+      profile.profilePic = profilePic ? profilePic : profile.profilePic;
 
       await this.profileModel.replaceOne({ _id: profile._id }, profile);
 
