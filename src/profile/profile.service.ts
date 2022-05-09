@@ -26,6 +26,7 @@ export class ProfileService {
       name: dto.name,
       userId: userId,
       phoneNumber: dto.phoneNumber,
+      generalNotification: true,
     });
 
     return profile;

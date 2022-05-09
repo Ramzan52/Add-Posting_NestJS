@@ -84,6 +84,7 @@ export class UsersService {
       registerCode: code,
       isUserVerified: false,
       phoneNumber: dto.phoneNumber,
+      generalNotification: true,
     });
 
     return {
