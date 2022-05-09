@@ -199,7 +199,10 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
     user.location = dto;
-    await this.userModel.replaceOne({ _id: user._id }, user);
+    await this.userModel.replaceOne(
+      { _id: new mongo.ObjectId(user._id) },
+      user,
+    );
   }
 
   async postGeneralNotification(userId: string, dto: boolean) {
@@ -210,7 +213,10 @@ export class UsersService {
     }
     user.generalNotification = dto;
     profile.generalNotification = dto;
-    await this.userModel.replaceOne({ _id: user._id }, user);
-    await this.userModel.replaceOne({ userId: user._id }, profile);
+    await this.userModel.replaceOne(
+      { _id: new mongo.ObjectId(user._id) },
+      user,
+    );
+    await this.profileModel.replaceOne({ userId: user._id }, profile);
   }
 }
