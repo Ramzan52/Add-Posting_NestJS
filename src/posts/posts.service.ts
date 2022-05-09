@@ -278,6 +278,7 @@ export class PostsService {
         {
           $match: {
             _id: new mongo.ObjectId(id),
+            isDeleted: false,
           },
         },
         {
@@ -290,6 +291,10 @@ export class PostsService {
         },
       ])
       .exec();
+
+    if (post.length < 1) {
+      throw new NotFoundException(`Post with id ${id} Not Found`);
+    }
 
     post.forEach(
       (post) =>
