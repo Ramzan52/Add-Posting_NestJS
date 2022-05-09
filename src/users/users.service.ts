@@ -211,8 +211,9 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    user.generalNotification = dto;
-    profile.generalNotification = dto;
+
+    user.generalNotification = !user.generalNotification;
+    profile.generalNotification = !profile.generalNotification;
     await this.userModel.replaceOne(
       { _id: new mongo.ObjectId(user._id) },
       user,
