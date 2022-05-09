@@ -18,11 +18,15 @@ import {
   generateRandomSixDigitCode,
 } from 'src/common/helper/email.helper';
 import { PostLocationSchema } from 'src/posts/schemas/post-location.schema';
+import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Profile.name)
+    private readonly profileModel: Model<ProfileDocument>,
+
     private readonly busSvc: AzureServiceBusService,
   ) {}
 
@@ -198,10 +202,13 @@ export class UsersService {
 
   async postGeneralNotification(userId: string, dto: boolean) {
     const user = await this.userModel.findById(userId).exec();
+    const profile = await this.profileModel.findOne({ userId: userId }).exec();
     if (!user) {
       throw new NotFoundException('User not found');
     }
     user.generalNotification = dto;
+    profile.generalNotification = dto;
     await this.userModel.replaceOne({ _id: user._id }, user);
+    await this.userModel.replaceOne({ userId: user._id }, profile);
   }
 }

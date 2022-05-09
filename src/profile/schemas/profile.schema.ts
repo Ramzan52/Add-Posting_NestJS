@@ -22,6 +22,9 @@ export class Profile {
 
   @Prop({ required: false })
   avgRating?: number = 0;
+
+  @Prop()
+  generalNotification: boolean = true;
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);
