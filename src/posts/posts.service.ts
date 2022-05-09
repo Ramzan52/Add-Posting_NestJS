@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { AlertsService } from 'src/alerts/alerts.service';
@@ -15,6 +19,7 @@ import admin from 'firebase-admin';
 import { Firebase_NotificationService } from 'src/firebase_notification/firebase_notification.service';
 import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 import { User, UserDocument } from 'src/users/schemas/user.schema';
+import { DeviceTokenService } from 'src/device_token/device_token.service';
 
 @Injectable()
 export class PostsService {
@@ -30,6 +35,7 @@ export class PostsService {
 
     private readonly alertSvc: AlertsService,
     private readonly fcmSvc: FcmTOkenService,
+    private readonly DeviceTokenSvc: DeviceTokenService,
   ) {}
 
   async getPosts(
@@ -221,23 +227,41 @@ export class PostsService {
       alert: x.alert,
       post: post,
     };
-    let fcmToken = await this.deviceTokenModal.findOne({ userId: x.userId });
-    if (fcmToken && fcmToken.token !== null) {
-      let payload: admin.messaging.Message = {
-        data: {
-          message: JSON.stringify(notificationPayload),
-          type: 'new-alert',
-        },
-        token: fcmToken.token,
-      };
+    let fcmToken = await this.deviceTokenModal.find({ userId: x.userId });
+    if (fcmToken.length > 0) {
+      for (let token of fcmToken) {
+        let payload: admin.messaging.Message = {
+          data: {
+            message: JSON.stringify(notificationPayload),
+            type: 'new-alert',
+          },
+          token: token.token,
+        };
 
-      admin.messaging().send(payload);
-
+        try {
+          admin
+            .messaging()
+            .send(payload)
+            .then((response) => {
+              console.log('send post');
+            })
+            .catch((error) => {
+              this.DeviceTokenSvc.deleteToken(token.token, token.userId).then(
+                (err) => {
+                  console.log(err);
+                },
+              );
+              console.log('error', error);
+            });
+        } catch (e) {
+          console.log('alert', e);
+        }
+      }
       await this.firebaseSvc.PostNotification({
         type: 'new-alert',
         payLoad: notificationPayload,
         sentOn: new Date(),
-        userId: x.userId,
+        userId: fcmToken[0].userId,
       });
     }
   }

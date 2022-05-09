@@ -34,7 +34,7 @@ export class ScheduleController {
   }
   @Post('/rating')
   @HttpCode(204)
-  async postScheduleRating(@Body() body: PostRating) {
-    await this.scheduleSvc.postScheduleRating(body);
+  async postScheduleRating(@Body() body: PostRating, @Req() req: any) {
+    await this.scheduleSvc.postScheduleRating(body, req.user.id);
   }
 }

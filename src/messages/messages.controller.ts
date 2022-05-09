@@ -92,6 +92,7 @@ export class MessagesController {
     const existingMessage = await this.messageSvc.markAsRead(
       req.user.id,
       receiverId,
+      postId,
     );
 
     const receiverUser = await this.profileSvc.findByUserId(receiverId);

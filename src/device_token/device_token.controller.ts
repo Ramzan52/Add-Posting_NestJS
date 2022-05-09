@@ -12,4 +12,8 @@ export class DeviceTokenController {
   postDeviceToken(@Req() req: any, @Body() body: CreateDeviceTokenDto) {
     return this.deviceSvc.postDeviceToken(req.user.id, body);
   }
+  @Post('/delete')
+  deleteDeviceToken(@Req() req: any, @Body() body: CreateDeviceTokenDto) {
+    return this.deviceSvc.deleteDeviceToken(req.user.id, body);
+  }
 }

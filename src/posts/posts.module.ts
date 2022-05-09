@@ -23,6 +23,7 @@ import {
 } from 'src/firebase_notification/schema/post.notification.schema';
 import { User, UserSchema } from 'src/users/schemas/user.schema';
 import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
+import { DeviceTokenService } from 'src/device_token/device_token.service';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { Profile, ProfileSchema } from 'src/profile/schemas/profile.schema';
     AlertsService,
     FcmTOkenService,
     Firebase_NotificationService,
+    DeviceTokenService,
   ],
   controllers: [PostsController],
 })

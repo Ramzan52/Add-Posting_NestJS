@@ -22,6 +22,7 @@ import { AzureSASServiceService } from 'src/azure-sasservice/azure-sasservice.se
 import { ProfileService } from 'src/profile/profile.service';
 import { UsersService } from 'src/users/users.service';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
+import { DeviceTokenService } from 'src/device_token/device_token.service';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.se
     ProfileService,
     UsersService,
     AzureServiceBusService,
+    DeviceTokenService,
   ],
 })
 export class MessagesModule {}

@@ -81,7 +81,7 @@ export class MessagesService {
     ]);
 
     if (existingMessage.length > 0) {
-      return existingMessage;
+      return existingMessage[0];
     }
 
     const message = await new this.messageModel(data);
@@ -205,10 +205,11 @@ export class MessagesService {
     }
   }
 
-  async markAsRead(senderId: string, receiverId: string) {
+  async markAsRead(senderId: string, receiverId: string, postId: string) {
     const existingMessage = await this.messageModel.findOne({
       senderId: senderId,
       receiverId: receiverId,
+      postId: postId,
     });
 
     if (existingMessage) {
