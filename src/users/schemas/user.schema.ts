@@ -39,10 +39,10 @@ export class User {
   @Prop()
   isUserVerified: boolean;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   location: PostLocationSchema;
 
-  @Prop()
+  @Prop({ required: false })
   generalNotification: boolean = true;
 }
 

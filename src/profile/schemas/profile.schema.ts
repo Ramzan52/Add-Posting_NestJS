@@ -23,7 +23,7 @@ export class Profile {
   @Prop({ required: false })
   avgRating?: number = 0;
 
-  @Prop()
+  @Prop({ required: false })
   generalNotification: boolean = true;
 }
 
