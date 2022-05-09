@@ -56,12 +56,13 @@ export class UsersService {
         throw new BadRequestException('Email is already registered');
       }
     }
+    if (dto.phoneNumber !== '') {
+      const phoneExists = await this.findByPhone(dto.phoneNumber);
 
-    const phoneExists = await this.findByPhone(dto.phoneNumber);
-
-    if (phoneExists) {
-      if (phoneExists.phoneNumber == dto.phoneNumber) {
-        throw new BadRequestException('Phone Number is already registered');
+      if (phoneExists) {
+        if (phoneExists.phoneNumber == dto.phoneNumber) {
+          throw new BadRequestException('Phone Number is already registered');
+        }
       }
     }
 

@@ -23,7 +23,7 @@ export class FireBaseLoginService {
       const existingUser = await this.usersSvc.findOne(email);
       const existingProfile = await this.profileSvc.findOne(email);
 
-      if (existingUser) {
+      if (existingUser !== null) {
         const payload = {
           sub: existingUser._id,
           name: existingUser.name,
