@@ -124,7 +124,7 @@ export class ScheduleService {
       text: `A schedule has been created against ${post.title}  on ${Schedule.date} ${Schedule.time}`,
     };
     await this.findDeviceToken(dto.buyerId, message);
-    await this.findDeviceToken(data.vendorId, message);
+    // await this.findDeviceToken(data.vendorId, message);
     return Schedule;
   }
   async postScheduleRating(dto: PostRating, id: string) {
