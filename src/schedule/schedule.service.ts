@@ -46,9 +46,14 @@ export class ScheduleService {
   async getSchedule(id: string) {
     let scheduleAsVendor = await this.scheduleModel.aggregate([
       {
-        $match: {
-          vendorId: id,
-        },
+        $match: [
+          {
+            $or: {
+              vendorId: id,
+              buyorId: id,
+            },
+          },
+        ],
       },
       {
         $lookup: {
@@ -91,7 +96,7 @@ export class ScheduleService {
     if (!scheduleAsVendor && !scheduleAsBuyer) {
       throw new NotFoundException('No schedule found');
     }
-    var result = [...scheduleAsBuyer, ...scheduleAsVendor];
+    let result = [...scheduleAsBuyer, ...scheduleAsVendor];
 
     return {
       result: result,
