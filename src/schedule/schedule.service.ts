@@ -60,7 +60,8 @@ export class ScheduleService {
       },
       {
         $sort: {
-          createdOn: -1,
+          date: -1,
+          time: -1,
         },
       },
     ]);
@@ -82,7 +83,8 @@ export class ScheduleService {
         },
         {
           $sort: {
-            createdOn: -1,
+            date: -1,
+            time: -1,
           },
         },
       ])
