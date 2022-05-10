@@ -70,7 +70,7 @@ export class ScheduleService {
       .aggregate([
         {
           $match: {
-            $or: { buyerId: id, vendorId: id },
+            $or: [{ buyerId: id, vendorId: id }],
           },
         },
         {
