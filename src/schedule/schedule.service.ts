@@ -24,6 +24,7 @@ import { Profile, ProfileDocument } from 'src/profile/schemas/profile.schema';
 import { scheduled } from 'rxjs';
 import { AzureServiceBusService } from 'src/azure-servicebus/azure-servicebus.service';
 import { DeviceTokenService } from 'src/device_token/device_token.service';
+import e from 'express';
 
 @Injectable()
 export class ScheduleService {
@@ -97,7 +98,11 @@ export class ScheduleService {
       result: result.sort(function (a, b) {
         var date1 = new Date(a);
         var date2 = new Date(b);
-        return date2.valueOf() - date1.valueOf();
+        if (date2.valueOf() - date1.valueOf() > 0) {
+          return 1;
+        } else if (date2.valueOf() - date1.valueOf() == 0) {
+          return 0;
+        }
       }),
       sas: this.sasSvc.getNewSASKey(),
     };
