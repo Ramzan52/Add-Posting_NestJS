@@ -98,9 +98,9 @@ export class ScheduleService {
       result: result.sort(function (a, b) {
         var date1 = new Date(a);
         var date2 = new Date(b);
-        if (date2.valueOf() - date1.valueOf() > 0) {
+        if (date1.valueOf() - date2.valueOf() > 0) {
           return 1;
-        } else if (date2.valueOf() - date1.valueOf() == 0) {
+        } else if (date1.valueOf() - date2.valueOf() == 0) {
           return 0;
         }
       }),
