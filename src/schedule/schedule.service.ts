@@ -61,7 +61,6 @@ export class ScheduleService {
       {
         $sort: {
           date: -1,
-          time: -1,
         },
       },
     ]);
@@ -84,7 +83,6 @@ export class ScheduleService {
         {
           $sort: {
             date: -1,
-            time: -1,
           },
         },
       ])
