@@ -46,14 +46,9 @@ export class ScheduleService {
   async getSchedule(id: string) {
     let scheduleAsVendor = await this.scheduleModel.aggregate([
       {
-        $match: [
-          {
-            $or: {
-              vendorId: id,
-              buyorId: id,
-            },
-          },
-        ],
+        $match: {
+          vendorId: id,
+        },
       },
       {
         $lookup: {
@@ -99,7 +94,11 @@ export class ScheduleService {
     let result = [...scheduleAsBuyer, ...scheduleAsVendor];
 
     return {
-      result: result,
+      result: result.sort(function (a, b) {
+        var date1 = new Date(a);
+        var date2 = new Date(b);
+        return date2.valueOf() - date1.valueOf();
+      }),
       sas: this.sasSvc.getNewSASKey(),
     };
   }
