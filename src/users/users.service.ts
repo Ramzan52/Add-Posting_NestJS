@@ -86,6 +86,11 @@ export class UsersService {
       isUserVerified: false,
       phoneNumber: dto.phoneNumber,
       generalNotification: true,
+      location: {
+        title: '',
+        latitude: 0,
+        longitude: 0,
+      },
     });
 
     return {
