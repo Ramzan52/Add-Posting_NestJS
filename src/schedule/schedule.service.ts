@@ -70,7 +70,7 @@ export class ScheduleService {
       .aggregate([
         {
           $match: {
-            buyerId: id,
+            $or: [{ buyerId: id }, { vendorId: id }],
           },
         },
         {
@@ -89,10 +89,10 @@ export class ScheduleService {
       ])
       .exec();
 
-    if (!scheduleAsVendor && !scheduleAsBuyer) {
-      throw new NotFoundException('No schedule found');
-    }
-    let result = [...scheduleAsBuyer, ...scheduleAsVendor];
+    // if (!scheduleAsVendor && !scheduleAsBuyer) {
+    //   throw new NotFoundException('No schedule found');
+    // }
+    let result = [...scheduleAsBuyer];
 
     return {
       result: result.sort(function (a, b) {
