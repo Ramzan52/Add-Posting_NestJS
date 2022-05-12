@@ -38,6 +38,6 @@ export class AlertsController {
 
   @Get('/my')
   async myAlerts(@Request() req: any): Promise<Array<AlertDocument>> {
-    return await this.alertSvc.myAlert(req.user.username);
+    return await this.alertSvc.myAlert(req.user.id);
   }
 }

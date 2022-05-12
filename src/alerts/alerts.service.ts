@@ -47,7 +47,7 @@ export class AlertsService {
     let post = await this.alertModel.aggregate([
       {
         $match: {
-          createdByUsername: username,
+          userId: username,
           isDeleted: false,
         },
       },

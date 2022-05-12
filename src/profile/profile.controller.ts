@@ -27,7 +27,7 @@ export class ProfileController {
   async getProfile(@Request() req): Promise<GetProfileDto> {
     const profile = await this.profileSvc.findOne(req.user.username);
     return {
-      id: profile._id,
+      id: profile.id,
       userId: profile.userId,
       name: profile.name,
       phoneNumber: profile.phoneNumber,
