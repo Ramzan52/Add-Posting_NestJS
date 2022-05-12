@@ -249,7 +249,7 @@ export class PostsService {
             .messaging()
             .send(payload)
             .then((response) => {
-              console.log('send post');
+              console.log('send post1111');
             })
             .catch((error) => {
               this.DeviceTokenSvc.deleteToken(token.token, token.userId).then(
