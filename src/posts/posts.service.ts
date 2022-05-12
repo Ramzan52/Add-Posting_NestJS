@@ -227,9 +227,9 @@ export class PostsService {
       // usernameList.forEach((x) => {
       //   this.sendNotification(x, post);
       // });
-      for (let username of usernameList) {
-        await this.sendNotification(username, post);
-      }
+    }
+    for (let username of usernameList) {
+      await this.sendNotification(username, post);
     }
   }
   async sendNotification(x: any, post: Post) {
