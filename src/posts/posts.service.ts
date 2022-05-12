@@ -178,10 +178,10 @@ export class PostsService {
     });
 
     await this.createObjForNotification(categoryId, post);
-    await this.serviceBusSvc.sendUpdateDocMessage({
-      messageType: 'post',
-      message: post,
-    });
+    // await this.serviceBusSvc.sendUpdateDocMessage({
+    //   messageType: 'post',
+    //   message: post,
+    // });
 
     return post;
   }
