@@ -67,17 +67,17 @@ export class FcmTOkenService {
     // }
   }
 
-  async sendAlertNotification(id: string, tokens: any, alert: Alert) {
-    let payload: admin.messaging.Message = {
-      data: { message: JSON.stringify(alert), type: 'new-alert' },
-      token: tokens,
-    };
-    admin.messaging().send(payload);
-    this.firebaseSvc.PostNotification({
-      type: 'new-alert',
-      payLoad: alert,
-      sentOn: new Date(),
-      userId: id,
-    });
-  }
+  // async sendAlertNotification(id: string, tokens: any, alert: Alert) {
+  //   let payload: admin.messaging.Message = {
+  //     data: { message: JSON.stringify(alert), type: 'new-alert' },
+  //     token: tokens,
+  //   };
+  //   admin.messaging().send(payload);
+  //   this.firebaseSvc.PostNotification({
+  //     type: 'new-alert',
+  //     payLoad: alert,
+  //     sentOn: new Date(),
+  //     userId: id,
+  //   });
+  // }
 }

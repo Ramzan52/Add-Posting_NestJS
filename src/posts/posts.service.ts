@@ -223,9 +223,12 @@ export class PostsService {
           }
         }
       }
-      usernameList.forEach((x) => {
-        this.sendNotification(x, post);
-      });
+      // usernameList.forEach((x) => {
+      //   this.sendNotification(x, post);
+      // });
+      for (let username of usernameList) {
+        await this.sendNotification(username, post);
+      }
     }
   }
   async sendNotification(x: any, post: Post) {
@@ -249,7 +252,7 @@ export class PostsService {
             .messaging()
             .send(payload)
             .then((response) => {
-              console.log('send post1111');
+              console.log('send post1111', payload);
             })
             .catch((error) => {
               this.DeviceTokenSvc.deleteToken(token.token, token.userId).then(
