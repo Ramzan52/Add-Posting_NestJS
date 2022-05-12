@@ -68,7 +68,7 @@ export class AlertsService {
 
   async find(categoryId: string) {
     const post = await this.alertModel
-      .find({ categoryId: categoryId, isDeleted: false })
+      .find({ categoryId: new mongo.ObjectId(categoryId), isDeleted: false })
       .exec();
     return post;
   }

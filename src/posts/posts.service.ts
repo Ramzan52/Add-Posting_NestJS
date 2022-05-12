@@ -193,6 +193,7 @@ export class PostsService {
     let usernameList = [];
 
     let alerts = await this.alertSvc.find(categoryId);
+    console.log(alerts);
 
     for (let alert of alerts) {
       if (alert.userId !== post.creatorId) {
