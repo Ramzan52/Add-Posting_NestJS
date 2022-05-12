@@ -35,7 +35,9 @@ export class UsersService {
     password: string,
     newPassword: string,
   ) {
-    const user = await this.userModel.findOne({ username });
+    const user = await this.userModel.findOne({
+      username: username.toLowerCase(),
+    });
 
     const { salt, hash } = user;
     const pwdHash = hashSync(password, salt);
@@ -49,10 +51,11 @@ export class UsersService {
   }
 
   async create(dto: RegisterDto) {
-    const exists = await this.findOne(dto.username);
+    let username = dto.username.toLowerCase();
+    const exists = await this.findOne(username);
 
     if (exists) {
-      if (exists.username == dto.username) {
+      if (exists.username == username) {
         throw new BadRequestException('Email is already registered');
       }
     }
@@ -67,7 +70,7 @@ export class UsersService {
     }
 
     const code = generateRandomSixDigitCode();
-    const emailBody = createEmailBody(dto.username, code);
+    const emailBody = createEmailBody(username, code);
 
     console.log({ code });
     console.log({ emailBody });
@@ -78,7 +81,7 @@ export class UsersService {
     const hash = hashSync(dto.password, salt);
 
     const user = await this.userModel.create({
-      username: dto.username,
+      username: dto.username.toLowerCase(),
       name: dto.name,
       salt,
       hash,
@@ -101,7 +104,9 @@ export class UsersService {
   }
 
   async findOne(username: string) {
-    return await this.userModel.findOne({ username: username }).exec();
+    return await this.userModel
+      .findOne({ username: username.toLowerCase() })
+      .exec();
   }
 
   async findByPhone(phoneNumber: string) {
@@ -120,7 +125,7 @@ export class UsersService {
   }
 
   async verify(dto: VerifyDto) {
-    let username = dto.username;
+    let username = dto.username.toLowerCase();
     const user = await this.userModel.findOne({ username });
 
     if (!user) {
@@ -143,7 +148,9 @@ export class UsersService {
     return false;
   }
   async resetPassword(username: string) {
-    const user = await this.userModel.findOne({ username });
+    const user = await this.userModel.findOne({
+      username: username.toLowerCase(),
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -162,7 +169,9 @@ export class UsersService {
   }
 
   async verifyResetPassword(dto: VerifyResetPassword, username: string) {
-    const user = await this.userModel.findOne({ username });
+    const user = await this.userModel.findOne({
+      username: username.toLowerCase(),
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -181,7 +190,9 @@ export class UsersService {
   }
 
   async updateResetPassword(dto: UpdateResetPassword, username: string) {
-    const user = await this.userModel.findOne({ username });
+    const user = await this.userModel.findOne({
+      username: username.toLowerCase(),
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
