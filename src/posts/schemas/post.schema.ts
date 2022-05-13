@@ -49,6 +49,6 @@ export class Post extends BaseSchema {
   UserProfile: string;
 
   @Prop()
-  UserNumber: number;
+  UserNumber: string;
 }
 export const PostSchema = SchemaFactory.createForClass(Post);
