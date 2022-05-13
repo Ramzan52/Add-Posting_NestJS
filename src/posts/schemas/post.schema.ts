@@ -43,7 +43,7 @@ export class Post extends BaseSchema {
   keywords: [{ type: String }];
 
   @Prop()
-  UserRating: number;
+  UserRating: number = 0;
 
   @Prop()
   UserProfile: string;
