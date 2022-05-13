@@ -175,6 +175,10 @@ export class ScheduleService {
         profile.save();
         user.save();
         Schedule.save();
+        await this.serviceBusSvc.sendUpdateDocMessage({
+          messageType: 'rating',
+          message: profile,
+        });
       }
     } else if (id === Schedule.buyerId) {
       Schedule.rating.push({
